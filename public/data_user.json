@@ -1,0 +1,29 @@
+{
+    "data":[
+      {
+        "id": 1,
+        "username": "quangfoden",
+        "email": "quang@gmail.com",
+        "password": "1234",
+        "avatar": "https://example.com/john_doe_avatar.jpg",
+        "roles": "admin"
+      },
+      {
+        "id": 2,
+        "username": "ThaoUyen",
+        "email": "uyen@gmail.com",
+        "password": "1234",
+        "avatar": "https://example.com/jane_smith_avatar.jpg",
+        "roles": "user"
+      },
+      {
+        "id": 3,
+        "username": "Kiet",
+        "email": "kiet@gmail.com",
+        "password": "1234",
+        "avatar": "https://example.com/bob_johnson_avatar.jpg",
+        "roles": "user"
+      }
+    ]
+    
+}

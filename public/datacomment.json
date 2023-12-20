@@ -1,0 +1,37 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "post_id": 1,
+            "content_comment": "Great article! I learned a lot.",
+            "likes_comment": 15,
+            "status_comment": "published",
+            "author_avatar": "https://example.com/user123-avatar.jpg",
+            "parent_comment_id": null,
+            "created_date": "2023-01-05T18:45:00Z",
+            "updated_date": "2023-01-05T18:45:00Z"
+        },
+        {
+            "id": 2,
+            "post_id": 1,
+            "content_comment": "I have a question. Can you explain this concept in more detail?",
+            "likes_comment": 5,
+            "status_comment": "pending",
+            "author_avatar": "https://example.com/curiouscoder-avatar.jpg",
+            "parent_comment_id": null,
+            "created_date": "2023-01-06T10:30:00Z",
+            "updated_date": "2023-01-06T10:30:00Z"
+        },
+        {
+            "id": 3,
+            "post_id": 1,
+            "content_comment": "Sure! I'll be happy to provide more details. Here's an explanation...",
+            "likes_comment": 8,
+            "status_comment": "published",
+            "author_avatar": "https://example.com/author123-avatar.jpg",
+            "parent_comment_id": 2,
+            "created_date": "2023-01-06T11:15:00Z",
+            "updated_date": "2023-01-06T11:15:00Z"
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.bg-account-image {
+  background-image: url(/images/bgaccount2.jpg?b279a3d46eb700e6d64778aff3c8c3fe);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
