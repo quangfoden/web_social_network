@@ -3,13 +3,13 @@
     <div class="text-center">
       <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
     </div>
-    <form @submit.prevent="login" class="user">
+    <form @submit.prevent="LoginUser" class="user">
       <div class="form-group">
-        <input type="text" class="form-control form-control-user username" v-model="username" id="exampleInputEmail"
-          placeholder="Enter Username...">
+        <input type="email" class="form-control form-control-user" v-model="user.email" id="exampleInputEmail"
+          placeholder="Enter Email...">
       </div>
       <div class="form-group">
-        <input type="password" v-model="password" class="form-control form-control-user password"
+        <input type="password" v-model="user.password" class="form-control form-control-user password"
           id="exampleInputPassword" placeholder="Password">
       </div>
       <div class="form-group">
@@ -19,9 +19,9 @@
             Me</label>
         </div>
       </div>
-      <a @click="login()" class="btn btn-primary btn-user btn-block">
+      <button type="submit" class="btn btn-primary btn-user btn-block">
         Login
-      </a>
+      </button>
     </form>
     <hr>
     <div class="text-center">
@@ -37,33 +37,22 @@
 export default {
   data() {
     return {
-      username: '',
-      password: '',
-      authen: false
-    };
+      user: {
+        email: '',
+        password: '',
+      }
+    }
   },
   methods: {
-    login() {
-      this.authenticateUser(this.username, this.password, 'data_user.json', '/user-manage');
-    },
-    authenticateUser(username, password, jsonFilePath, successRedirect) {
-      fetch(jsonFilePath)
-        .then(response => response.json())
-        .then(data => {
-          const user = data.data.find(u => u.username === username && u.password === password);
-          if (user) {
-            alert("Login successful! Welcome, " + user.username + "!");
-            console.log(user);
-            this.authen = true
-            this.$router.push(successRedirect);
-          } else {
-            alert("Invalid username or password. Please try again.");
-          }
+    LoginUser() {
+      this.$store.dispatch('loginUser', this.user)
+        .then(() => {
+          
         })
-        .catch(error => {
-          console.error('Error fetching data:', error);
+        .catch((error) => {
+          console.log('Đăng nhập thất bái:', error)
         });
-    }
-  }
-};
+    },
+  },
+}
 </script>

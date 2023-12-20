@@ -1,6 +1,6 @@
 <template>
     <div id="app_vue">
-        <div v-if="$route.path == '/'">
+        <div v-if="$route.path.startsWith('/login') || $route.path.startsWith('/register') || $route.path.startsWith('/forgot-password')">
             <LayoutAccount />
         </div>
         <div

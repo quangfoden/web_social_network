@@ -27,7 +27,7 @@ export const routes = [
         component: ErrorPaBlogge
     },
     {
-        path: '/',
+        path: '/login',
         name: "Login",
         component: LoginView
     },
