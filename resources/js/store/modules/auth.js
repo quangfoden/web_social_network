@@ -22,7 +22,7 @@ const mutations = {
     mutateAuthUser: (state, payload) => (state.authUser = payload),
 }
 const actions = {
-    registerUser({ commit,getters }, userData) {
+    registerUser({ commit, getters }, userData) {
         return new Promise((resolve, reject) => {
             axios.post('/register', userData)
                 .then(response => {
@@ -37,7 +37,7 @@ const actions = {
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Đăng ký thành công',
-                                text: `Error ${getters.getRegisterResponse.response_data[0]}`,
+                                text: `Chào Bạn ${getters.getRegisterResponse.response_data.user_data.email}`,
                                 showConfirmButton: false,
                                 timer: Config.notificationTimer ?? 3000
                             })

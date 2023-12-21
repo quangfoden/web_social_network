@@ -22018,7 +22018,7 @@ var actions = {
             sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
               icon: 'success',
               title: 'Đăng ký thành công',
-              text: "Error ".concat(getters.getRegisterResponse.response_data[0]),
+              text: "Ch\xE0o B\u1EA1n ".concat(getters.getRegisterResponse.response_data.user_data.email),
               showConfirmButton: false,
               timer: (_Config$notificationT = _config__WEBPACK_IMPORTED_MODULE_2__["default"].notificationTimer) !== null && _Config$notificationT !== void 0 ? _Config$notificationT : 3000
             });
