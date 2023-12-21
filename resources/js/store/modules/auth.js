@@ -8,35 +8,49 @@ const state = {
     registrationErrors: null,
     loginResponse: {},
     authUser: {},
+    registerResponse: {}
 };
 
 const getters = {
-    getRegistrationStatus: state => state.registrationStatus,
-    getRegistrationErrors: state => state.registrationErrors,
+    getRegisterResponse: state => state.registerResponse,
     getLoginResponse: state => state.loginResponse,
     getAuthUser: state => state.authUser,
 }
 const mutations = {
-    setRegistrationStatus(state, status) {
-        state.registrationStatus = status;
-    },
-    setRegistrationErrors(state, errors) {
-        state.registrationErrors = errors;
-    },
+    mutateRegisterResponse: (state, payload) => (state.registerResponse = payload),
     mutateLoginResponse: (state, payload) => (state.loginResponse = payload),
     mutateAuthUser: (state, payload) => (state.authUser = payload),
 }
 const actions = {
-    registerUser({ commit }, userData) {
+    registerUser({ commit,getters }, userData) {
         return new Promise((resolve, reject) => {
             axios.post('/register', userData)
                 .then(response => {
-                    if (response.data.authenticated == true) {
-                        commit('setRegistrationStatus', true);
-                        resolve(response);
+                    commit('mutateRegisterResponse', response.data);
+                    localStorage.setItem(
+                        'registerResponse',
+                        JSON.stringify(response.data)
+                    );
+                    if (getters.getRegisterResponse.authenticated == true) {
+                        if (response.status == 200) {
+                            resolve(response);
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Đăng ký thành công',
+                                text: `Error ${getters.getRegisterResponse.response_data[0]}`,
+                                showConfirmButton: false,
+                                timer: Config.notificationTimer ?? 3000
+                            })
+                            Router.push('/login');
+                        }
                     } else {
-                        commit('setRegistrationStatus', false);
-                        commit('setRegistrationErrors', response.data.response_data);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi đăng ký',
+                            text: `Error ${getters.getRegisterResponse.response_data[0]}`,
+                            showConfirmButton: false,
+                            timer: Config.notificationTimer ?? 3000
+                        })
                     }
                 })
                 .catch(error => {
@@ -64,9 +78,9 @@ const actions = {
                         Swal.fire({
                             icon: 'success',
                             title: 'Đăng nhập thành công',
-                            text: `Error ${getters.getLoginResponse.response_data[0]}`,
+                            text: `Success ${getters.getLoginResponse.response_data[0]}`,
                             showConfirmButton: false,
-                            timer: Config.notificationTimer ?? 1000
+                            timer: Config.notificationTimer ?? 3000
                         })
                         Router.push('/user-manage');
                     }
@@ -77,16 +91,13 @@ const actions = {
                         title: 'Lỗi đăng nhập',
                         text: `Error ${getters.getLoginResponse.response_data[0]}`,
                         showConfirmButton: false,
-                        timer: Config.notificationTimer ?? 1000
+                        timer: Config.notificationTimer ?? 3000
                     })
                 }
             });
 
     }
 }
-
-
-
 export default {
     state,
     getters,

@@ -1,4 +1,5 @@
 require('./bootstrap');
+import '@mdi/font/css/materialdesignicons.min.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 import { createApp } from 'vue';
 import App from './App.vue';

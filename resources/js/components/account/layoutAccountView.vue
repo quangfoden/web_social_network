@@ -1,25 +1,30 @@
 <template>
-    <div class="bg-gradient-primary">
-        <div class="account-wrapper h-100">
-            <div class="container h-100">
-                <div class="row justify-content-center h-100 align-items-center">
-                    <div class="col-xl-10 col-lg-12 col-md-9">
-                        <div class="card o-hidden border-0 shadow-lg my-5">
-                            <div class="card-body p-0">
-                                <div class="row">
-                                    <div class="col-lg-6 d-none d-lg-block bg-account-image"></div>
-                                    <div class="col-lg-6">
-                                        <router-view></router-view>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="login_register">
+      <div class="home-btn d-none d-sm-block">
+        <a href="/">
+          <i class="mdi mdi-home-variant h2 text-white"></i>
+        </a>
+      </div>
+      <div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="authentication-page-content d-flex align-items-center min-vh-100">
+                <div class="w-100">
+                  <div class="row justify-content-center">
+                    <router-view></router-view>
+                    
+                  </div>
                 </div>
+              </div>
             </div>
+            <div class="col-lg-8">
+              <div class="authentication-bg">
+                <div class="bg-overlay"></div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</template>
-<script>
-
-</script>
+  </template>

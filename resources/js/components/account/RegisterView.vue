@@ -1,55 +1,71 @@
 <template>
-    <div v-if="registrationErrors" style="color: red;">
-        <ul>
-            <li v-for="error in registrationErrors">{{ error }}</li>
-        </ul>
-    </div>
-    <div class="p-5">
-        <div class="text-center">
-            <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
-        </div>
-        <form @submit.prevent="registerUser" class="user">
-            <div class="form-group row">
-                <div class="col-sm-6 mb-3 mb-sm-0">
-                    <input type="text" class="form-control form-control-user" id="exampleFirstName" placeholder="First Name"
-                        v-model="user.first_name">
+    <div class="col-lg-12">
+        <div>
+            <div class="text-center">
+                <div>
+                    <a href="/" class="logo">
+                        <img src="/assets/images/logo-dark.png" height="20" alt="logo" />
+                    </a>
                 </div>
-                <div class="col-sm-6">
-                    <input type="text" class="form-control form-control-user" id="exampleLastName" placeholder="Last Name"
-                        v-model="user.last_name">
-                </div>
+                <h4 class="font-size-18 mt-4 mt-md-3">Register account</h4>
             </div>
-            <div class="form-group">
-                <input type="email" class="form-control form-control-user" id="exampleInputEmail"
-                    placeholder="Email Address" v-model="user.email">
+            <div class="p-2 mt-5 mt-md-3">
+                <form class="form-horizontal" @submit.prevent="registerUser">
+                    <div class="d-lg-flex gap-1 justify-content-between">
+                        <div class="form-group auth-form-group-custom mb-3">
+                            <i class="mdi mdi-account text-black auti-custom-input-icon"></i>
+                            <label for="userfirstname">First name</label>
+                            <input v-model="user.first_name" type="text" class="form-control" id="userfirstname"
+                                placeholder="Enter first name" />
+                        </div>
+                        <div class="form-group auth-form-group-custom mb-3">
+                            <i class="mdi mdi-alphabetical text-black auti-custom-input-icon"></i>
+                            <label for="userlastname">Last name</label>
+                            <input v-model="user.last_name" type="text" class="form-control" id="userlastname"
+                                placeholder="Enter last name" />
+                        </div>
+
+                    </div>
+                    <div class="form-group auth-form-group-custom mb-3">
+                        <i class="mdi mdi-email-outline text-black auti-custom-input-icon"></i>
+                        <label for="useremail">Email</label>
+                        <input v-model="user.email" type="email" class="form-control" id="useremail"
+                            placeholder="Enter email" />
+                    </div>
+
+                    <div class="form-group auth-form-group-custom mb-3">
+                        <i class="mdi mdi-lock text-black auti-custom-input-icon"></i>
+                        <label for="userpassword">Password</label>
+                        <input v-model="user.password" type="password" class="form-control" id="userpassword"
+                            placeholder="Enter password" />
+                    </div>
+                    <div class="form-group auth-form-group-custom mb-3">
+                        <i class="mdi mdi-lock text-black auti-custom-input-icon"></i>
+                        <label for="userpassword">Repassword</label>
+                        <input v-model="user.password_confirmation" type="password" class="form-control" id="userrepassword"
+                            placeholder="Enter repassword" />
+                    </div>
+
+                    <div class="text-center">
+                        <button class="btn btn-all-add-edit w-md waves-effect waves-light" type="submit">
+                            Register
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group row">
-                <div class="col-sm-6 mb-3 mb-sm-0">
-                    <input type="password" class="form-control form-control-user" id="exampleInputPassword"
-                        placeholder="Password" v-model="user.password">
-                </div>
-                <div class="col-sm-6">
-                    <input type="password" class="form-control form-control-user" id="exampleRepeatPassword"
-                        placeholder="Repeat Password" v-model="user.password_confirmation">
-                </div>
+
+            <div class="mt-2 text-center">
+                <p>
+                    Already have an account ?
+                    <router-link :to="{ name: 'Login' }" class="font-weight-medium text-login-register">Login</router-link>
+                </p>
+                <p>
+                    © 2023. Create 
+                    <i class="mdi mdi-heart text-danger"></i> by
+                    me
+                </p>
             </div>
-            <button type="submit" class="btn btn-primary btn-user btn-block">
-                Register Account
-            </button>
-            <hr>
-        </form>
-        <hr>
-        <div class="text-center">
-            <router-link :to="{ name: 'ForgotPassword' }" class="small">Forgot Password?</router-link>
         </div>
-        <div class="text-center">
-            <router-link :to="{ name: 'Login' }" class="small">Already have an account?
-                Login!</router-link>
-        </div>
-    </div>
-    <!-- Hiển thị thông báo đăng ký thành công -->
-    <div v-if="registrationStatus === true" style="color: green;">
-        Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.
     </div>
 </template>
 <script>

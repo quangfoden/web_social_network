@@ -4,9 +4,12 @@
   box-sizing: border-box;
 }
 
-.bg-account-image {
-  background-image: url(/images/bgaccount2.jpg?b279a3d46eb700e6d64778aff3c8c3fe);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
+body .btn-all-add-edit {
+  background: #252b3b;
+  color: #fff;
+}
+
+body .btn-all-add-edit:hover {
+  background: #4b5a83;
+  color: #fff;
 }

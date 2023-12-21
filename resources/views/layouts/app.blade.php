@@ -9,6 +9,9 @@
     <meta content="Themesdesign" name="author" />
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <!-- icon  -->
+    <link rel="stylesheet" href="node_modules/@mdi/font/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="node_modules/@mdi/font/css/materialdesignicons.css">
+    <link href="{{ asset('assets/css/materialdesignicons.min.css') }}" type="text/css" rel="stylesheet" />
     <link href="{{ asset('assets/css/fontawesome-free/css/all.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <!-- boostrap icon  -->
     <link href="{{ asset('assets/libs/bootstrap-icons/bootstrap-icons.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
@@ -18,6 +21,7 @@
     <link href="{{ asset('assets/libs/swiper/swiper-bundle.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <!-- style.css  -->
     <link href="{{ mix('assets/css/style.css') }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset('assets/css/authentication.css') }}" type="text/css" rel="stylesheet" />
     <link href="{{ asset('assets/css/custom.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/user_side/style.css') }}" id="app-style" rel="stylesheet" type="text/css" />
 
