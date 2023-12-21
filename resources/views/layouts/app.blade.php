@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="node_modules/@mdi/font/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="node_modules/@mdi/font/css/materialdesignicons.css">
     <link href="{{ asset('assets/css/materialdesignicons.min.css') }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset('assets/css/custom_admin.css') }}" type="text/css" rel="stylesheet" />
     <link href="{{ asset('assets/css/fontawesome-free/css/all.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <!-- boostrap icon  -->
     <link href="{{ asset('assets/libs/bootstrap-icons/bootstrap-icons.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />

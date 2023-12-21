@@ -1,8 +1,15 @@
 <template>
-    <footer class="sticky-footer bg-white">
-        <div class="container my-auto">
-            <div class="copyright text-center my-auto">
-                <span>Create By Me </span>
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-sm-right d-sm-block">
+                       Create by <i class="mdi mdi-heart text-danger"></i> me
+                    </div>
+                </div>
             </div>
         </div>
     </footer>

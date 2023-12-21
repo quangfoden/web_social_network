@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
+import WelComeView from '../components/WelComeView.vue'
+
 import LoginView from '../components/account/LoginView.vue'
 import RegisterView from '../components/account/RegisterView.vue'
 import ForgotPasswordView from '../components/account/ForgotPasswordView.vue'
@@ -27,6 +29,11 @@ export const routes = [
         component: ErrorPaBlogge
     },
     {
+        path: '/',
+        name: "WelCome View",
+        component: WelComeView
+    },
+    {
         path: '/login',
         name: "Login",
         component: LoginView
@@ -46,6 +53,7 @@ export const routes = [
         path: '/user-manage',
         name: "User Manage",
         component: UserParent,
+        meta: { requiresAuth: true },
         children: [
             {
                 path: 'all',
@@ -64,6 +72,7 @@ export const routes = [
         path: '/post-manage',
         name: "Post Manage",
         component: PostParent,
+        meta: { requiresAuth: true },
         children: [
             {
                 path: 'all',
@@ -85,10 +94,29 @@ export const routes = [
         ]
     },
 
+
 ]
+
 const router = createRouter({
     history: createWebHistory(),
     routes
 })
+import { store } from '../store/store';
+router.beforeEach((to, from, next) => {
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+    const isAuthenticated = store.getters.getLoginResponse.authenticated || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated
+    let authUser = undefined
+    if (store.getters.getAuthUser.id !== undefined) {
+        authUser = store.getters.getAuthUser;
+    }
+    authUser = JSON.parse(localStorage.getItem('authUser'));
+    if (requiresAuth) {
+        if (!isAuthenticated) {
+            next('/login');
+            return;
+        }
+    }
 
+    next();
+})
 export default router

@@ -13,3 +13,7 @@ body .btn-all-add-edit:hover {
   background: #4b5a83;
   color: #fff;
 }
+
+a {
+  text-decoration: none !important;
+}

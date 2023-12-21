@@ -24,7 +24,7 @@ const mutations = {
 const actions = {
     registerUser({ commit, getters }, userData) {
         return new Promise((resolve, reject) => {
-            axios.post('/register', userData)
+            axios.post('/api/register', userData)
                 .then(response => {
                     commit('mutateRegisterResponse', response.data);
                     localStorage.setItem(
@@ -60,7 +60,7 @@ const actions = {
     },
     loginUser({ commit, getters }, loginData) {
         axios
-            .post('/login', loginData)
+            .post('/api/login', loginData)
             .then(response => {
                 commit('mutateLoginResponse', response.data);
                 localStorage.setItem(
@@ -69,22 +69,23 @@ const actions = {
                 );
 
                 if (getters.getLoginResponse.response_type == 'success') {
-                    if (response.status === 200) {
-                        // commit('mutateAuthUser', response.data.data.user);
-                        // localStorage.setItem(
-                        //     'authUser',
-                        //     JSON.stringify(response.data.data.user)
-                        // );
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Đăng nhập thành công',
-                            text: `Success ${getters.getLoginResponse.response_data[0]}`,
-                            showConfirmButton: false,
-                            timer: Config.notificationTimer ?? 3000
-                        })
-                        Router.push('/user-manage');
-                    }
-
+                    axios.get('/api/user').then(response => {
+                        if (response.status === 200) {
+                            commit('mutateAuthUser', response.data.data.user);
+                            localStorage.setItem(
+                                'authUser',
+                                JSON.stringify(response.data.data.user)
+                            );
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Đăng nhập thành công',
+                                text: `Success ${getters.getLoginResponse.response_data[0]}`,
+                                showConfirmButton: false,
+                                timer: Config.notificationTimer ?? 3000
+                            })
+                            Router.push('/user-manage');
+                        }
+                    });
                 } else {
                     Swal.fire({
                         icon: 'error',

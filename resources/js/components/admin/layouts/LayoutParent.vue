@@ -1,47 +1,67 @@
 <template>
-    <div id="wrapper">
-        <LeftSidebar />
-        <div id="content-wrapper" class="d-flex flex-column">
-            <div id="content">
-                <HeaderView />
-                <!-- start page title -->
-                <div class="row mb-4" style="padding: 0 12px;">
-                    <div class="col-12">
-                        <div class="page-title-box d-flex align-items-center justify-content-between"
-                            style="padding-bottom: 0px;">
-                            <h4 class="mb-0 d-none d-md-block">
-                                <!-- {{ pageName }} -->
-                            </h4>
-                            <div class="page-title-right">
-                                <ol class="breadcrumb" v-if="crumbs && crumbs.length > 0">
-                                    <li class="breadcrumb-item" v-for="(crumb, index) in crumbs" :key="index">
-                                        <p style="margin-bottom: 0px;">{{ crumb.title }}</p>
-                                    </li>
-                                </ol>
-                            </div>
+    <!-- Begin page -->
+    <div id="layout-wrapper">
 
+        <HeaderView />
+
+        <!-- ========== Left Sidebar Start ========== -->
+        <LeftSiderbar />
+        <!-- Left Sidebar End -->
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+
+            <div class="page-content">
+                <div class="container-fluid">
+
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-flex align-items-center justify-content-between"
+                                style="padding-bottom: 0px;">
+                                <h4 class="mb-0 d-none d-md-block">
+                                    <!-- {{ pageName }} -->
+                                </h4>
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb" v-if="crumbs && crumbs.length > 0">
+                                        <li class="breadcrumb-item" v-for="(crumb, index) in crumbs" :key="index">
+                                            <p style="margin-bottom: 0px;">{{ crumb.title }}</p>
+                                        </li>
+                                    </ol>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- end page title -->
-                <div class="container-fluid">
+                    <!-- end page title -->
                     <router-view></router-view>
-                </div>
+
+                </div> <!-- container-fluid -->
             </div>
+            <!-- End Page-content -->
+
             <FooterView />
         </div>
+        <!-- end main content-->
+
     </div>
+
+    <!-- END layout-wrapper -->
 </template>
 <script>
-import HeaderView from './HeaderView.vue'
-import LeftSidebar from './Leftsiderbar.vue'
-import FooterView from './FooterView.vue'
+
+import LeftSiderbar from './LeftSiderbar.vue';
+import HeaderView from './HeaderView.vue';
+import FooterView from './FooterView.vue';
 export default {
     components: {
+        LeftSiderbar,
         HeaderView,
-        LeftSidebar,
-        FooterView,
+        FooterView
     },
+
     computed: {
         crumbs() {
             const routes = this.$route.matched
