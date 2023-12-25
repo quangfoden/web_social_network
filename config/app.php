@@ -143,7 +143,15 @@ return [
         'driver' => 'file',
         // 'store' => 'redis',
     ],
+    
+    'providers' => [
+        // ...
+        Spatie\Permission\PermissionServiceProvider::class,
+    ],
+    
 
+    
+   
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

@@ -23,7 +23,9 @@ return new class extends Migration
             $table->date('birthdate')->nullable();
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
             $table->text('bio')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->tinyInteger('status')->default(1);
+            $table->tinyInteger('is_lock')->default(0);
+            $table->tinyInteger('first_login')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

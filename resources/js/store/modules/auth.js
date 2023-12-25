@@ -68,9 +68,24 @@ const actions = {
                     JSON.stringify(response.data)
                 );
 
-                if (getters.getLoginResponse.response_type == 'success') {
+                if (getters.getLoginResponse.response_type == 'success' && getters.getLoginResponse.status == 1) {
                     axios.get('/api/user').then(response => {
-                        if (response.status === 200) {
+                        if (response.status === 200 && getters.getLoginResponse.role.includes('admin')) {
+                            commit('mutateAuthUser', response.data.data.user);
+                            localStorage.setItem(
+                                'authUser',
+                                JSON.stringify(response.data.data.user)
+                            );
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Chào mừng Admin',
+                                text: `Success ${getters.getLoginResponse.response_data[0]}`,
+                                showConfirmButton: false,
+                                timer: Config.notificationTimer ?? 3000
+                            })
+                            Router.push('/user-manage');
+                        }
+                        else if (getters.getLoginResponse.response_type == 'success' && getters.getLoginResponse.role == 'user') {
                             commit('mutateAuthUser', response.data.data.user);
                             localStorage.setItem(
                                 'authUser',
@@ -83,10 +98,11 @@ const actions = {
                                 showConfirmButton: false,
                                 timer: Config.notificationTimer ?? 3000
                             })
-                            Router.push('/user-manage');
+                            Router.push('/');
                         }
                     });
-                } else {
+                }
+                else {
                     Swal.fire({
                         icon: 'error',
                         title: 'Lỗi đăng nhập',
@@ -97,7 +113,20 @@ const actions = {
                 }
             });
 
-    }
+    },
+    logout() {
+        axios.post('/api/user/logout').then(() => {
+            localStorage.removeItem('loginResponse');
+            localStorage.removeItem('authUser');
+            Swal.fire({
+                icon: 'success',
+                title: 'Đăng xuất thành công',
+                showConfirmButton: false,
+                timer: Config.notificationTimer ?? 3000
+            })
+            Router.push('/login');
+        });
+    },
 }
 export default {
     state,

@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/', function (Request $request) {
         $user = $request->user();
         $responseData = [
@@ -29,4 +30,9 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
         ];
         return response()->json($responseData);
     });
+    Route::get('allusers', [UserController::class, 'allusers']);
+    Route::get('roles', [UserController::class, 'roles']);
+    Route::post('create-new-user', [UserController::class, 'createNewUser']);
+    Route::post('change-role-user/{id}', [UserController::class, 'changeRoleUser']);
+    Route::post('admin-change-user-pass/{id}', [UserController::class, 'adminChangePasswordUser']);
 });

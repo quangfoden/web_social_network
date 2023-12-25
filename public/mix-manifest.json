@@ -1,5 +1,6 @@
 {
     "/assets/js/app.js": "/assets/js/app.js",
+    "/assets/css/datatable.css": "/assets/css/datatable.css",
     "/assets/css/custom_admin.css": "/assets/css/custom_admin.css",
     "/assets/css/authentication.css": "/assets/css/authentication.css",
     "/assets/css/style.css": "/assets/css/style.css"

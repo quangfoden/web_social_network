@@ -1,7 +1,6 @@
 import axios from 'axios'
-axios.defaults.baseURL = 'http://localhost:8000';
-
+axios.defaults.baseURL = 'http://localhost:8000'
 const config = {
     notificationTimer: 3000,
 }
-export default { config, axios }
+export default { config}

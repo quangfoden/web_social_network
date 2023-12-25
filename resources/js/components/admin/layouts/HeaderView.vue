@@ -48,23 +48,19 @@
 
                 <div class="dropdown d-inline-block user-dropdown">
                     <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img class="rounded-circle header-profile-user" src=""
-                            alt="Header Avatar" />
-                            <!-- {{
-                            UserForm.name
-                        }} -->
-                        <span class="d-none d-xl-inline-block ml-1">Quang</span>
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img class="rounded-circle header-profile-user mx-2" width="35" height="35" src="../../../../assets/images/avatar.gif"
+                            alt="" />
+                        <span class="d-none d-xl-inline-block"> {{ UserForm.name }}</span>
                         <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <!-- <router-link class="dropdown-item" :to="{ name: 'Profile User' }"><i
-                                class="ri-user-line align-middle mr-1"></i>
-                            Profile</router-link>
+                        <a class="dropdown-item"><i class="fas fa-user align-middle mr-1"></i>
+                            Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item text-danger" href="#"><i
-                                class="ri-shut-down-line align-middle mr-1 text-danger"></i>
-                            Logout</a> -->
+                        <a class="dropdown-item text-danger" @click="logoutSubmit" href="#"><i
+                                class="fas fa-sign-out-alt align-middle mr-1 text-danger"></i>
+                            Logout</a>
                     </div>
                 </div>
             </div>
@@ -73,8 +69,47 @@
 </template>
   
 <script>
-//   import { mapGetters, mapMutations, mapActions } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex"
 export default {
-}
+    data() {
+        return {
+
+        };
+    },
+    created() {
+        this.fetchData();
+
+    },
+    methods: {
+        ...mapActions(["logout"]),
+        logoutSubmit() {
+            this.logout();
+        },
+        reloadPage() {
+            location.reload();
+        },
+        goToProject(index) {
+            console.log(index);
+        },
+        fetchData() {
+
+        }
+    },
+    computed: {
+        authUser() {
+            if (this.$store.getters.getAuthUser.id !== undefined) {
+                return this.$store.getters.getAuthUser;
+            }
+            return JSON.parse(localStorage.getItem("authUser"));
+        },
+        UserForm() {
+            return {
+                name: this.authUser ? this.authUser.first_name : "",
+            };
+        },
+    },
+    mounted() {
+    },
+};
 </script>
   

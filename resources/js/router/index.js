@@ -8,7 +8,7 @@ import ForgotPasswordView from '../components/account/ForgotPasswordView.vue'
 
 import UserParent from '../components/admin/Users/UserParent.vue'
 import AllUser from '../components/admin/Users/AllUser.vue'
-import AddUser from '../components/admin/Users/AddUser.vue'
+
 
 import PostParent from '../components/admin/Posts/PostParent.vue'
 import AllPost from '../components/admin/Posts/AllPost.vue'
@@ -60,11 +60,6 @@ export const routes = [
                 name: "All User",
                 component: AllUser,
             },
-            {
-                path: 'add',
-                name: "Add User",
-                component: AddUser,
-            }
         ]
 
     },
@@ -93,8 +88,6 @@ export const routes = [
             },
         ]
     },
-
-
 ]
 
 const router = createRouter({
@@ -104,7 +97,9 @@ const router = createRouter({
 import { store } from '../store/store';
 router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-    const isAuthenticated = store.getters.getLoginResponse.authenticated || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated
+    const isAuthenticated =
+        store.getters.getLoginResponse.authenticated
+        || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated
     let authUser = undefined
     if (store.getters.getAuthUser.id !== undefined) {
         authUser = store.getters.getAuthUser;

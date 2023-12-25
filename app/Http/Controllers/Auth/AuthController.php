@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Events\SetDefaultUserRole;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -66,6 +68,7 @@ class AuthController extends Controller
                 ],
                 'authenticated' => true,
             ];
+            $user->assignRole('user');
         }
         return response()->json($res, 200);
     }
@@ -84,7 +87,6 @@ class AuthController extends Controller
                     $msg[] = $error;
                 }
             }
-
             $res = [
                 'response_index' => true,
                 'response_type' => 'error',
@@ -96,11 +98,16 @@ class AuthController extends Controller
         }
 
         if (Auth::attempt($request->only('email', 'password'))) {
+            $user = Auth::user();
+            $userRoles = User::with('roles:name')->find($user->id)->roles->pluck('name');
+            $status = $user->status;
             $res = [
                 'response_index' => true,
                 'response_type' => 'success',
                 'response_data' => ['You Have Logged In Successfully'],
                 'authenticated' => true,
+                'status' => $status,
+                'role' => $userRoles
             ];
 
             return response()->json($res, 200);
@@ -114,5 +121,10 @@ class AuthController extends Controller
 
             return response()->json($res, 200);
         }
+    }
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+        return response()->json(['message' => 'Logged out successfully']);
     }
 }
