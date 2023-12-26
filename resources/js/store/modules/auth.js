@@ -83,7 +83,7 @@ const actions = {
                                 showConfirmButton: false,
                                 timer: Config.notificationTimer ?? 3000
                             })
-                            Router.push('/user-manage');
+                            Router.push('/admin');
                         }
                         else if (getters.getLoginResponse.response_type == 'success' && getters.getLoginResponse.role == 'user') {
                             commit('mutateAuthUser', response.data.data.user);
@@ -127,6 +127,17 @@ const actions = {
             Router.push('/login');
         });
     },
+    storeUpdateUser({commit, getters}) {
+            axios.get('/api/user').then(response => {
+                if (response.data.status === 200) {
+                    commit('mutateAuthUser', response.data.data.user);
+                    localStorage.setItem(
+                        'authUser',
+                        JSON.stringify(response.data.data.user)
+                    );
+                }
+            });
+    }
 }
 export default {
     state,

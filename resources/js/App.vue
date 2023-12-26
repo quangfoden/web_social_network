@@ -4,7 +4,10 @@
             <LayoutAccount />
         </div>
         <div v-else-if="isAdminRoute && authUser">
-            <AdminView :authUser="authUser" />
+            <LayoutParent :authUser="authUser" />
+        </div>
+        <div v-else-if="isUserRoute && authUser">
+            <PageUserParent :authUser="authUser" />
         </div>
         <div v-else>
             <WelComeView />
@@ -14,12 +17,14 @@
 <script>
 import LayoutAccount from './components/account/layoutAccountView.vue'
 import WelComeView from './components/WelComeView.vue'
-import AdminView from './components/admin/adminView.vue'
+import LayoutParent from './components/admin/layouts/LayoutParent.vue';
+import PageUserParent from './components/user/PageUserParent.vue';
 export default {
     components: {
         LayoutAccount,
-        AdminView,
-        WelComeView
+        LayoutParent,
+        WelComeView,
+        PageUserParent
     },
     data() {
         return {
@@ -34,8 +39,11 @@ export default {
             return JSON.parse(localStorage.getItem('authUser'));
         },
         isAdminRoute() {
-            return this.$route.path.startsWith("/user-manage") || this.$route.path.startsWith("/post-manage");
+            return this.$route.path.startsWith("/admin");
         },
+        isUserRoute(){
+            return this.$route.path.startsWith("/");
+        }
     }
 }
 </script>

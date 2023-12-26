@@ -6,6 +6,12 @@ import LoginView from '../components/account/LoginView.vue'
 import RegisterView from '../components/account/RegisterView.vue'
 import ForgotPasswordView from '../components/account/ForgotPasswordView.vue'
 
+import AdminView from '../components/admin/adminView.vue';
+
+import ProfileParent from '../components/admin/profile/ProfileParent.vue';
+import Profile from '../components/admin/profile/ProfileView.vue';
+import ChangePasswordProfile from '../components/admin/profile/ChangePassword.vue';
+
 import UserParent from '../components/admin/Users/UserParent.vue'
 import AllUser from '../components/admin/Users/AllUser.vue'
 
@@ -50,16 +56,40 @@ export const routes = [
         component: ForgotPasswordView
     },
     {
-        path: '/user-manage',
-        name: "User Manage",
-        component: UserParent,
+        path: '/admin',
+        name: "Dashboard",
+        component: AdminView,
         meta: { requiresAuth: true },
         children: [
             {
-                path: 'all',
-                name: "All User",
-                component: AllUser,
+                path: 'user-manage',
+                name: "User Manage",
+                component:UserParent,
+                children: [
+                    {
+                        path: 'all-user',
+                        name: "All User",
+                        component: AllUser,
+                    }
+                ]
             },
+            {
+                name: 'Profile',
+                path: 'profile',
+                component: ProfileParent,
+                children: [
+                    {
+                        name: 'Profile User',
+                        path: 'profile-user',
+                        component: Profile,
+                    },
+                    {
+                        name: 'Change Password',
+                        path: 'change-password',
+                        component: ChangePasswordProfile,
+                    }
+                ]
+            }
         ]
 
     },
