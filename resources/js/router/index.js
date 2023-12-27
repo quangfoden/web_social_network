@@ -22,6 +22,8 @@ import AllPost from '../components/admin/Posts/AllPost.vue'
 import CommentParent from '../components/admin/Comments/CommentParent.vue'
 import AllComment from '../components/admin/Comments/AllComment.vue'
 
+import PageUserParent from '../components/user/PageUserParent.vue'
+
 const ErrorPaBlogge = {
     template:
         '<div class="error-page">Trang Này Hiện Đang Trong Quá Trình Phát Triển <i class="fas fa-heart text-danger"></i></div>'
@@ -35,7 +37,7 @@ export const routes = [
         component: ErrorPaBlogge
     },
     {
-        path: '/',
+        path: '/welcome',
         name: "WelCome View",
         component: WelComeView
     },
@@ -64,7 +66,7 @@ export const routes = [
             {
                 path: 'user-manage',
                 name: "User Manage",
-                component:UserParent,
+                component: UserParent,
                 children: [
                     {
                         path: 'all-user',
@@ -118,6 +120,18 @@ export const routes = [
             },
         ]
     },
+    {
+        path: '/',
+        component: PageUserParent,
+        meta: { requiresAuthUser: true },
+        children: [
+            {
+                path: '',
+                name: '',
+                component: PageUserParent
+            }
+        ]
+    }
 ]
 
 const router = createRouter({
@@ -127,9 +141,18 @@ const router = createRouter({
 import { store } from '../store/store';
 router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+    const requiresAuthUser = to.matched.some(record => record.meta.requiresAuthUser)
+    const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
+
+    const isAdmin = loginResponse?.role?.includes('admin');
+    const isUser = loginResponse?.role?.includes('user');
+
     const isAuthenticated =
-        store.getters.getLoginResponse.authenticated
-        || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated
+        store.getters.getLoginResponse.authenticated && isAdmin
+        || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated && isAdmin
+    const isUserAuthenticated =
+        store.getters.getLoginResponse.authenticated && isUser
+        || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated && isUser
     let authUser = undefined
     if (store.getters.getAuthUser.id !== undefined) {
         authUser = store.getters.getAuthUser;
@@ -137,6 +160,12 @@ router.beforeEach((to, from, next) => {
     authUser = JSON.parse(localStorage.getItem('authUser'));
     if (requiresAuth) {
         if (!isAuthenticated) {
+            next('/login');
+            return;
+        }
+    }
+    if (requiresAuthUser) {
+        if (!isUserAuthenticated) {
             next('/login');
             return;
         }
