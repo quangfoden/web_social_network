@@ -89,6 +89,32 @@
             </div>
         </div>
     </div>
+    <!-- myModalToProfile  -->
+    <div class="row">
+        <button ref="myModalToProfile" type="button" class="btn btn-primary d-none" data-bs-toggle="modal"
+            data-bs-target="#ModalViewProfile">
+            Launch demo modal
+        </button>
+        <!-- Modal -->
+        <div class="modal fade" id="ModalViewProfile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog p-lg-5 p-1 pt-5 pt-lg-5 d-flex justify-content-center" role="document">
+                <div class="modal-content col-md-7">
+                    <div class="word_default p-4">
+                        <h3 class="text-center mb-4">View profile Now <i class="fas fa-chevron-down"></i></h3>
+                        <button ref="btnCloseEditUser" type="button" class="close" data-bs-dismiss="modal"
+                            aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <div class="col-md-12 d-flex gap-2 align-items-center justify-content-center">
+                            <router-link :to="{ name: 'Profile User' }" class="btn btn-primary" @click="closeModal">Go to Profile </router-link>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- change password  -->
     <div class="row">
         <button ref="myModalBtnchangepass" type="button" class="btn btn-primary d-none" data-bs-toggle="modal"
@@ -238,7 +264,7 @@
 </template>
 <style></style>
 <script>
-
+import router from "../../../router/index"
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
@@ -299,6 +325,10 @@ export default {
     },
     methods: {
         ...mapActions(["logout"]),
+        closeModal() {
+            // Đóng modal khi chuyển đến trang 
+            $(".modal-backdrop").remove();
+        },
         createNewUser() {
             axios
                 .post("/api/user/create-new-user", this.newUser)
@@ -336,10 +366,10 @@ export default {
                 })
                 .catch((error) => {
                     if (error.response.status == 403) {
-                        logout();
+                        this.logout();
                     }
                     if (error.response.status == 401) {
-                        logout();
+                        this.logout();
                     }
                     this.$swal.fire({
                         icon: "error",
@@ -371,10 +401,10 @@ export default {
                 })
                 .catch((error) => {
                     if (error.response.status === 403) {
-                        logout();
+                        this.logout();
                     }
                     if (error.response.status === 401) {
-                        logout();
+                        this.logout();
                     }
                     this.$swal.fire({
                         icon: "error",
@@ -394,15 +424,8 @@ export default {
                             icon: "success",
                             title: `${response.data.message}`,
                             showConfirmButton: false,
-                            timer: this.$config.notificationTimer ?? 1000,
+                            timer: this.$config.notificationTimer ?? 3000,
                         });
-                        this.userPasswwordForm = {
-                            first_name: rowData.first_name,
-                            last_name: rowData.last_name,
-                            password_new: '',
-                            repassword_new: '',
-                            id: rowData.id,
-                        }
                     }
                     else {
                         this.$swal.fire({
@@ -410,16 +433,17 @@ export default {
                             icon: "error",
                             title: `${response.data.message}`,
                             showConfirmButton: false,
-                            timer: this.$config.notificationTimer ?? 1000,
+                            timer: this.$config.notificationTimer ?? 3000,
                         });
                     }
                 })
                 .catch((error) => {
+                    console.log("lỗi changepass rồi", error)
                     if (error.response.status == 403) {
-                        logout();
+                        this.logout();
                     }
                     if (error.response.status == 401) {
-                        logout();
+                        this.logout();
                     }
                     this.$swal.fire({
                         icon: "error",
@@ -488,61 +512,90 @@ export default {
                     data: "id",
                     title: "Action",
                     createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
-                        const app = createApp({
-                            render() {
-                                return [
-                                    h(
-                                        "a",
-                                        {
-                                            class: "btn btn-all-add-edit me-2",
-                                            onClick: () => {
-                                                self.userForm = {
-                                                    first_name: rowData.first_name,
-                                                    last_name: rowData.last_name,
-                                                    email: rowData.email,
-                                                    id: rowData.id,
-                                                    status: rowData.status,
-                                                    is_lock: rowData.is_lock,
-                                                };
-                                                self.showCheckbox = false;
-                                                setTimeout(() => {
-                                                    self.showCheckbox = true;
-                                                    self.userRoles = rowData.roles;
-                                                    self.$refs.myModalBtn.click();
-                                                }, 10); // xử lý chờ 10 ms để userRoles kịp xóa list checkbox cũ
+                        const dataAuth = localStorage.getItem('authUser');
+                        const authUserArray = JSON.parse(dataAuth);
+                        console.log(authUserArray.id)
+                        if (rowData.id !== authUserArray.id) {
+                            const app = createApp({
+                                render() {
+                                    return [
+                                        h(
+                                            "a",
+                                            {
+                                                class: "btn btn-all-add-edit me-2",
+                                                onClick: () => {
+                                                    self.userForm = {
+                                                        first_name: rowData.first_name,
+                                                        last_name: rowData.last_name,
+                                                        email: rowData.email,
+                                                        id: rowData.id,
+                                                        status: rowData.status,
+                                                        is_lock: rowData.is_lock,
+                                                    };
+                                                    self.showCheckbox = false;
+                                                    setTimeout(() => {
+                                                        self.showCheckbox = true;
+                                                        self.userRoles = rowData.roles;
+                                                        self.$refs.myModalBtn.click();
+                                                    }, 10); // xử lý chờ 10 ms để userRoles kịp xóa list checkbox cũ
+                                                },
                                             },
-                                        },
-                                        "Edit"
-                                    ),
-                                    h(
+                                            "Edit"
+                                        ),
+                                        h(
+                                            "a",
+                                            {
+                                                class: "btn btn-all-add-edit me-2",
+                                                onClick: () => {
+                                                    self.userPasswwordForm = {
+                                                        first_name: rowData.first_name,
+                                                        last_name: rowData.last_name,
+                                                        password: rowData.password,
+                                                        password_new: '',
+                                                        repassword_new: '',
+                                                        email: rowData.email,
+                                                        id: rowData.id,
+                                                    };
+                                                    self.$refs.myModalBtnchangepass.click();
+
+                                                }
+                                            },
+                                            "Change password"
+                                        )
+                                    ];
+                                },
+                                data() {
+                                    return {
+                                        rowData: rowData,
+                                    };
+                                },
+                            })
+                            app.mount(cell);
+                        }
+                        else {
+                            const app = createApp({
+                                render() {
+                                    return h(
                                         "a",
                                         {
-                                            class: "btn btn-all-add-edit me-2",
+                                            class: 'btn btn-all-add-edit me-2',
                                             onClick: () => {
-                                                self.userPasswwordForm = {
-                                                    first_name: rowData.first_name,
-                                                    last_name: rowData.last_name,
-                                                    password: rowData.password,
-                                                    password_new: '',
-                                                    repassword_new: '',
-                                                    email: rowData.email,
-                                                    id: rowData.id,
-                                                };
-                                                self.$refs.myModalBtnchangepass.click();
+                                                self.$refs.myModalToProfile.click();
 
                                             }
                                         },
-                                        "Change password"
+                                        "View profile"
                                     )
-                                ];
-                            },
-                            data() {
-                                return {
-                                    rowData: rowData,
-                                };
-                            },
-                        });
-                        app.mount(cell);
+                                },
+                                data() {
+                                    return {
+                                        rowData: rowData,
+                                    };
+                                },
+                            })
+                            app.use(router);
+                            app.mount(cell);
+                        };
                     },
                 },
             ]

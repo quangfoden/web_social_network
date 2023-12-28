@@ -15,5 +15,5 @@ import Swal from 'sweetalert2';
 const app = createApp(App)
 app.config.globalProperties.$swal = Swal;
 app.config.globalProperties.$config = config;
-app.use(store,Vuex, axios, VueAxios);
+app.use(store, Vuex, axios, VueAxios);
 app.use(router).mount('#app');

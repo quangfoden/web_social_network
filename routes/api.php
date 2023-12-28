@@ -35,4 +35,6 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('create-new-user', [UserController::class, 'createNewUser']);
     Route::post('change-role-user/{id}', [UserController::class, 'changeRoleUser']);
     Route::post('admin-change-user-pass/{id}', [UserController::class, 'adminChangePasswordUser']);
+    Route::post('update', [UserController::class, 'updateUser']);
+    Route::post('change-password', [UserController::class, 'change_password']);
 });

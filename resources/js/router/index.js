@@ -6,6 +6,12 @@ import LoginView from '../components/account/LoginView.vue'
 import RegisterView from '../components/account/RegisterView.vue'
 import ForgotPasswordView from '../components/account/ForgotPasswordView.vue'
 
+import AdminView from '../components/admin/adminView.vue';
+
+import ProfileParent from '../components/admin/profile/ProfileParent.vue';
+import Profile from '../components/admin/profile/ProfileView.vue';
+import ChangePasswordProfile from '../components/admin/profile/ChangePassword.vue';
+
 import UserParent from '../components/admin/Users/UserParent.vue'
 import AllUser from '../components/admin/Users/AllUser.vue'
 
@@ -15,6 +21,8 @@ import AllPost from '../components/admin/Posts/AllPost.vue'
 
 import CommentParent from '../components/admin/Comments/CommentParent.vue'
 import AllComment from '../components/admin/Comments/AllComment.vue'
+
+import PageUserParent from '../components/user/PageUserParent.vue'
 
 const ErrorPaBlogge = {
     template:
@@ -29,7 +37,7 @@ export const routes = [
         component: ErrorPaBlogge
     },
     {
-        path: '/',
+        path: '/welcome',
         name: "WelCome View",
         component: WelComeView
     },
@@ -50,16 +58,40 @@ export const routes = [
         component: ForgotPasswordView
     },
     {
-        path: '/user-manage',
-        name: "User Manage",
-        component: UserParent,
+        path: '/admin',
+        name: "Dashboard",
+        component: AdminView,
         meta: { requiresAuth: true },
         children: [
             {
-                path: 'all',
-                name: "All User",
-                component: AllUser,
+                path: 'user-manage',
+                name: "User Manage",
+                component: UserParent,
+                children: [
+                    {
+                        path: 'all-user',
+                        name: "All User",
+                        component: AllUser,
+                    }
+                ]
             },
+            {
+                name: 'Profile',
+                path: 'profile',
+                component: ProfileParent,
+                children: [
+                    {
+                        name: 'Profile User',
+                        path: 'profile-user',
+                        component: Profile,
+                    },
+                    {
+                        name: 'Change Password',
+                        path: 'change-password',
+                        component: ChangePasswordProfile,
+                    }
+                ]
+            }
         ]
 
     },
@@ -88,6 +120,18 @@ export const routes = [
             },
         ]
     },
+    {
+        path: '/',
+        component: PageUserParent,
+        meta: { requiresAuthUser: true },
+        children: [
+            {
+                path: '',
+                name: '',
+                component: PageUserParent
+            }
+        ]
+    }
 ]
 
 const router = createRouter({
@@ -97,9 +141,18 @@ const router = createRouter({
 import { store } from '../store/store';
 router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+    const requiresAuthUser = to.matched.some(record => record.meta.requiresAuthUser)
+    const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
+
+    const isAdmin = loginResponse?.role?.includes('admin');
+    const isUser = loginResponse?.role?.includes('user');
+
     const isAuthenticated =
-        store.getters.getLoginResponse.authenticated
-        || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated
+        store.getters.getLoginResponse.authenticated && isAdmin
+        || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated && isAdmin
+    const isUserAuthenticated =
+        store.getters.getLoginResponse.authenticated && isUser
+        || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated && isUser
     let authUser = undefined
     if (store.getters.getAuthUser.id !== undefined) {
         authUser = store.getters.getAuthUser;
@@ -107,6 +160,12 @@ router.beforeEach((to, from, next) => {
     authUser = JSON.parse(localStorage.getItem('authUser'));
     if (requiresAuth) {
         if (!isAuthenticated) {
+            next('/login');
+            return;
+        }
+    }
+    if (requiresAuthUser) {
+        if (!isUserAuthenticated) {
             next('/login');
             return;
         }

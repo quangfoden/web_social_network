@@ -134,19 +134,35 @@ class UserController extends Controller
         $userUpdate->first_name = $request->input('first_name');
         $userUpdate->phone_number = $request->input('phone_number');
         $userUpdate->address = $request->input('address');
-        $userUpdate->status = $request->input('status');
-        $userUpdate->is_lock = $request->input('is_lock');
         $userUpdate->save();
         $responseData = ['status' => 200, 'success' => true, 'message' => 'The user successfully updated'];
+        return response()->json($responseData);
+    }
+    public function change_password(Request $request)
+    {
+        $user = $request->user();
+        if (!Hash::check($request->input('password'), $user->password)) {
+            $responseData = ['status' => 200, 'success' => false, 'message' => 'Password cũ không chính xác !'];
+            return response()->json($responseData);
+        }
+        $password_new = $request->input('password_new');
+        $repassword_new = $request->input('repassword_new');
+        if ($password_new !== $repassword_new or !$password_new) {
+            $responseData = ['status' => 200, 'success' => false, 'message' => 'Cập nhật mật khẩu không thành công ! xác nhận mật khẩu không đúng !'];
+            return response()->json($responseData);
+        }
+        $user->password = Hash::make($password_new);
+        $user->save();
+        $responseData = ['status' => 200, 'success' => true, 'message' => 'Cập nhật mật khẩu thành công !'];
         return response()->json($responseData);
     }
     public function adminChangePasswordUser($id, Request $request)
     {
         $user = User::find($id);
-        $password_new= $request->input('password_new');
+        $password_new = $request->input('password_new');
         $repassword_new = $request->input('repassword_new');
         if ($password_new !== $repassword_new or !$password_new) {
-            $responseData = ['status' => 200, 'success' => false, 'message' => 'Cập nhật mật khẩu không thành công !'];
+            $responseData = ['status' => 200, 'success' => false, 'message' => 'Cập nhật mật khẩu không thành công ! xác nhận mật khẩu không đúng !'];
             return response()->json($responseData);
         }
         $user->password = Hash::make($password_new);
