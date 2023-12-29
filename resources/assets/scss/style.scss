@@ -18,12 +18,52 @@ a {
     text-decoration: none !important;
 }
 
+.bg-EFF2F5 {
+    background: #EFF2F5;
+}
+
+.hidden {
+    display: none;
+}
+
 .custom-cursor-pointer {
     cursor: pointer;
 }
 
 .rounded-full {
     border-radius: 9999px;
+}
+
+.rounded-lg {
+    border-radius: 0.375rem;
+}
+
+.rounded-xl {
+    border-radius: 0.75rem;
+}
+
+.shadow-sm {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.hover-200:hover {
+    background-color: #edf2f7;
+}
+
+.bg-red-100 {
+    background-color: #FECDD3;
+}
+
+.text-red-700 {
+    background-color: #FECDD3;
+}
+
+.bg-blue-500 {
+    background-color: #4299e1;
+}
+
+.hover-bg-blue-600:hover {
+    background-color: #2c5282;
 }
 
 .text-xs {
@@ -40,6 +80,10 @@ a {
 
 .font-semibold {
     font-weight: 600;
+}
+
+.font-extrabold {
+    font-weight: 800;
 }
 
 .wrapper_customs {
@@ -89,13 +133,17 @@ a {
         justify-content: flex-start;
         width: 260px;
 
-        input.search {
+        input.search[type=text] {
             display: none;
             border: none;
             padding: 0;
             background-color: #EFF2F5;
 
-            @media (min-width: 1024px) {
+            &:focus {
+                outline: none;
+            }
+
+            @media (min-width: 768px) {
                 & {
                     display: block;
                 }
@@ -402,6 +450,79 @@ a {
             .img-cus {
                 min-width: 30px;
                 max-height: 30px;
+            }
+        }
+    }
+
+
+}
+
+#CreatePostOverlay {
+    position: fixed;
+    z-index: 50;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .5);
+
+    .wrapper_crpost {
+        display: grid;
+        height: 100vh;
+        place-items: center;
+        padding: 1rem;
+        overflow: scroll;
+
+        .crpost {
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
+            border-radius: 0.75rem;
+            background-color: #fff;
+
+            .close {
+                padding: 0.375rem;
+                background-color: #edf2f7;
+                right: 0.75rem;
+
+                &:hover {
+                    background-color: #a0aec0;
+                }
+            }
+
+            .img-cus {
+                margin-left: 0.25rem;
+                min-width: 45px;
+                max-height: 45px;
+            }
+
+            .pri {
+                background-color: #edf2f7;
+                padding: 0.125rem;
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+
+                .text-cus {
+                    padding-left: 0.375rem;
+                    font-size: 13px;
+                }
+            }
+
+            .text-ar {
+                max-height: 350px;
+                overflow-y: auto;
+
+                textarea {
+                    border: none;
+                    font-size: 22px;
+                    margin-top: 1rem;
+                    min-height: 30px;
+
+                    &:focus {
+                        outline: none;
+                    }
+                }
             }
         }
     }

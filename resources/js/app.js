@@ -5,7 +5,9 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import Vuex from 'vuex';
 import { createPinia } from 'pinia';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate)
 import VueAxios from 'vue-axios';
 import router from "./router/index"
 import "bootstrap";

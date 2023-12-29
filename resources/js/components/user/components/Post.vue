@@ -59,11 +59,11 @@ import Delete from 'vue-material-design-icons/Delete.vue';
                     <a href="/" class="mr-2">
                         <img class="rounded-full ml-1 img-cus" src="https://picsum.photos/id/189/800/800" alt="">
                     </a>
-                    <div class="d-flex align-items-center bg-[#EFF2F5] p-2 rounded-full w-100">
+                    <div class="d-flex align-items-center bg-EFF2F5 p-2 rounded-full w-100">
                         <input type="text" placeholder="Bình luận ..."
-                            class="w-full mx-1 border-none p-0 text-sm bg-[#EFF2F5] placeholder-[#64676B] ring-0 focus:ring-0">
+                            class="w-100 border-0 mx-1 border-none p-0 text-sm bg-EFF2F5 placeholder-[#64676B] ring-0 focus:ring-0">
                         <button type="button"
-                            class="d-flex align-items-center text-sm pl-2 pr-3.5 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">
+                            class="d-flex border-0 align-items-center text-sm px-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">
                             <Check />Gửi
                         </button>
                     </div>
@@ -75,7 +75,7 @@ import Delete from 'vue-material-design-icons/Delete.vue';
                         <a href="/" class="mr-2">
                             <img class="rounded-full ml-1 img-cus" src="https://picsum.photos/id/189/800/800" alt="">
                         </a>
-                        <div class="d-flex align-items-center bg-[#EFF2F5] text-xs p-2 rounded-lg w-100">
+                        <div class="d-flex align-items-center bg-EFF2F5 text-xs p-2 rounded-lg w-100">
                             Chao ban
                         </div>
                     </div>

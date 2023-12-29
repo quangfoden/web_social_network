@@ -13,7 +13,7 @@ import EmoticonOutline from 'vue-material-design-icons/EmoticonOutline.vue';
             <a href="/">
                 <img class="img-pr" :src="image" alt="">
             </a>
-            <div @click="isPostOverlay = true" class="custom-cursor-pointer d-flex align-items-center justify-content-start">
+            <div @click="showCreatepostBox" class="custom-cursor-pointer d-flex align-items-center justify-content-start">
                 <div class="text-left pl-2">
                     {{ placeholder }}
                 </div>
@@ -38,21 +38,23 @@ import EmoticonOutline from 'vue-material-design-icons/EmoticonOutline.vue';
 <script>
 import { useGeneralStore } from '../../../store/general';
 import { storeToRefs } from 'pinia';
-import { toRefs } from 'vue';
+import { ref } from 'vue';
 export default {
-    setup() {
+    data() {
         const useGeneral = useGeneralStore()
         const { isPostOverlay } = storeToRefs(useGeneral)
-        const { image, placeholder } = toRefs(props);
         return {
-            isPostOverlay,
-            image,
-            placeholder
+            isPostOverlay
         }
     },
     props: {
         image: String,
         placeholder: String
+    },
+    methods: {
+        showCreatepostBox() {
+            this.isPostOverlay = true
+        }
     }
 }
 </script>

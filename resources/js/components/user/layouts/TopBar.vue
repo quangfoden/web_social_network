@@ -1,6 +1,4 @@
 <script setup>
-
-
 import Magnify from 'vue-material-design-icons/Magnify.vue';
 import Home from 'vue-material-design-icons/Home.vue';
 import HomeOutline from 'vue-material-design-icons/HomeOutline.vue';
@@ -12,7 +10,6 @@ import DotsGrid from 'vue-material-design-icons/DotsGrid.vue';
 import FacebookMessenger from 'vue-material-design-icons/FacebookMessenger.vue';
 import Bell from 'vue-material-design-icons/Bell.vue';
 import Logout from 'vue-material-design-icons/Logout.vue';
-
 
 </script>
 
@@ -82,16 +79,16 @@ import Logout from 'vue-material-design-icons/Logout.vue';
                 </div>
             </div>
         </div>
-        <!-- <CreatePostOverLay v-if="isPostOverlay" @showModal="isPostOverlay = false" />
-        <CropperModal v-if="isCropperModal" @showModal="isCropperModal = false" />
+        <CreatePostOverLay v-if="isPostOverlay" />
+        <!-- <CropperModal v-if="isCropperModal" @showModal="isCropperModal = false" />
         <ImageDisplay v-if="isImageDisplay" /> -->
     </div>
 </template>
 <script>
 import { mapGetters, mapMutations, mapActions } from "vuex"
 import { useGeneralStore } from '../../../store/general';
+import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
-
 import CropperModal from '../components/CropperModal.vue'
 import ImageDisplay from '../Components/ImageDisplay.vue'
 import CreatePostOverLay from '../Components/CreatePostOverLay.vue'
@@ -102,25 +99,22 @@ export default {
         ImageDisplay,
         CreatePostOverLay
     },
-    setup() {
+    data() {
         const useGeneral = useGeneralStore();
         const { isPostOverlay, isCropperModal, isImageDisplay } = storeToRefs(useGeneral)
         return {
+            showMenu: false,
             isPostOverlay,
             isCropperModal,
             isImageDisplay
         }
     },
-    data() {
-        return {
-            showMenu: false
-        }
-    },
-    methods:{
+    methods: {
         ...mapActions(["logout"]),
-        logoutSubmit(){
+        logoutSubmit() {
             this.logout();
-        }
+        },
+
     }
 }
 </script>
