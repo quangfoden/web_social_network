@@ -23,6 +23,8 @@ import CommentParent from '../components/admin/Comments/CommentParent.vue'
 import AllComment from '../components/admin/Comments/AllComment.vue'
 
 import PageUserParent from '../components/user/PageUserParent.vue'
+import LayoutUserParent from '../components/user/layouts/LayoutsUserParent.vue'
+import HomeView from '../components/user/homeSection/HomeView.vue'
 
 const ErrorPaBlogge = {
     template:
@@ -127,8 +129,15 @@ export const routes = [
         children: [
             {
                 path: '',
-                name: '',
-                component: PageUserParent
+                name: 'Layout User Parent',
+                component: LayoutUserParent,
+                children: [
+                    {
+                        path: '',
+                        name: 'Home Section',
+                        component: HomeView,
+                    }
+                ]
             }
         ]
     }
