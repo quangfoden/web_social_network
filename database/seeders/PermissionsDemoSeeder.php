@@ -37,6 +37,7 @@ class PermissionsDemoSeeder extends Seeder
         $admin = User::create([
             'first_name' => "admin",
             'last_name' => "admin",
+            'user_name' => "admin",
             'email' => "admin@gmail.com",
             'password' => Hash::make('123456'),
         ]);
@@ -61,6 +62,7 @@ class PermissionsDemoSeeder extends Seeder
         $user = User::create([
             'first_name' => "Quang",
             'last_name' => "Nguyễn Văn",
+            'user_name' => "QuangFoden",
             'email' => "quang@gmail.com",
             'password' => Hash::make('123456'),
         ]);

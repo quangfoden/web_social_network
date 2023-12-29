@@ -20,6 +20,8 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->text('text');
             $table->string('image')->nullable();
+            $table->string('video')->nullable();
+            $table->enum('privacy', ['public', 'friends', 'private'])->default('public');
             $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });

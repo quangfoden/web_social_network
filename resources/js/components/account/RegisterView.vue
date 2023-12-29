@@ -24,6 +24,12 @@
                             <input v-model="user.last_name" type="text" class="form-control" id="userlastname"
                                 placeholder="Enter last name" />
                         </div>
+                        <div class="form-group auth-form-group-custom mb-3">
+                            <i class="mdi mdi-alphabetical text-black auti-custom-input-icon"></i>
+                            <label for="userlastname">User Name</label>
+                            <input v-model="user.user_name" type="text" class="form-control" id="userusername"
+                                placeholder="Enter username" />
+                        </div>
 
                     </div>
                     <div class="form-group auth-form-group-custom mb-3">
@@ -75,6 +81,7 @@ export default {
             user: {
                 first_name: '',
                 last_name: '',
+                user_name: '',
                 email: '',
                 password: '',
                 password_confirmation: ''
