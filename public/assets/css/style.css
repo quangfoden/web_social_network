@@ -463,3 +463,8 @@ a {
 #CreatePostOverlay .wrapper_crpost .crpost .text-ar textarea:focus {
   outline: none;
 }
+#CreatePostOverlay .wrapper_crpost .crpost .cus-img-dis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}

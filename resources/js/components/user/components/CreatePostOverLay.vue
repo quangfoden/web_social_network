@@ -19,27 +19,33 @@ const emit = defineEmits(['showModal'])
                     </div>
                 </div>
                 <div class="border-top">
-                    <div class="p-4">
+                    <form @submit.prevent="submitPost" method="post" enctype="multipart/form-data" class="p-4">
                         <div class="d-flex align-items-center">
                             <img src="https://picsum.photos/id/78/800/800" class="rounded-full img-cus" alt="">
                             <div class="mx-2">
                                 <div class="font-extrabold">Nguyen Van Quang</div>
-                                <div class="pri d-flex align-items-center justify-content-between">
-                                    <Earth :size="18" />
-                                    <span class="font-bold text-cus">Công khai</span>
-                                    <ChevronDown class="pr-1 pl-1" :size="18" />
-                                </div>
+                                <select v-model="form.privacy" id="privacy" required>
+                                    <option v-for="option in privacyOptions" :value="option.value">{{ option.name }}
+                                    </option>
+                                </select>
                             </div>
                         </div>
                         <div class="text-ar">
-                            <textarea cols="30" v-model="form.text" class="w-100"
-                                placeholder="bạn đang nghĩ gì ... ">
+                            <textarea cols="30" v-model="form.content" class="w-100" placeholder="bạn đang nghĩ gì ... ">
                             </textarea>
-                            <div v-if="form.image" class="p-2 position-relative">
-                                <Close @click="clearImage"
-                                    class="position-absolute bg-white p-1 m-2 right-2 rounded-full border custom-cursor-pointer"
-                                    :size="22" fillColor="#5E6771" />
-                                <img class="rounded-lg mx-auto w-100" :src="imageDisplay" alt="">
+                            <div v-if="form.media" class="p-2 position-relative cus-img-dis">
+                                <div v-for="(media, index) in form.media" :key="index">
+                                    <Close @click="clearImage(index)"
+                                        class="position-absolute bg-white p-1 m-2 right-2 rounded-full border custom-cursor-pointer"
+                                        :size="22" fillColor="#5E6771" />
+                                    <div v-if="media.type === 'image'"><img class="rounded-lg mx-auto w-100"
+                                            :src="media.url" alt=""></div>
+                                    <div v-if="media.type === 'video'"> <video class="rounded-lg mx-auto w-100" controls>
+                                            <source :src="media.url" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="border-2 rounded-xl mt-4 shadow-sm d-flex align-items-center justify-content-between">
@@ -48,7 +54,8 @@ const emit = defineEmits(['showModal'])
                                 <label class="hover-200 rounded-full p-2 custom-cursor-pointer" for="image">
                                     <Image :size="27" fillColor="#43BE62" />
                                 </label>
-                                <input type="file" id="image" class="hidden" @input="getUploadedImage($event)">
+                                <input type="file" id="image" accept="image/*,video/*" multiple class="hidden"
+                                    @input="getUploadedImage($event)">
                                 <a class="hover-200 rounded-full p-2 custom-cursor-pointer">
                                     <EmoticonOutline :size="27" fillColor="#F8B927" />
                                 </a>
@@ -65,10 +72,11 @@ const emit = defineEmits(['showModal'])
                                 <div class="p-0.5">{{ error }}</div>
                             </div>
                         </div>
-                        <button class="w-100 bg-blue-500 hover-bg-blue-600 text-white font-extrabold p-1.5 mt-3 rounded-lg">
+                        <button type="submit"
+                            class="w-100 bg-blue-500 hover-bg-blue-600 text-white font-extrabold p-1.5 mt-3 rounded-lg">
                             Đăng
                         </button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -83,23 +91,61 @@ export default {
         const useGeneral = useGeneralStore()
         const { isPostOverlay } = storeToRefs(useGeneral)
         return {
+            privacyOptions: [
+                { name: "Công khai", value: "public" },
+                { name: "Bạn bè", value: "friends" },
+                { name: "Chỉ mình tôi", value: "only_me" },
+
+            ],
             isPostOverlay,
             imageDisplay: ref(''),
             form: reactive({
-                text: null,
-                image: null,
+                content: null,
+                media: [],
+                privacy: null,
             }),
             error: ref(null),
         }
     },
+    mounted() {
+        console.log(this.imageDisplay)
+        console.log(this.form.media)
+
+    },
     methods: {
-        getUploadedImage(e) {
-            this.imageDisplay = URL.createObjectURL(e.target.files[0])
-            this.form.image = e.target.files[0]
+        submitPost() {
+            axios.post('/api/user/create-post', this.form, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+                .then(response => {
+                    console.log(response.data.message);
+                    this.form = {}
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         },
-        clearImage() {
-            this.imageDisplay = null
-            this.form.image = null
+        getUploadedImage(e) {
+            for (let i = 0; i < e.target.files.length; i++) {
+                const file = e.target.files[i];
+                let mediaType;
+
+                if (file.type.startsWith('image/')) {
+                    mediaType = 'image';
+                } else if (file.type.startsWith('video/')) {
+                    mediaType = 'video';
+                }
+
+                const url = URL.createObjectURL(file);
+                this.form.media.push({ type: mediaType, url });
+            }
+        }
+        ,
+
+        clearImage(index) {
+            this.form.media.splice(index, 1);
         }
     }
 }
