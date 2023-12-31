@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-use App\Services\MediaService;
+use App\Services\PostService;
+
 use Carbon\Carbon;
 use App\Models\Post;
 use App\Models\User;
@@ -15,13 +16,13 @@ use GrahamCampbell\ResultType\Success;
 
 class PostsController extends Controller
 {
-    protected $mediaService;
+    protected $postService;
 
-    public function __construct(MediaService $mediaService)
+    public function __construct(PostService $postService)
     {
-        $this->mediaService = $mediaService;
+        $this->postService = $postService;
     }
-    //
+
     public function create_post(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -54,7 +55,7 @@ class PostsController extends Controller
             foreach ($requestData['media'] as $mediaData) {
                 $file = $mediaData['file'];
                 $type = $mediaData['type'];
-                $response = $this->mediaService->updatemedia($post, $type, $file);
+                $response = $this->postService->updatemedia($post, $type, $file);
             }
             if ($response->getStatusCode() !== 200) {
                 return $response;
@@ -82,8 +83,7 @@ class PostsController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($post) {
-                // Định dạng thời gian tạo thành định dạng cụ thể (ví dụ: d-m-Y H:i:s)
-                $post->created_at_formatted = Carbon::parse($post->created_at)->format('d-m-Y H:i:s');
+                $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
                 return $post;
             })
             ->toArray();

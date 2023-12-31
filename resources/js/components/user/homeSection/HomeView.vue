@@ -1,6 +1,6 @@
 <template>
     <div id="PostsSection" class="">
-        <CreatePostBox image="https://picsum.photos/id/120/300/320" placeholder="Bạn đang nghĩ gì vậy Quang?" />
+        <CreatePostBox :image="authUser.avatar" :placeholder="'Bạn đang nghĩ gì vậy ' + authUser.user_name" />
         <div v-for="post in posts" :key="post.id">
             <Post :post="post" :user="post.user" :media="post.media" />
         </div>
@@ -22,6 +22,14 @@ export default {
     },
     mounted() {
         this.fetchData();
+    },
+    computed: {
+        authUser() {
+            if (this.$store.getters.getAuthUser.id !== undefined) {
+                return this.$store.getters.getAuthUser;
+            }
+            return JSON.parse(localStorage.getItem('authUser'));
+        },
     },
     methods: {
         fetchData() {

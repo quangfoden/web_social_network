@@ -24,7 +24,7 @@ import EmoticonOutline from 'vue-material-design-icons/EmoticonOutline.vue';
                 <VideoImage :size="35" fillColor="#F12848" />
                 <div class="text-cus">Live Video</div>
             </button>
-            <button class="icon-cus d-flex align-items-center justify-content-center p-1 w-100">
+            <button  @click="showCreatepostBox" class="icon-cus d-flex align-items-center justify-content-center p-1 w-100">
                 <Image :size="35" fillColor="#43BE62" />
                 <div class="text-cus">PhoTo/Video</div>
             </button>

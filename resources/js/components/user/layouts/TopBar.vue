@@ -16,7 +16,7 @@ import Logout from 'vue-material-design-icons/Logout.vue';
 <template>
     <div id="Mainnav">
         <router-link :to="{ name: '' }" class="text_name">
-            <img width="40" src="" alt="">
+            <img width="100" src="/images/logoclient.png" alt="">
         </router-link>
         <div id="Navleft">
             <Magnify class="p-2" :size="22" fillColor="#64676B" />
@@ -80,8 +80,9 @@ import Logout from 'vue-material-design-icons/Logout.vue';
             </div>
         </div>
         <CreatePostOverLay v-if="isPostOverlay" />
-        <!-- <CropperModal v-if="isCropperModal" @showModal="isCropperModal = false" />
-        <ImageDisplay v-if="isImageDisplay" /> -->
+        <!--  <CropperModal v-if="isCropperModal" @showModal="isCropperModal = false" /> -->
+        <MediaDisplay v-if="isFileDisplay" />
+
     </div>
 </template>
 <script>
@@ -90,23 +91,23 @@ import { useGeneralStore } from '../../../store/general';
 import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import CropperModal from '../components/CropperModal.vue'
-import ImageDisplay from '../Components/ImageDisplay.vue'
+import MediaDisplay from '../Components/mediaDisplay.vue'
 import CreatePostOverLay from '../Components/CreatePostOverLay.vue'
 
 export default {
     components: {
         CropperModal,
-        ImageDisplay,
+        MediaDisplay,
         CreatePostOverLay
     },
     data() {
         const useGeneral = useGeneralStore();
-        const { isPostOverlay, isCropperModal, isImageDisplay } = storeToRefs(useGeneral)
+        const { isPostOverlay, isCropperModal, isFileDisplay } = storeToRefs(useGeneral)
         return {
             showMenu: false,
             isPostOverlay,
             isCropperModal,
-            isImageDisplay
+            isFileDisplay
         }
     },
     computed: {
@@ -116,9 +117,6 @@ export default {
             }
             return JSON.parse(localStorage.getItem('authUser'));
         },
-    },
-    mounted() {
-        console.log(this.authUser);
     },
     methods: {
         ...mapActions(["logout"]),
