@@ -16,8 +16,8 @@ import Restore from 'vue-material-design-icons/Restore.vue';
     <div id="LeftSection">
         <div class="leffsidebar_lists">
             <a href="/" class="d-flex align-items-center justify-content-start w-100 left-item">
-            <img src="https://picsum.photos/id/120/300/320" alt="" class="img-cus">
-            <div class="text-profile">Nguyen Van Quang</div>
+                <img :src="authUser.avatar" alt="" class="img-cus">
+                <div class="text-profile">{{ authUser.user_name }}</div>
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
                 <AccountMultiple :size="40" fillColor="#5BD7C6" />
@@ -50,3 +50,15 @@ import Restore from 'vue-material-design-icons/Restore.vue';
         </div>
     </div>
 </template>
+<script>
+export default {
+    computed: {
+        authUser() {
+            if (this.$store.getters.getAuthUser.id !== undefined) {
+                return this.$store.getters.getAuthUser;
+            }
+            return JSON.parse(localStorage.getItem('authUser'));
+        },
+    },
+}
+</script>

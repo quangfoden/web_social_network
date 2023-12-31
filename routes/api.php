@@ -39,4 +39,5 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('update', [UserController::class, 'updateUser']);
     Route::post('change-password', [UserController::class, 'change_password']);
     Route::post('create-post', [PostsController::class, 'create_post']);
+    Route::get('allposts', [PostsController::class, 'all_post']);
 });

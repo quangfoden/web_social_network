@@ -5,19 +5,42 @@ namespace App\Http\Controllers;
 use App\Models\Media;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use App\Services\MediaService;
+use Carbon\Carbon;
 use App\Models\Post;
 use App\Models\User;
+use GrahamCampbell\ResultType\Success;
 
 class PostsController extends Controller
 {
+    protected $mediaService;
+
+    public function __construct(MediaService $mediaService)
+    {
+        $this->mediaService = $mediaService;
+    }
     //
     public function create_post(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'content' => 'required',
             'privacy' => 'required|in:public,friends,only_me',
-            // 'media.*' => 'required|file|mimes:jpeg,png,jpg,mp4,mov,ogg,qt|max:20480',
         ]);
+
+        if ($validator->fails()) {
+            foreach (array_values($validator->errors()->toArray()) as $val) {
+                foreach ($val as $error) {
+                    $msg[] = $error;
+                }
+            }
+            $res = [
+                'message' => $msg,
+                'success' => false,
+            ];
+            return response()->json(['data' => $res]);
+        }
 
         $user = Auth::user();
 
@@ -25,28 +48,45 @@ class PostsController extends Controller
             'content' => $request->input('content'),
             'privacy' => $request->input('privacy'),
         ]);
-
-        $media = new Media([]);
         $user->posts()->save($post);
-
-        // Lưu media
         if ($request->has('media')) {
-            foreach ($request->input('media') as $mediaData) {
-                $path = $mediaData['url'];
+            $requestData = $request->all();
+            foreach ($requestData['media'] as $mediaData) {
+                $file = $mediaData['file'];
                 $type = $mediaData['type'];
-                if ($type === 'image' || $type === 'video') {
-                    $media = new Media([
-                        'path' => $path,
-                        'type' => $type,
-                    ]);
-
-                    $post->media()->save($media);
-                }
+                $response = $this->mediaService->updatemedia($post, $type, $file);
             }
+            if ($response->getStatusCode() !== 200) {
+                return $response;
+            }
+            $res = [
+                'message' => 'UpLoad file thành công',
+                'success' => true,
+            ];
         } else {
-            $mes = 'lỗi';
+            $res = [
+                'message' => 'UpLoad file Không thành công',
+                'success' => false,
+            ];
         }
-
-        return response()->json(['message' => 'Bài viết của bạn đã được đăng thành công!', 'user' => $user, 'post' => $post, 'media' => $media]);
+        $res = [
+            'message' => 'Bạn đã đăng bài thành công',
+            'success' => true,
+        ];
+        return response()->json($res);
+    }
+    public function all_post()
+    {
+        $posts = Post::where('status', 1)
+            ->with('user', 'media')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($post) {
+                // Định dạng thời gian tạo thành định dạng cụ thể (ví dụ: d-m-Y H:i:s)
+                $post->created_at_formatted = Carbon::parse($post->created_at)->format('d-m-Y H:i:s');
+                return $post;
+            })
+            ->toArray();
+        return response()->json(['posts' => $posts]);
     }
 }

@@ -67,11 +67,6 @@ const emit = defineEmits(['showModal'])
                                 </a>
                             </div>
                         </div>
-                        <div v-if="error">
-                            <div class="w-100 bg-red-100 text-red-700 rounded-lg mt-3 text-center">
-                                <div class="p-0.5">{{ error }}</div>
-                            </div>
-                        </div>
                         <button type="submit"
                             class="w-100 bg-blue-500 hover-bg-blue-600 text-white font-extrabold p-1.5 mt-3 rounded-lg">
                             Đăng
@@ -95,22 +90,17 @@ export default {
                 { name: "Công khai", value: "public" },
                 { name: "Bạn bè", value: "friends" },
                 { name: "Chỉ mình tôi", value: "only_me" },
-
             ],
             isPostOverlay,
-            imageDisplay: ref(''),
+            isFileDisplay: ref(''),
+            medias: [],
             form: reactive({
                 content: null,
                 media: [],
-                privacy: null,
+                privacy: ref('public'),
             }),
-            error: ref(null),
-        }
-    },
-    mounted() {
-        console.log(this.imageDisplay)
-        console.log(this.form.media)
 
+        }
     },
     methods: {
         submitPost() {
@@ -120,11 +110,37 @@ export default {
                 },
             })
                 .then(response => {
-                    console.log(response.data.message);
-                    this.form = {}
+                    if (response.status === 200 && response.data.success === true) {
+                        this.$swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: `${response.data.message}`,
+                            showConfirmButton: false,
+                            timer: this.$config.notificationTimer ?? 3000,
+                        });
+                        this.form = {}
+
+                    }
+                    else {
+                        this.$swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: `${response.data.message[0]}`,
+                            showConfirmButton: false,
+                            timer: this.$config.notificationTimer ?? 3000,
+                        });
+
+                    }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    this.$swal.fire({
+                        position: "top-end",
+                        icon: "error",
+                        title: error,
+                        showConfirmButton: false,
+                        timer: this.$config.notificationTimer ?? 3000,
+                    });
                 });
         },
         getUploadedImage(e) {
@@ -137,13 +153,10 @@ export default {
                 } else if (file.type.startsWith('video/')) {
                     mediaType = 'video';
                 }
-
                 const url = URL.createObjectURL(file);
-                this.form.media.push({ type: mediaType, url });
+                this.form.media.push({ type: mediaType, file, url });
             }
-        }
-        ,
-
+        },
         clearImage(index) {
             this.form.media.splice(index, 1);
         }

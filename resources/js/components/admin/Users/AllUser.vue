@@ -207,6 +207,11 @@
                                                     <input type="text" placeholder="Enter last name..." class="form-control"
                                                         v-model="newUser.last_name" required />
                                                 </div>
+                                                <div class="form-group mb-3 col-12 col-lg-6">
+                                                    <label>User Name</label>
+                                                    <input type="text" placeholder="Enter username..." class="form-control"
+                                                        v-model="newUser.user_name" required />
+                                                </div>
                                             </div>
                                             <div class="form-group mb-3">
                                                 <label>Email</label>
@@ -282,6 +287,7 @@ export default {
                 // đối tượng người dùng mới
                 first_name: "",
                 last_name: "",
+                user_name: "",
                 email: "",
                 password: "",
                 role: "",

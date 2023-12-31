@@ -402,6 +402,11 @@ a {
   min-width: 30px;
   max-height: 30px;
 }
+#post .cus-post-media {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
 
 #CreatePostOverlay {
   position: fixed;

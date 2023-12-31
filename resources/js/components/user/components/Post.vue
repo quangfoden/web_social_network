@@ -19,34 +19,39 @@ import Delete from 'vue-material-design-icons/Delete.vue';
     <div id="post">
         <div class="d-flex align-items-center py-3 px-0">
             <a class="mr-2">
-                <img class="img-cus" src="https://picsum.photos/id/120/300/320" alt="">
+                <img class="img-cus" :src="user.avatar" alt="">
             </a>
             <div class="d-flex align-items-center justify-content-between p-2 rounded-full w-100">
                 <div>
-                    <div class="text-pr">Nguyen Van Quang</div>
+                    <div class="text-pr">{{ user.user_name }}</div>
                     <div class="d-flex align-items-center text-xs text-gray-600">
-                        14h
-                        <AccountMultiple :size="15" class="ml-1" fillColor="#64676B" />
+                        {{ post.created_at_formatted }}
+                        <i v-if="post.privacy === 'public'" class="mx-2 fas fa-globe"></i>
+                        <!-- <AccountMultiple :size="15" class="ml-1" fillColor="#64676B" /> -->
+                        <i v-if="post.privacy === 'friends'" class="mx-2 fas fa-user-friends"></i>
+                        <i v-if="post.privacy === 'only_me'" class="mx-2 fas fa-lock"></i>
                     </div>
                 </div>
             </div>
-            <div class="d-flex align-items-center">
+            <!-- <div class="d-flex align-items-center">
                 <a class="rounded-full p-1 custom-cursor-pointer">
                     <Delete :size="20" fillColor="#64676B" />
                 </a>
-            </div>
+            </div> -->
         </div>
         <div class="px-1 pb-2 text-cus-pos">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias deleniti aliquam dolorem odit neque laborum
-            ratione quos ex ipsam facilis. Tenetur quas at pariatur aperiam, numquam soluta obcaecati minima praesentium
-            doloribus molestiae ipsam voluptatem officia, sunt hic voluptas ratione possimus. Minima, et? Illo ullam et
-            culpa natus, delectus quisquam impedit maiores ad quidem! Consectetur ducimus vel hic ut incidunt quibusdam,
-            ratione odio? Suscipit ullam totam natus magnam eos voluptatum facere, rerum in molestiae ipsa. Esse, obcaecati
-            natus dignissimos adipisci sed deleniti eius odit rem exercitationem quis corrupti est voluptates? Officia id
-            tempore laudantium repellendus a nulla dolor deleniti earum alias.
+            {{ post.content }}
         </div>
-        <img @click="isImageDisplay = 'https://picsum.photos/id/189/800/800'" class="mx-auto custom-cursor-pointer w-100"
-            alt="" src="https://picsum.photos/id/189/800/800">
+        <div class="cus-post-media">
+            <div v-for="medias in media" :key="media.id">
+                <div class="d-flex" v-if="medias.type === 'image'">
+                    <img :src="medias.path" alt="Image" class="mx-auto custom-cursor-pointer w-100">
+                </div>
+                <div class="d-flex" v-else-if="medias.type === 'video'">
+                    <video :src="medias.path" class="mx-auto custom-cursor-pointer w-100" controls></video>
+                </div>
+            </div>
+        </div>
         <div id="Likes" class="px-5">
             <div class="d-flex align-items-center justify-content-between py-3 border-bottom">
                 <ThumbUp :size="16" fillColor="#1D72E2" />
@@ -93,14 +98,14 @@ import { useGeneralStore } from '../../../store/general';
 import { storeToRefs } from 'pinia';
 
 export default {
-    setup() {
-        const form = reactive({ comment: null });
+    data() {
         const useGeneral = useGeneralStore()
-        const { isImageDisplay } = storeToRefs(useGeneral)
+        const { isFileDisplay } = storeToRefs(useGeneral)
         return {
-            isImageDisplay,
-            form
+            isFileDisplay,
         }
-    }
+    },
+    props: ['post', 'user', 'media']
+
 }
 </script>

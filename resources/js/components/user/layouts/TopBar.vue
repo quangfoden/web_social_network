@@ -60,13 +60,13 @@ import Logout from 'vue-material-design-icons/Logout.vue';
             </div>
             <div class="d-flex align-items-center justify-content-center position-relative">
                 <div @click="showMenu = !showMenu">
-                    <img src="https://picsum.photos/id/120/300/320" alt="" class="custom">
+                    <img :src="authUser.avatar" alt="" class="custom">
                 </div>
                 <div v-if="showMenu" class="show_menu position-absolute">
                     <a href="/user" @click="showMenu = !showMenu">
                         <div class="d-flex menu_item align-items-center gap-3 ">
-                            <img src="https://picsum.photos/id/120/300/320" alt="" class="custom">
-                            <span>Nguyen Van Quang</span>
+                            <img :src="authUser.avatar" alt="" class="custom">
+                            <span>{{ authUser.user_name }}</span>
                         </div>
                     </a>
                     <a @click="logoutSubmit" class="w-full  ml-2" as="button" method="post">
@@ -109,8 +109,20 @@ export default {
             isImageDisplay
         }
     },
+    computed: {
+        authUser() {
+            if (this.$store.getters.getAuthUser.id !== undefined) {
+                return this.$store.getters.getAuthUser;
+            }
+            return JSON.parse(localStorage.getItem('authUser'));
+        },
+    },
+    mounted() {
+        console.log(this.authUser);
+    },
     methods: {
         ...mapActions(["logout"]),
+
         logoutSubmit() {
             this.logout();
         },
