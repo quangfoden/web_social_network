@@ -13,6 +13,528 @@ body .btn-all-add-edit:hover {
     background: #4b5a83;
     color: #fff;
 }
-a{
+
+a {
     text-decoration: none !important;
+}
+
+.bg-EFF2F5 {
+    background: #EFF2F5;
+}
+
+.hidden {
+    display: none;
+}
+
+.custom-cursor-pointer {
+    cursor: pointer;
+}
+
+.rounded-full {
+    border-radius: 9999px;
+}
+
+.rounded-lg {
+    border-radius: 0.375rem;
+}
+
+.rounded-xl {
+    border-radius: 0.75rem;
+}
+
+.shadow-sm {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.hover-200:hover {
+    background-color: #edf2f7;
+}
+
+.bg-red-100 {
+    background-color: #FECDD3;
+}
+
+.text-red-700 {
+    background-color: #FECDD3;
+}
+
+.bg-blue-500 {
+    background-color: #4299e1;
+}
+
+.hover-bg-blue-600:hover {
+    background-color: #2c5282;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+}
+
+.text-gray-600 {
+    color: #4a5568;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.font-extrabold {
+    font-weight: 800;
+}
+
+.wrapper_customs {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    background-color: #F1F2F5;
+
+    .wrapper_2 {
+        display: grid;
+        grid-template-rows: repeat(3, 1fr);
+        grid-auto-flow: column;
+        width: 100%;
+        max-width: 1600px;
+        margin-top: 56px;
+        height: calc(100% - 56px);
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+#Mainnav {
+    position: fixed;
+    z-index: 50;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid #e2e8f0;
+
+    a.text_name {
+        padding-left: 0.75rem;
+        padding-left: 0.75rem;
+        min-width: 55px;
+    }
+
+    #Navleft {
+        display: flex;
+        align-items: center;
+        background-color: #EFF2F5;
+        border-radius: 9999px;
+        justify-content: flex-start;
+        width: 260px;
+
+        input.search[type=text] {
+            display: none;
+            border: none;
+            padding: 0;
+            background-color: #EFF2F5;
+
+            &:focus {
+                outline: none;
+            }
+
+            @media (min-width: 768px) {
+                & {
+                    display: block;
+                }
+            }
+
+            &::placeholder {
+                color: #64676B;
+            }
+
+            &:focus {
+                box-shadow: none;
+            }
+        }
+    }
+
+    #NavCenter {
+        display: none;
+        align-items: center;
+        margin-left: 1.25rem;
+        /* 1.25rem là giá trị tương đương với 20px */
+        justify-content: center;
+        width: 66.66667%;
+        /* Tương đương với w-8/12 */
+        max-width: 600px;
+
+        /* max-w-[600px] */
+        @media (min-width: 1024px) {
+            & {
+                display: flex;
+            }
+        }
+
+        .list_items {
+            height: 48px;
+            padding: 0.25rem;
+            cursor: pointer;
+            border-radius: 10px;
+
+            &:hover {
+                background-color: #d1d5db;
+            }
+        }
+    }
+
+    #NavLeft {
+        width: 16.66667%;
+        margin-right: 1rem;
+
+        .nav_left_items {
+            padding: 0.5rem;
+            margin-left: 0.25rem;
+            margin-right: 0.25rem;
+            cursor: pointer;
+            border-radius: 10px;
+
+            &:hover {
+                background-color: #d1d5db;
+            }
+
+        }
+
+        .show_menu {
+            background-color: white;
+            box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+            top: 55px;
+            right: 0;
+            width: 300px;
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+            border: 1px solid #e2e8f0;
+            margin-top: 0.25rem;
+
+            .menu_item {
+                padding: 0.5rem;
+                border-radius: 0.5rem;
+
+                &:hover {
+                    background-color: #e2e8f0;
+                }
+            }
+
+            a {
+                color: #64676B;
+                cursor: pointer;
+            }
+        }
+    }
+
+    img.custom {
+        border-radius: 9999px;
+        margin-left: 0.25rem;
+        min-width: 40px;
+        max-height: 40px;
+        cursor: pointer;
+    }
+}
+
+//left sidebar
+#LeftSection {
+    display: none;
+
+    @media (min-width: 1280px) {
+        & {
+            width: 345px;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        & {
+            display: block;
+        }
+    }
+
+    .leffsidebar_lists {
+        padding-top: 1rem;
+        max-width: 320px;
+        padding-right: 1rem;
+
+        .left-item {
+            cursor: pointer;
+
+            &:hover {
+                background-color: #E5E6E9;
+            }
+
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+        }
+
+        img.img-cus {
+            border-radius: 9999px;
+            margin-left: 0.25rem;
+            min-width: 38px;
+            max-height: 38px;
+        }
+
+        .text-profile {
+            font-size: 15px;
+            color: #1f2933;
+            font-weight: 800;
+            padding-left: 0.75rem;
+        }
+
+        .text-items {
+            font-size: 15px;
+            color: #2d3748;
+            font-weight: 800;
+            padding-left: 0.75rem;
+        }
+    }
+}
+
+// sidebar right 
+#RightSection {
+    padding-left: 1rem;
+    display: none;
+
+    @media (min-width: 768px) {
+        & {
+            display: block;
+        }
+    }
+
+    .rightsection_cus {
+        max-width: 340px;
+        min-width: 250px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 1rem;
+
+        .icon-right {
+            padding: 0.5rem;
+            border-radius: 9999px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #d1d5db;
+                /* Giả sử bạn muốn sử dụng màu xám khi hover */
+            }
+        }
+
+        .list_friends {
+            height: calc(100vh - 115px);
+            overflow: auto;
+            padding-top: 0.5rem;
+
+            .friend_pr {
+                cursor: pointer;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+                border-radius: 10px;
+
+                &:hover {
+                    background-color: #e5e6e9;
+                }
+
+                img {
+                    border-radius: 9999px;
+                    margin-left: 0.25rem;
+                    min-width: 38px;
+                    max-height: 38px;
+                }
+
+                .text-pr {
+                    font-size: 15px;
+                    color: #2d3748;
+                    font-weight: 800;
+                    padding-left: 0.75rem;
+                }
+            }
+        }
+    }
+}
+
+// home section 
+#PostsSection {
+    grid-row: span 6;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: auto;
+
+    @media (min-width: 1024px) {
+        & {
+            margin-left: 0;
+        }
+    }
+
+}
+
+#CreatePostBox {
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 0.375rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    margin-top: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    img.img-pr {
+        border-radius: 9999px;
+        margin-right: 0.25rem;
+        min-width: 36px;
+        max-height: 36px;
+    }
+
+    .icon-cus {
+        border-radius: 0.375rem;
+        margin-left: 0.25rem;
+        margin-right: 0.25rem;
+        cursor: pointer;
+
+        &:hover {
+            background-color: #f2f2f2;
+        }
+
+        .text-cus {
+            color: #6f7275;
+            font-weight: bold;
+        }
+    }
+}
+
+#post {
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 0.375rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    img.img-cus {
+        border-radius: 9999px;
+        margin-left: 0.25rem;
+        min-width: 42px;
+        max-height: 42px;
+    }
+
+    .text-pr {
+        font-weight: 800;
+        font-size: 15px;
+    }
+
+    .text-cus-pos {
+        font-size: 17px;
+        font-weight: 600;
+    }
+
+    #Comments {
+        max-height: 120px;
+        overflow: auto;
+        padding-bottom: 0.5rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+
+        .img-cus {
+            min-width: 36px;
+            max-height: 36px;
+        }
+
+        #CreateComment {
+            .img-cus {
+                min-width: 30px;
+                max-height: 30px;
+            }
+        }
+    }
+
+    .cus-post-media {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+}
+
+#CreatePostOverlay {
+    position: fixed;
+    z-index: 50;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .5);
+
+    .wrapper_crpost {
+        display: grid;
+        height: 100vh;
+        place-items: center;
+        padding: 1rem;
+        overflow: scroll;
+
+        .crpost {
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
+            border-radius: 0.75rem;
+            background-color: #fff;
+
+            .close {
+                padding: 0.375rem;
+                background-color: #edf2f7;
+                right: 0.75rem;
+
+                &:hover {
+                    background-color: #a0aec0;
+                }
+            }
+
+            .img-cus {
+                margin-left: 0.25rem;
+                min-width: 45px;
+                max-height: 45px;
+            }
+
+            .pri {
+                background-color: #edf2f7;
+                padding: 0.125rem;
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+
+                .text-cus {
+                    padding-left: 0.375rem;
+                    font-size: 13px;
+                }
+            }
+
+            .text-ar {
+                max-height: 350px;
+                overflow-y: auto;
+
+                textarea {
+                    border: none;
+                    font-size: 22px;
+                    margin-top: 1rem;
+                    min-height: 30px;
+
+                    &:focus {
+                        outline: none;
+                    }
+                }
+            }
+
+            .cus-img-dis {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+        }
+    }
 }

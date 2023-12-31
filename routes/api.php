@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\PostsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,4 +38,6 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('admin-change-user-pass/{id}', [UserController::class, 'adminChangePasswordUser']);
     Route::post('update', [UserController::class, 'updateUser']);
     Route::post('change-password', [UserController::class, 'change_password']);
+    Route::post('create-post', [PostsController::class, 'create_post']);
+    Route::get('allposts', [PostsController::class, 'all_post']);
 });
