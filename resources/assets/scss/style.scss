@@ -462,6 +462,37 @@ a {
 
 }
 
+#MediaDisplay {
+    position: fixed;
+    z-index: 50;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+
+    .imagedisplay_close {
+        position: absolute;
+        right: 0;
+        padding: 0.25rem;
+        margin: 0.75rem;
+        background-color: #E5E7EB;
+        border-radius: 9999px;
+        cursor: pointer;
+    }
+
+    .media_display {
+        display: grid;
+        height: 100vh;
+        place-items: center;
+        .displ{
+            height: 100vh;
+            padding: 2.5rem; 
+            object-fit: scale-down;
+        }
+    }
+}
+
 #CreatePostOverlay {
     position: fixed;
     z-index: 50;

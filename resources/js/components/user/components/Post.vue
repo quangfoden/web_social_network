@@ -44,11 +44,14 @@ import Delete from 'vue-material-design-icons/Delete.vue';
         </div>
         <div class="cus-post-media">
             <div v-for="medias in media" :key="media.id">
-                <div class="d-flex" v-if="medias.type === 'image'">
-                    <img :src="medias.path" alt="Image" class="mx-auto custom-cursor-pointer w-100">
+                <div class="" v-if="medias.type === 'image'">
+                    <img @click="isFileDisplay = medias.path" :src="medias.path" alt="Image"
+                        class="mx-auto custom-cursor-pointer w-100">
                 </div>
-                <div class="d-flex" v-else-if="medias.type === 'video'">
-                    <video :src="medias.path" class="mx-auto custom-cursor-pointer w-100" controls></video>
+                <div class="" v-else-if="medias.type === 'video'">
+                    <video @click="isFileDisplay = medias.path" :src="medias.path"
+                        class="mx-auto custom-cursor-pointer w-100">
+                    </video>
                 </div>
             </div>
         </div>
@@ -98,6 +101,7 @@ import { useGeneralStore } from '../../../store/general';
 import { storeToRefs } from 'pinia';
 
 export default {
+    props: ['post', 'user', 'media'],
     data() {
         const useGeneral = useGeneralStore()
         const { isFileDisplay } = storeToRefs(useGeneral)
@@ -105,7 +109,6 @@ export default {
             isFileDisplay,
         }
     },
-    props: ['post', 'user', 'media']
 
 }
 </script>

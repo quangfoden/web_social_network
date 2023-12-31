@@ -21,9 +21,10 @@ const emit = defineEmits(['showModal'])
                 <div class="border-top">
                     <form @submit.prevent="submitPost" method="post" enctype="multipart/form-data" class="p-4">
                         <div class="d-flex align-items-center">
-                            <img src="https://picsum.photos/id/78/800/800" class="rounded-full img-cus" alt="">
+                            <img :src="authUser.avatar" class="rounded-full img-cus"
+                                alt="">
                             <div class="mx-2">
-                                <div class="font-extrabold">Nguyen Van Quang</div>
+                                <div class="font-extrabold">{{ authUser.user_name }}</div>
                                 <select v-model="form.privacy" id="privacy" required>
                                     <option v-for="option in privacyOptions" :value="option.value">{{ option.name }}
                                     </option>
@@ -31,7 +32,8 @@ const emit = defineEmits(['showModal'])
                             </div>
                         </div>
                         <div class="text-ar">
-                            <textarea cols="30" v-model="form.content" class="w-100" placeholder="bạn đang nghĩ gì ... ">
+                            <textarea cols="30" v-model="form.content" class="w-100"
+                                :placeholder="'bạn đang nghĩ gì ' + authUser.user_name + '...'">
                             </textarea>
                             <div v-if="form.media" class="p-2 position-relative cus-img-dis">
                                 <div v-for="(media, index) in form.media" :key="index">
@@ -84,7 +86,7 @@ import { ref, reactive } from 'vue'
 export default {
     data() {
         const useGeneral = useGeneralStore()
-        const { isPostOverlay } = storeToRefs(useGeneral)
+        const { isPostOverlay,isFileDisplay } = storeToRefs(useGeneral)
         return {
             privacyOptions: [
                 { name: "Công khai", value: "public" },
@@ -92,7 +94,7 @@ export default {
                 { name: "Chỉ mình tôi", value: "only_me" },
             ],
             isPostOverlay,
-            isFileDisplay: ref(''),
+            isFileDisplay,
             medias: [],
             form: reactive({
                 content: null,
@@ -101,6 +103,14 @@ export default {
             }),
 
         }
+    },
+    computed: {
+        authUser() {
+            if (this.$store.getters.getAuthUser.id !== undefined) {
+                return this.$store.getters.getAuthUser;
+            }
+            return JSON.parse(localStorage.getItem('authUser'));
+        },
     },
     methods: {
         submitPost() {
@@ -119,7 +129,6 @@ export default {
                             timer: this.$config.notificationTimer ?? 3000,
                         });
                         this.form = {}
-
                     }
                     else {
                         this.$swal.fire({
