@@ -30,6 +30,8 @@ class User extends Authenticatable
         'cover_photo',
         'birthdate',
         'gender',
+        'phone_number',
+        'address',
         'bio',
         'status',
         'is_lock',
