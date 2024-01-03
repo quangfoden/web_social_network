@@ -21,8 +21,7 @@ const emit = defineEmits(['showModal'])
                 <div class="border-top">
                     <form @submit.prevent="submitPost" method="post" enctype="multipart/form-data" class="p-4">
                         <div class="d-flex align-items-center">
-                            <img :src="authUser.avatar" class="rounded-full img-cus"
-                                alt="">
+                            <img :src="authUser.avatar" class="rounded-full img-cus" alt="">
                             <div class="mx-2">
                                 <div class="font-extrabold">{{ authUser.user_name }}</div>
                                 <select v-model="form.privacy" id="privacy" required>
@@ -80,13 +79,14 @@ const emit = defineEmits(['showModal'])
     </div>
 </template>
 <script>
+import { mapState, mapActions } from 'vuex';
 import { useGeneralStore } from '../../../../js/store/general';
 import { storeToRefs } from 'pinia';
 import { ref, reactive } from 'vue'
 export default {
     data() {
         const useGeneral = useGeneralStore()
-        const { isPostOverlay,isFileDisplay } = storeToRefs(useGeneral)
+        const { isPostOverlay, isFileDisplay } = storeToRefs(useGeneral)
         return {
             privacyOptions: [
                 { name: "Công khai", value: "public" },
@@ -105,6 +105,7 @@ export default {
         }
     },
     computed: {
+        ...mapState('post', ['posts']),
         authUser() {
             if (this.$store.getters.getAuthUser.id !== undefined) {
                 return this.$store.getters.getAuthUser;
@@ -113,36 +114,25 @@ export default {
         },
     },
     methods: {
+        ...mapActions('post', ['addNewPost']),
+        ...mapActions('post', ['fetchPosts']),
         submitPost() {
-            axios.post('/api/user/create-post', this.form, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-                .then(response => {
-                    if (response.status === 200 && response.data.success === true) {
-                        this.$swal.fire({
-                            position: "top-end",
-                            icon: "success",
-                            title: `${response.data.message}`,
-                            showConfirmButton: false,
-                            timer: this.$config.notificationTimer ?? 3000,
-                        });
-                        this.form = {}
-                    }
-                    else {
-                        this.$swal.fire({
-                            position: "top-end",
-                            icon: "error",
-                            title: `${response.data.message[0]}`,
-                            showConfirmButton: false,
-                            timer: this.$config.notificationTimer ?? 3000,
-                        });
-
-                    }
+            this.$store.dispatch('post/addNewPost', this.form)
+                .then((addedPost) => {
+                    this.isPostOverlay = false
+                    this.fetchPosts()
+                    // Xử lý khi bài viết được thêm thành công
+                    this.$swal.fire({
+                        position: "top-end",
+                        icon: "success",
+                        title: "Bài viết được thêm thành công",
+                        showConfirmButton: false,
+                        timer: this.$config.notificationTimer ?? 3000,
+                    });
+                    this.form = {};
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    // Xử lý khi có lỗi
                     this.$swal.fire({
                         position: "top-end",
                         icon: "error",

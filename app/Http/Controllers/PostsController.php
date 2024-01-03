@@ -73,8 +73,9 @@ class PostsController extends Controller
         $res = [
             'message' => 'Bạn đã đăng bài thành công',
             'success' => true,
+            'posts'=>$post
         ];
-        return response()->json($res);
+        return response()->json(['data'=>$res]);
     }
     public function all_post()
     {

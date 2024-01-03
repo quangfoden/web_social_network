@@ -5,15 +5,6 @@ import ThumbUp from 'vue-material-design-icons/ThumbUp.vue';
 import Check from 'vue-material-design-icons/Check.vue';
 import Delete from 'vue-material-design-icons/Delete.vue';
 
-
-
-
-// const props = defineProps({
-//     user: Object,
-//     post: Object,
-//     comment: Object
-// })
-// const { user, post, comment } = toRefs(props)
 </script>
 <template>
     <div id="post">
@@ -27,7 +18,6 @@ import Delete from 'vue-material-design-icons/Delete.vue';
                     <div class="d-flex align-items-center text-xs text-gray-600">
                         {{ post.created_at_formatted }}
                         <i v-if="post.privacy === 'public'" class="mx-2 fas fa-globe"></i>
-                        <!-- <AccountMultiple :size="15" class="ml-1" fillColor="#64676B" /> -->
                         <i v-if="post.privacy === 'friends'" class="mx-2 fas fa-user-friends"></i>
                         <i v-if="post.privacy === 'only_me'" class="mx-2 fas fa-lock"></i>
                     </div>
@@ -63,9 +53,9 @@ import Delete from 'vue-material-design-icons/Delete.vue';
         </div>
         <div id="comments" class="px-3">
             <div id="CreateComment" class="d-flex align-items-center py-2">
-                <div class="d-flex align-items-center justify-content-between w-100">
+                <form class="d-flex align-items-center justify-content-between w-100">
                     <a href="/" class="mr-2">
-                        <img class="rounded-full ml-1 img-cus" src="https://picsum.photos/id/189/800/800" alt="">
+                        <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" alt="">
                     </a>
                     <div class="d-flex align-items-center bg-EFF2F5 p-2 rounded-full w-100">
                         <input type="text" placeholder="Bình luận ..."
@@ -75,9 +65,9 @@ import Delete from 'vue-material-design-icons/Delete.vue';
                             <Check />Gửi
                         </button>
                     </div>
-                </div>
+                </form>
             </div>
-            <div id="Comments">
+            <div id="Comment">
                 <div class="d-flex align-items-center justify-content-between pb-2">
                     <div class="d-flex align-items-center w-100 mb-1">
                         <a href="/" class="mr-2">
@@ -109,6 +99,15 @@ export default {
             isFileDisplay,
         }
     },
-
+  
+    computed: {
+        authUser() {
+            if (this.$store.getters.getAuthUser.id !== undefined) {
+                return this.$store.getters.getAuthUser;
+            }
+            return JSON.parse(localStorage.getItem('authUser'));
+        },
+    },
+  
 }
 </script>

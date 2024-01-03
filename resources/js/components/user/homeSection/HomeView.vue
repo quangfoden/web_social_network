@@ -7,6 +7,7 @@
     </div>
 </template>
 <script>
+import { mapState, mapActions } from 'vuex';
 import { ref } from 'vue';
 import CreatePostBox from '../Components/CreatePostBox.vue'
 import Post from '../Components/Post.vue'
@@ -17,13 +18,14 @@ export default {
     },
     data() {
         return {
-            posts: ref([]),
+         
         };
     },
     mounted() {
         this.fetchData();
     },
     computed: {
+        ...mapState('post', ['posts']),
         authUser() {
             if (this.$store.getters.getAuthUser.id !== undefined) {
                 return this.$store.getters.getAuthUser;
@@ -32,19 +34,9 @@ export default {
         },
     },
     methods: {
+        ...mapActions('post', ['fetchPosts']),
         fetchData() {
-            axios
-                .get("/api/user/allposts")
-                .then(response => {
-                    if (Array.isArray(response.data.posts)) {
-                        this.posts = response.data.posts;
-                    } else {
-                        console.error('Invalid data format:', response.data.posts);
-                    }
-                })
-                .catch(error => {
-                    console.log("Error fetching posts:", error);
-                });
+            this.fetchPosts();
         }
     }
 }
