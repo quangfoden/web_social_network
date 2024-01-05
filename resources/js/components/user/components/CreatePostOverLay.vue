@@ -37,7 +37,7 @@ const emit = defineEmits(['showModal'])
                             <div v-if="form.media" class="p-2 position-relative cus-img-dis">
                                 <div v-for="(media, index) in form.media" :key="index">
                                     <Close @click="clearImage(index)"
-                                        class="position-absolute bg-white p-1 m-2 right-2 rounded-full border custom-cursor-pointer"
+                                        class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
                                         :size="22" fillColor="#5E6771" />
                                     <div v-if="media.type === 'image'"><img class="rounded-lg mx-auto w-100"
                                             :src="media.url" alt=""></div>
@@ -50,7 +50,7 @@ const emit = defineEmits(['showModal'])
                             </div>
                         </div>
                         <div class="border-2 rounded-xl mt-4 shadow-sm d-flex align-items-center justify-content-between">
-                            <div class="font-extrabold p-4 w-100 d-block">Tạo bài viết của bạn</div>
+                            <div class="font-extrabold w-100 d-block">Tạo bài viết của bạn</div>
                             <div class="d-flex align-items-center">
                                 <label class="hover-200 rounded-full p-2 custom-cursor-pointer" for="image">
                                     <Image :size="27" fillColor="#43BE62" />
@@ -69,7 +69,7 @@ const emit = defineEmits(['showModal'])
                             </div>
                         </div>
                         <button type="submit"
-                            class="w-100 bg-blue-500 hover-bg-blue-600 text-white font-extrabold p-1.5 mt-3 rounded-lg">
+                            class="w-100 bg-blue-500 hover-bg-blue-600 text-white font-extrabold p-1 mt-3 rounded-lg">
                             Đăng
                         </button>
                     </form>

@@ -9,6 +9,24 @@ body .btn-all-add-edit {
     color: #fff;
 }
 
+:root {
+    --collor-gray: #EFF2F5;
+}
+
+p {
+    margin: 0;
+}
+
+select {
+    background: var(--collor-gray);
+    border: none;
+    border-radius: 4px;
+}
+
+button {
+    border: none;
+}
+
 body .btn-all-add-edit:hover {
     background: #4b5a83;
     color: #fff;
@@ -16,6 +34,10 @@ body .btn-all-add-edit:hover {
 
 a {
     text-decoration: none !important;
+}
+
+.z-1000 {
+    z-index: 1000;
 }
 
 .bg-EFF2F5 {
@@ -454,6 +476,31 @@ a {
         }
     }
 
+    #Comment {
+        margin: 10px auto;
+        width: 90%;
+
+        .box-comment-cus {
+            background-color: var(--collor-gray);
+            border-radius: 5px;
+            padding: 10px;
+           
+
+
+            #bottom-cus {
+                position: absolute;
+                z-index: 10000;
+                display: flex;
+                gap: 15px;
+                /* left: 10px; */
+                right: 58px;
+                bottom: 10px;
+                font-size: 15px;
+            }
+        }
+
+    }
+
     .cus-post-media {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -485,9 +532,10 @@ a {
         display: grid;
         height: 100vh;
         place-items: center;
-        .displ{
+
+        .displ {
             height: 100vh;
-            padding: 2.5rem; 
+            padding: 2.5rem;
             object-fit: scale-down;
         }
     }

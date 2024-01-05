@@ -80,7 +80,7 @@ class PostsController extends Controller
     public function all_post()
     {
         $posts = Post::where('status', 1)
-            ->with('user', 'media')
+            ->with('user', 'media','comments')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($post) {

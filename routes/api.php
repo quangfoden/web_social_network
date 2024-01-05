@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostsController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,4 +41,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('change-password', [UserController::class, 'change_password']);
     Route::post('create-post', [PostsController::class, 'create_post']);
     Route::get('allposts', [PostsController::class, 'all_post']);
+    Route::post('create_comment/{postId}', [CommentController::class, 'create_comment']);
+    // Route::post('get_all_comments/{postId}', [CommentController::class, 'get_all_comments']);
+    Route::get('getAllComments', [CommentController::class, 'getAllComments']);
 });
