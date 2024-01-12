@@ -33,8 +33,17 @@ body .btn-all-add-edit:hover {
   color: #fff;
 }
 
+textarea {
+  resize: none !important;
+  padding: 5px !important;
+}
+
 a {
   text-decoration: none !important;
+}
+
+.focus-0 {
+  outline: none;
 }
 
 .z-1000 {
@@ -398,8 +407,8 @@ a {
 #post img.img-cus {
   border-radius: 9999px;
   margin-left: 0.25rem;
-  min-width: 42px;
-  max-height: 42px;
+  min-width: 36px;
+  max-height: 36px;
 }
 #post .text-pr {
   font-weight: 800;
@@ -425,23 +434,21 @@ a {
   max-height: 30px;
 }
 #post #Comment {
-  margin: 10px auto;
   width: 90%;
 }
 #post #Comment .box-comment-cus {
-  background-color: var(--collor-gray);
   border-radius: 5px;
   padding: 10px;
+  margin-bottom: 30px;
 }
 #post #Comment .box-comment-cus #bottom-cus {
-  position: absolute;
-  z-index: 10000;
+  width: 100%;
   display: flex;
-  gap: 15px;
-  /* left: 10px; */
-  right: 58px;
-  bottom: 10px;
-  font-size: 15px;
+  gap: 10px;
+  font-size: 14px;
+  margin-left: 64px;
+  color: rgba(74, 85, 104, 0.7725490196);
+  font-weight: 500;
 }
 #post .cus-post-media {
   display: grid;

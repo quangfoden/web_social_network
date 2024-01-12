@@ -8,7 +8,7 @@ import Close from 'vue-material-design-icons/Close.vue'
 
 </script>
 <template>
-    <div id="post">
+    <div id="post" class="pb-2">
         <div class="d-flex align-items-center py-3 px-0">
             <a class="mr-2">
                 <img class="img-cus" :src="user.avatar" alt="">
@@ -46,26 +46,26 @@ import Close from 'vue-material-design-icons/Close.vue'
                 </div>
             </div>
         </div>
-        <div id="Likes" class="px-5">
+        <div id="Likes" class="">
             <div class="d-flex align-items-center justify-content-between py-3 border-bottom">
                 <ThumbUp :size="16" fillColor="#1D72E2" />
                 <div class="text-sm text-gray-600 font-semibold">5 bình luận</div>
             </div>
         </div>
-        <div id="comments" class="px-3">
+        <div id="comments" class="">
             <div id="CreateComment" class="">
-                <form @submit.prevent="CreateComment" class="d-flex align-items-center justify-content-between w-100">
-                    <a href="/" class="mr-2">
+                <form @submit.prevent="CreateComment" class="d-flex align-items-center pt-2 justify-content-between w-100">
+                    <a href="/" class="mx-2">
                         <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" alt="">
                     </a>
-                    <div class="d-flex align-items-center bg-EFF2F5 p-2 rounded-full w-100">
-                        <input v-model="formComment.content" type="text" placeholder="Bình luận ..."
-                            class="w-100 border-0 mx-1 border-none p-0 text-sm bg-EFF2F5 placeholder-[#64676B] ring-0 focus:ring-0">
-
+                    <div class="d-flex align-items-center bg-EFF2F5 rounded-full w-100  px-2">
+                        <textarea v-model="formComment.content" type="text" placeholder="Viết bình luận ..."
+                            class="custom-input w-100 focus-0 border-0 mx-1 border-none p-0 text-sm bg-EFF2F5 placeholder-[#64676B] ring-0 focus:ring-0">
+                        </textarea>
                         <label class="hover-200 rounded-full p-2 custom-cursor-pointer" for="image">
                             <Image :size="27" fillColor="#43BE62" />
                         </label>
-                        <input ref="fieldMedia" type="file" id="image" accept="image/*,video/*"
+                        <input ref="fieldMedia" type="file" class="" id="image" accept="image/*,video/*"
                             @input="getUploadedImage($event)">
                         <button type="submit"
                             class="d-flex border-0 align-items-center text-sm px-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">
@@ -73,7 +73,6 @@ import Close from 'vue-material-design-icons/Close.vue'
                         </button>
                     </div>
                 </form>
-
             </div>
             <div v-if="formMediaComment.url" class="p-2 position-relative cus-img-dis">
                 <Close @click="clearImage()"
@@ -92,43 +91,47 @@ import Close from 'vue-material-design-icons/Close.vue'
                     <div class="box-comment-cus">
                         <div class="box-comment-cus_2">
                             <div class="box-comment-cus_3">
-                                <div class="d-flex gap-2 align-items-center w-100 mb-1">
+                                <div class="d-flex gap-2 align-items-start w-100 mb-1">
                                     <a href="/" class="mr-2">
                                         <img class="rounded-full ml-1 img-cus" :src="comment.user.avatar" alt="">
                                     </a>
-                                    <h5>{{ comment.user.user_name }}</h5>
-                                    <div class="d-flex align-items-center bg-EFF2F5 text-xs p-2 rounded-lg w-100">
-                                        {{ comment.content }}
+                                    <div class="bg-EFF2F5 p-2 rounded-lg">
+                                        <h6>{{ comment.user.user_name }}</h6>
+                                        <div class="d-flex align-items-center text-xs rounded-lg w-100">
+                                            {{ comment.content }}
+                                        </div>
                                     </div>
-                                    <a class="rounded-full p-1.5 ml-2 custom-cursor-pointer">
+                                    <!-- <a class="rounded-full p-1.5 ml-2 custom-cursor-pointer">
                                         <Delete fillColor="#64676B" size="20" />
-                                    </a>
+                                    </a> -->
                                 </div>
                                 <div class="w-100 position-relative" style="margin-left: 50px;">
                                     <img width="150" v-if="comment.type != null && comment.type.includes('image')"
                                         :src="comment.path" alt="Image">
                                     <video width="150" v-else-if="comment.type != null && comment.type.includes('video')"
                                         :src="comment.path" controls></video>
-                                    <div id="bottom-cus">
-                                        <p class="custom-cursor-pointer">{{ comment.created_at_formatted }}</p>
-                                        <p class="custom-cursor-pointer">like</p>
-                                        <p @click="clickRepComment(index)" class="custom-cursor-pointer">Phản hồi</p>
-                                    </div>
                                 </div>
-                                <div style="background: white;" id="repComment">
-                                    <div class="mx-5 boxrepcomment-cusmjwgjyf9" v-for="repcomment in comment.repcomments "
+                                <div id="bottom-cus">
+                                    <p class="custom-cursor-pointer">{{ comment.created_at_formatted }}</p>
+                                    <p class="custom-cursor-pointer">like</p>
+                                    <p @click="clickRepComment(index)" class="custom-cursor-pointer">Phản hồi</p>
+                                </div>
+                                <div v-if="comment.repcomments.length > 0" style="background: white;" id="repComment">
+                                    <div class="mx-5 boxrepcomment-cus" v-for="repcomment in comment.repcomments "
                                         :key="repcomment">
-                                        <div class="d-flex gap-2 align-items-center w-100 mb-1">
+                                        <div class="d-flex gap-2 align-items-start w-100 mb-1">
                                             <a href="/" class="mr-2">
                                                 <img class="rounded-full ml-1 img-cus" :src="repcomment.user.avatar" alt="">
                                             </a>
-                                            <h5>{{ repcomment.user.user_name }}</h5>
-                                            <div class="d-flex align-items-center bg-EFF2F5 text-xs p-2 rounded-lg w-100">
-                                                {{ repcomment.content }}
+                                            <div class="bg-EFF2F5 p-2 rounded-lg">
+                                                <h6>{{ repcomment.user.user_name }}</h6>
+                                                <div class="d-flex align-items-center text-xs rounded-lg w-100">
+                                                    {{ repcomment.content }}
+                                                </div>
                                             </div>
-                                            <a class="rounded-full p-1.5 ml-2 custom-cursor-pointer">
+                                            <!-- <a class="rounded-full p-1.5 ml-2 custom-cursor-pointer">
                                                 <Delete fillColor="#64676B" size="20" />
-                                            </a>
+                                            </a> -->
                                         </div>
                                         <div class="w-100 position-relative" style="margin-left: 50px;">
                                             <img width="150"
@@ -137,50 +140,52 @@ import Close from 'vue-material-design-icons/Close.vue'
                                             <video width="150"
                                                 v-else-if="repcomment.type != null && repcomment.type.includes('video')"
                                                 :src="repcomment.path" controls></video>
-                                            <div id="bottom-cus">
-                                                <p class="custom-cursor-pointer">{{ repcomment.created_at_formatted }}</p>
-                                                <p class="custom-cursor-pointer">like</p>
-                                                <p @click="clickRepComment(index)" class="custom-cursor-pointer">Phản hồi
-                                                </p>
-                                            </div>
+                                        </div>
+                                        <div id="bottom-cus">
+                                            <p class="custom-cursor-pointer">{{ repcomment.created_at_formatted }}</p>
+                                            <p class="custom-cursor-pointer">like</p>
+                                            <p @click="clickRepComment(index)" class="custom-cursor-pointer">Phản hồi
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <div>
-                                    <p class="text-center morecomment" @click="loadMoreComments()">Xem thêm bình luận</p>
-                                </div> -->
-                            </div>
-                            <form style="background: white;" @submit.prevent="CreateRepComment(comment.id, index)"
-                                class="d-flex align-items-center justify-content-between w-100">
-                                <a href="/" class="mr-2">
-                                    <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" alt="">
-                                </a>
-                                <div class="'d-flex align-items-center rounded-full w-100'">
-                                    <input v-model="formRepComment[index].content" :id="'repcomten' + comment.id"
-                                        type="text" placeholder="Bình luận ..."
-                                        class="w-100 border-0 mx-1 border-none p-0 text-sm  placeholder-[#64676B] ring-0 focus:ring-0">
-                                    <label class="hover-200 rounded-full p-2 custom-cursor-pointer">
-                                        <Image :size="27" fillColor="#43BE62" />
-                                    </label>
-                                    <input ref="fieldMediaRepCM" type="file" accept="image/*,video/*"
-                                        :id="`fieldMediaRepCM_${index}`" @change="getUploadedImageComment($event, index)">
-                                    <button type="submit"
-                                        class="d-flex border-0 align-items-center text-sm px-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">
-                                        <Check />Gửi
-                                    </button>
-                                </div>
-                            </form>
-                            <div v-if="formMediarepComment[index].url" class="p-2 position-relative cus-img-dis">
-                                <Close @click="clearImageRepComment(index)"
-                                    class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
-                                    :size="22" fillColor="#5E6771" />
-                                <div v-if="formMediarepComment[index].type === 'image'"><img class="rounded-lg mx-auto w-50"
-                                        :src="formMediarepComment[index].url" alt=""></div>
-                                <div v-if="formMediarepComment[index].type === 'video'"> <video
-                                        class="rounded-lg mx-auto w-50" controls>
-                                        <source :src="formMediarepComment[index].url" type="video/mp4">
-                                        Your browser does not support the video tag.
-                                    </video>
+                                <form style="background: white;margin-left:46px ;"
+                                    @submit.prevent="CreateRepComment(comment.id, index)"
+                                    class="d-flex align-items-center rounded-full justify-content-between w-100">
+                                    <a href="/" class="mr-2">
+                                        <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" alt="">
+                                    </a>
+                                    <div class="d-flex align-items-center bg-EFF2F5 rounded-full px-2 w-100">
+                                        <textarea v-model="formRepComment[index].content" :id="'repcomment' + comment.id"
+                                            type="text" placeholder="Viết phản hồi ..."
+                                            class="custom-input bg-EFF2F5 w-100 border-0 mx-1 border-none p-0 text-sm placeholder-[#64676B] focus-0">
+                                        </textarea>
+                                            <label class="hover-200 rounded-full p-2 custom-cursor-pointer">
+                                                <Image :size="27" fillColor="#43BE62" />
+                                            </label>
+                                            <input ref="fieldMediaRepCM" type="file" accept="image/*,video/*" class=""
+                                                :id="`fieldMediaRepCM_${index}`"
+                                                @change="getUploadedImageComment($event, index)">
+                                        <button type="submit"
+                                            class="d-flex border-0 align-items-center text-sm px-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">
+                                            <Check />Gửi
+                                        </button>
+                                    </div>
+                                </form>
+                                <div style="margin-left: 60px;" v-if="formMediarepComment[index].url"
+                                    class="p-2 position-relative cus-img-dis">
+                                    <Close @click="clearImageRepComment(index)"
+                                        class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
+                                        :size="22" fillColor="#5E6771" />
+                                    <div v-if="formMediarepComment[index].type === 'image'"><img
+                                            class="rounded-lg mx-auto w-50" :src="formMediarepComment[index].url" alt="">
+                                    </div>
+                                    <div v-if="formMediarepComment[index].type === 'video'"> <video
+                                            class="rounded-lg mx-auto w-50" controls>
+                                            <source :src="formMediarepComment[index].url" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -245,7 +250,7 @@ export default {
         },
     },
     mounted() {
-        console.log(this.repcomments)
+
     },
     methods: {
         getUploadedImage(e) {
@@ -378,7 +383,9 @@ export default {
             if (currentCommentIndex >= comments.length) {
                 document.querySelector('.morecomment').style.display = 'none';
             }
-        }
-    }
+        },
+
+    },
+
 }
 </script>
