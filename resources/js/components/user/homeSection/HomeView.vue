@@ -1,7 +1,7 @@
 <template>
     <div id="PostsSection" class="">
         <CreatePostBox :image="authUser.avatar" :placeholder="'Bạn đang nghĩ gì vậy ' + authUser.user_name" />
-        <div v-for="post in posts" :key="post.id">
+        <div id="posts" v-for="post in posts" :key="post.id">
             <Post :post="post" :user="post.user" :media="post.media" :comments="post.comments" />
         </div>
     </div>

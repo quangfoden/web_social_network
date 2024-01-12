@@ -139,6 +139,18 @@ a {
     }
 }
 
+#loadMore.noContent {
+    display: none;
+}
+
+#loadMoreRepComment {
+    display: block;
+}
+
+#loadMoreRepComment.noContent {
+    display: none;
+}
+
 #Mainnav {
     position: fixed;
     z-index: 50;
@@ -488,10 +500,17 @@ a {
     #Comment {
         width: 90%;
 
+        .comment_list {
+            display: none;
+        }
+
+        .repcomment_list {
+            display: none;
+        }
+
         .box-comment-cus {
             border-radius: 5px;
             padding: 10px;
-            margin-bottom: 30px;
 
             #bottom-cus {
                 width: 100%;
@@ -511,8 +530,14 @@ a {
 
     .cus-post-media {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 10px;
+        .list_item_media {
+            img {
+                border-radius: 10px;
+            }
+        }
+
     }
 
 }

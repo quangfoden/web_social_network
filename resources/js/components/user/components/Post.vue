@@ -34,8 +34,8 @@ import Close from 'vue-material-design-icons/Close.vue'
             {{ post.content }}
         </div>
         <div class="cus-post-media">
-            <div v-for="medias in media" :key="media.id">
-                <div class="" v-if="medias.type === 'image'">
+            <div class="list_item_media" v-for="medias in media" :key="media.id">
+                <div v-if="medias.type === 'image'">
                     <img @click="isFileDisplay = medias.path" :src="medias.path" alt="Image"
                         class="mx-auto custom-cursor-pointer w-100">
                 </div>
@@ -86,8 +86,8 @@ import Close from 'vue-material-design-icons/Close.vue'
                     </video>
                 </div>
             </div>
-            <div v-if="comments" id="Comment">
-                <div class="my-1" v-for="(comment, index) in comments" :key="comment.id">
+            <div v-if="comments.length > 0" id="Comment" class="comment_array">
+                <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">
                     <div class="box-comment-cus">
                         <div class="box-comment-cus_2">
                             <div class="box-comment-cus_3">
@@ -116,9 +116,10 @@ import Close from 'vue-material-design-icons/Close.vue'
                                     <p class="custom-cursor-pointer">like</p>
                                     <p @click="clickRepComment(index)" class="custom-cursor-pointer">Phản hồi</p>
                                 </div>
-                                <div v-if="comment.repcomments.length > 0" style="background: white;" id="repComment">
-                                    <div class="mx-5 boxrepcomment-cus" v-for="repcomment in comment.repcomments "
-                                        :key="repcomment">
+                                <div v-if="comment.repcomments.length > 0" style="background: white;"
+                                    class="repComment_array" id="repComment">
+                                    <div class="mx-5 repcomment_list boxrepcomment-cus"
+                                        v-for="repcomment in comment.repcomments " :key="repcomment">
                                         <div class="d-flex gap-2 align-items-start w-100 mb-1">
                                             <a href="/" class="mr-2">
                                                 <img class="rounded-full ml-1 img-cus" :src="repcomment.user.avatar" alt="">
@@ -148,6 +149,9 @@ import Close from 'vue-material-design-icons/Close.vue'
                                             </p>
                                         </div>
                                     </div>
+                                    <a href="#" class="text-center w-100" id="loadMoreRepComment"
+                                        style="text-decoration:underline !important;color: black;font-weight: 500;">Xem
+                                        thêm</a>
                                 </div>
                                 <form style="background: white;margin-left:46px ;"
                                     @submit.prevent="CreateRepComment(comment.id, index)"
@@ -160,12 +164,12 @@ import Close from 'vue-material-design-icons/Close.vue'
                                             type="text" placeholder="Viết phản hồi ..."
                                             class="custom-input bg-EFF2F5 w-100 border-0 mx-1 border-none p-0 text-sm placeholder-[#64676B] focus-0">
                                         </textarea>
-                                            <label class="hover-200 rounded-full p-2 custom-cursor-pointer">
-                                                <Image :size="27" fillColor="#43BE62" />
-                                            </label>
-                                            <input ref="fieldMediaRepCM" type="file" accept="image/*,video/*" class=""
-                                                :id="`fieldMediaRepCM_${index}`"
-                                                @change="getUploadedImageComment($event, index)">
+                                        <label class="hover-200 rounded-full p-2 custom-cursor-pointer">
+                                            <Image :size="27" fillColor="#43BE62" />
+                                        </label>
+                                        <input ref="fieldMediaRepCM" type="file" accept="image/*,video/*" class=""
+                                            :id="`fieldMediaRepCM_${index}`"
+                                            @change="getUploadedImageComment($event, index)">
                                         <button type="submit"
                                             class="d-flex border-0 align-items-center text-sm px-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">
                                             <Check />Gửi
@@ -191,6 +195,9 @@ import Close from 'vue-material-design-icons/Close.vue'
                         </div>
                     </div>
                 </div>
+                <a href="#" id="loadMore" style="text-decoration:underline !important;color: black;font-weight: 500;">Xem
+                    tất cả bình
+                    luận</a>
             </div>
         </div>
     </div>
@@ -230,12 +237,12 @@ export default {
         return {
             isFileDisplay,
             formComment: reactive({
-                content: null
+                content: ''
             }),
             formMediaComment: reactive({
 
             }),
-            formRepComment: this.comments.map(() => reactive({ content: null })),
+            formRepComment: this.comments.map(() => reactive({ content: '' })),
             formMediarepComment: this.comments.map(() => reactive({})),
             boxRepComment: this.comments.map(() => reactive(false)),
         }
@@ -250,9 +257,11 @@ export default {
         },
     },
     mounted() {
-
+        this.loadMoreComments()
+        this.loadMoreRepComments()
     },
     methods: {
+        ...mapActions('post', ['fetchPosts']),
         getUploadedImage(e) {
             const file = e.target.files[0];
             let mediaType;
@@ -295,31 +304,44 @@ export default {
                 input.value = null;
             }
         },
-
+       
         CreateComment() {
             const fieldMediaCMRef = this.$refs['fieldMedia']
             const formData = new FormData();
             formData.append('content', this.formComment.content);
             formData.append('file', fieldMediaCMRef.files[0]);
-            console.log(fieldMediaCMRef)
             axios.post(`api/user/create_comment/${this.post.id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             })
                 .then(response => {
-                    // console.log('Comment created successfully:', response.data);
-                    this.$swal.fire({
-                        position: "top-end",
-                        icon: "success",
-                        title: "Comment thành công",
-                        showConfirmButton: false,
-                        timer: this.$config.notificationTimer ?? 3000,
-                    });
-                    this.formMediaComment = {};
+                    if (response.status === 200 && response.data.data.success === true) {
+                        this.fetchPosts()
+                        this.$swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Comment thành công !",
+                            showConfirmButton: false,
+                            timer: this.$config.notificationTimer ?? 3000,
+                        });
+                        this.formMediaComment = {};
+                        this.formComment.content = null
+                        this.$refs['fieldMedia'].value = null
+                    } else {
+                        this.$swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: "Comment không thành công !",
+                            showConfirmButton: false,
+                            timer: this.$config.notificationTimer ?? 3000,
+                        });
+                        this.formMediaComment = {};
+                        this.formComment.content = null
+                        this.$refs['fieldMedia'].value = null
+                    }
                 })
                 .catch(error => {
-                    // console.error('Error creating comment:', error);
                     this.$swal.fire({
                         position: "top-end",
                         icon: "error",
@@ -340,20 +362,35 @@ export default {
                 },
             })
                 .then(response => {
-                    const input = document.getElementById(`fieldMediaRepCM_${index}`);
-                    if (input) {
-                        input.value = null;
+                    if (response.status === 200 && response.data.data.success === true) {
+                        this.fetchPosts()
+                        const input = document.getElementById(`fieldMediaRepCM_${index}`);
+                        if (input) {
+                            input.value = null;
+                        }
+                        this.$swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Rep Comment thành công !",
+                            showConfirmButton: false,
+                            timer: this.$config.notificationTimer ?? 3000,
+                        });
+                        this.formRepComment[index] = {}
+                        this.formMediarepComment[index] = {};
+                        this.$refs.fieldMediaRepCM.value = null
                     }
-                    this.$swal.fire({
-                        position: "top-end",
-                        icon: "success",
-                        title: "Rep Comment thành công",
-                        showConfirmButton: false,
-                        timer: this.$config.notificationTimer ?? 3000,
-                    });
-                    this.formRepComment[index] = {}
-                    this.formMediarepComment[index] = {};
-                    this.$refs.fieldMediaRepCM.value = null
+                    else {
+                        this.$swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: "Rep Comment không thành công !",
+                            showConfirmButton: false,
+                            timer: this.$config.notificationTimer ?? 3000,
+                        });
+                        this.formMediaComment = {};
+                        this.formComment.content = null
+                        this.$refs['fieldMedia'].value = null
+                    }
                 })
                 .catch(error => {
                     this.$swal.fire({
@@ -371,18 +408,40 @@ export default {
             this.formRepComment[index].content = this.comments[index].user.user_name
         },
         loadMoreComments() {
-            var commentsPerPage = 3;
-            var currentCommentIndex = commentsPerPage;
-            var comments = document.getElementsByClassName('boxrepcomment-cus');
-            for (var i = currentCommentIndex; i < currentCommentIndex + commentsPerPage; i++) {
-                if (comments[i]) {
-                    comments[i].style.display = 'block';
-                }
-            }
-            currentCommentIndex += commentsPerPage;
-            if (currentCommentIndex >= comments.length) {
-                document.querySelector('.morecomment').style.display = 'none';
-            }
+            $(document).ready(function () {
+                $(".comment_array").each(function () {
+                    var $commentArray = $(this);
+                    var $commentList = $commentArray.find(".comment_list");
+                    $commentList.slice(0, 1).show();
+                    $commentArray.find("#loadMore").on("click", function (e) {
+                        e.preventDefault();
+                        var $hiddenComments = $commentList.filter(":hidden").slice(0, 3);
+                        $hiddenComments.slideDown();
+                        if ($hiddenComments.length === 0) {
+                            $(this).addClass("noContent");
+                        }
+                    });
+                });
+            });
+        },
+        loadMoreRepComments() {
+            $(document).ready(function () {
+                $(".repComment_array").each(function () {
+                    var $RepcommentArray = $(this);
+                    var $RepcommentList = $RepcommentArray.find(".repcomment_list");
+                    if ($RepcommentList.length > 1) {
+                        $RepcommentList.slice(0, 1).show();
+                        $RepcommentArray.find("#loadMoreRepComment").on("click", function (e) {
+                            e.preventDefault();
+                            var $hiddenRepComments = $RepcommentList.filter(":hidden").slice(0, 3);
+                            $hiddenRepComments.slideDown();
+                            if ($hiddenRepComments.length === 0) {
+                                $(this).addClass("noContent");
+                            }
+                        });
+                    }
+                });
+            });
         },
 
     },

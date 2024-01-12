@@ -55,7 +55,7 @@ const emit = defineEmits(['showModal'])
                                 <label class="hover-200 rounded-full p-2 custom-cursor-pointer" for="image">
                                     <Image :size="27" fillColor="#43BE62" />
                                 </label>
-                                <input type="file" id="image" accept="image/*,video/*" multiple class="hidden"
+                                <input type="file" ref="fieldCreatePost" id="image" accept="image/*,video/*" multiple class="hidden"
                                     @input="getUploadedImage($event)">
                                 <a class="hover-200 rounded-full p-2 custom-cursor-pointer">
                                     <EmoticonOutline :size="27" fillColor="#F8B927" />
@@ -121,7 +121,6 @@ export default {
                 .then((addedPost) => {
                     this.isPostOverlay = false
                     this.fetchPosts()
-                    // Xử lý khi bài viết được thêm thành công
                     this.$swal.fire({
                         position: "top-end",
                         icon: "success",

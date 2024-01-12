@@ -37,13 +37,8 @@ class CommentController extends Controller
             'content' => 'required',
         ]);
         if ($validator->fails()) {
-            foreach (array_values($validator->errors()->toArray()) as $val) {
-                foreach ($val as $error) {
-                    $msg[] = $error;
-                }
-            }
             $res = [
-                'message' => $msg,
+                'message' => 'Nội dung bình luận trống !',
                 'success' => false,
             ];
             return response()->json(['data' => $res]);
@@ -58,20 +53,29 @@ class CommentController extends Controller
         $comment->save();
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            // $path = $file->store('public/uploads/Upload_comments'); 
             $filename = $file->getClientOriginalName();
             $path = 'uploads/Upload_comments/' . $filename;
             $file->storeAs('uploads/Upload_comments', $filename);
-            // Cập nhật thông tin về ảnh trong comment
             $comment->update([
                 'type' => $file->getMimeType(),
                 'path' => $path,
             ]);
-            $res = 'success';
+            $res = [
+                'message' => 'upload file thành công !',
+                'success' => true,
+            ];
         } else {
-            $res = 'lỗi';
+            $res = [
+                'message' => 'Không có file !',
+                'success' => true,
+            ];
         }
-        return response()->json(['data' => $comment, $res]);
+        $res = [
+            'message' => 'Bạn đã bình luận thành công',
+            'success' => true,
+            'comment' =>  $comment,
+        ];
+        return response()->json(['data' => $res]);
     }
     public function create_rep_comment(Request $request, $commentId)
     {
@@ -79,13 +83,8 @@ class CommentController extends Controller
             'content' => 'required',
         ]);
         if ($validator->fails()) {
-            foreach (array_values($validator->errors()->toArray()) as $val) {
-                foreach ($val as $error) {
-                    $msg[] = $error;
-                }
-            }
             $res = [
-                'message' => $msg,
+                'message' => 'Nội dung trả lời bình luận trống !',
                 'success' => false,
             ];
             return response()->json(['data' => $res]);
@@ -100,19 +99,28 @@ class CommentController extends Controller
         $replycomment->save();
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            // $path = $file->store('public/uploads/Upload_comments'); 
             $filename = $file->getClientOriginalName();
             $path = 'uploads/Upload_comments/rep_comment/' . $filename;
             $file->storeAs('uploads/Upload_comments/rep_comment', $filename);
-            // Cập nhật thông tin về ảnh trong comment
             $replycomment->update([
                 'type' => $file->getMimeType(),
                 'path' => $path,
             ]);
-            $res = 'success';
+            $res = [
+                'message' => 'upload file thành công !',
+                'success' => true,
+            ];
         } else {
-            $res = 'lỗi';
+            $res = [
+                'message' => 'không có file !',
+                'success' => true,
+            ];
         }
-        return response()->json(['data' => $replycomment, $res]);
+        $res = [
+            'message' => 'Bạn đã trả lời bình luận thành công !',
+            'success' => true,
+            'repcomment' =>  $replycomment,
+        ];
+        return response()->json(['data' => $res]);
     }
 }

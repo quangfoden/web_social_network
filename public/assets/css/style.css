@@ -138,6 +138,18 @@ a {
   padding-right: 1rem;
 }
 
+#loadMore.noContent {
+  display: none;
+}
+
+#loadMoreRepComment {
+  display: block;
+}
+
+#loadMoreRepComment.noContent {
+  display: none;
+}
+
 #Mainnav {
   position: fixed;
   z-index: 50;
@@ -436,10 +448,15 @@ a {
 #post #Comment {
   width: 90%;
 }
+#post #Comment .comment_list {
+  display: none;
+}
+#post #Comment .repcomment_list {
+  display: none;
+}
 #post #Comment .box-comment-cus {
   border-radius: 5px;
   padding: 10px;
-  margin-bottom: 30px;
 }
 #post #Comment .box-comment-cus #bottom-cus {
   width: 100%;
@@ -452,8 +469,11 @@ a {
 }
 #post .cus-post-media {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 10px;
+}
+#post .cus-post-media .list_item_media img {
+  border-radius: 10px;
 }
 
 #MediaDisplay {
