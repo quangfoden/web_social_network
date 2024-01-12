@@ -73,18 +73,26 @@ class PostsController extends Controller
         $res = [
             'message' => 'Bạn đã đăng bài thành công',
             'success' => true,
-            'posts'=>$post
+            'posts' => $post
         ];
-        return response()->json(['data'=>$res]);
+        return response()->json(['data' => $res]);
     }
     public function all_post()
     {
         $posts = Post::where('status', 1)
-            ->with('user', 'media','comments')
+            ->with('user', 'media', 'comments.user', 'comments.repcomments.user')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($post) {
                 $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
+                $post->comments->each(function ($comment) {
+                    $comment->created_at_formatted = $this->postService->formatTimeAgo($comment->created_at);
+                    if ($comment->repcomments) {
+                        foreach ($comment->repcomments as $repcomment) {
+                            $repcomment->created_at_formatted = $this->postService->formatTimeAgo($repcomment->created_at);
+                        }
+                    }
+                });
                 return $post;
             })
             ->toArray();
