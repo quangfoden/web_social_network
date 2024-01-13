@@ -11,7 +11,7 @@ import Close from 'vue-material-design-icons/Close.vue'
     <div id="post" class="pb-2">
         <div class="d-flex align-items-center py-3 px-0">
             <a class="mr-2">
-                <img class="img-cus" :src="user.avatar" alt="">
+                <img class="img-cus" :src="user.avatclickRepCommentar" alt="">
             </a>
             <div class="d-flex align-items-center justify-content-between p-2 rounded-full w-100">
                 <div>
@@ -119,7 +119,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                                 <div v-if="comment.repcomments.length > 0" style="background: white;"
                                     class="repComment_array" id="repComment">
                                     <div class="mx-5 repcomment_list boxrepcomment-cus"
-                                        v-for="repcomment in comment.repcomments " :key="repcomment">
+                                        v-for="(repcomment,index2) in comment.repcomments " :key="index2">
                                         <div class="d-flex gap-2 align-items-start w-100 mb-1">
                                             <a href="/" class="mr-2">
                                                 <img class="rounded-full ml-1 img-cus" :src="repcomment.user.avatar" alt="">
@@ -145,7 +145,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                                         <div id="bottom-cus">
                                             <p class="custom-cursor-pointer">{{ repcomment.created_at_formatted }}</p>
                                             <p class="custom-cursor-pointer">like</p>
-                                            <p @click="clickRepComment(index)" class="custom-cursor-pointer">Phản hồi
+                                            <p @click="clickRepComment2(index,index2)" class="custom-cursor-pointer">Phản hồi
                                             </p>
                                         </div>
                                     </div>
@@ -407,6 +407,10 @@ export default {
             this.boxRepComment[index] = true
             this.formRepComment[index].content = this.comments[index].user.user_name
         },
+        clickRepComment2(index,index2) {
+            this.boxRepComment[index] = true
+            this.formRepComment[index].content = this.comments[index].repcomments[index2].user.user_name
+        },
         loadMoreComments() {
             $(document).ready(function () {
                 $(".comment_array").each(function () {
@@ -429,7 +433,6 @@ export default {
                 $(".repComment_array").each(function () {
                     var $RepcommentArray = $(this);
                     var $RepcommentList = $RepcommentArray.find(".repcomment_list");
-                    if ($RepcommentList.length > 1) {
                         $RepcommentList.slice(0, 1).show();
                         $RepcommentArray.find("#loadMoreRepComment").on("click", function (e) {
                             e.preventDefault();
@@ -439,7 +442,6 @@ export default {
                                 $(this).addClass("noContent");
                             }
                         });
-                    }
                 });
             });
         },
