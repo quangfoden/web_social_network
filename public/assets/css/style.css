@@ -10,13 +10,44 @@ body .btn-all-add-edit {
   color: #fff;
 }
 
+:root {
+  --collor-gray: #EFF2F5;
+}
+
+p {
+  margin: 0;
+}
+
+select {
+  background: var(--collor-gray);
+  border: none;
+  border-radius: 4px;
+}
+
+button {
+  border: none;
+}
+
 body .btn-all-add-edit:hover {
   background: #4b5a83;
   color: #fff;
 }
 
+textarea {
+  resize: none !important;
+  padding: 5px !important;
+}
+
 a {
   text-decoration: none !important;
+}
+
+.focus-0 {
+  outline: none;
+}
+
+.z-1000 {
+  z-index: 1000;
 }
 
 .bg-EFF2F5 {
@@ -105,6 +136,18 @@ a {
   margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+#loadMore.noContent {
+  display: none;
+}
+
+#loadMoreRepComment {
+  display: block;
+}
+
+#loadMoreRepComment.noContent {
+  display: none;
 }
 
 #Mainnav {
@@ -376,8 +419,8 @@ a {
 #post img.img-cus {
   border-radius: 9999px;
   margin-left: 0.25rem;
-  min-width: 42px;
-  max-height: 42px;
+  min-width: 36px;
+  max-height: 36px;
 }
 #post .text-pr {
   font-weight: 800;
@@ -402,10 +445,35 @@ a {
   min-width: 30px;
   max-height: 30px;
 }
+#post #Comment {
+  width: 90%;
+}
+#post #Comment .comment_list {
+  display: none;
+}
+#post #Comment .repcomment_list {
+  display: none;
+}
+#post #Comment .box-comment-cus {
+  border-radius: 5px;
+  padding: 10px;
+}
+#post #Comment .box-comment-cus #bottom-cus {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+  margin-left: 64px;
+  color: rgba(74, 85, 104, 0.7725490196);
+  font-weight: 500;
+}
 #post .cus-post-media {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 10px;
+}
+#post .cus-post-media .list_item_media img {
+  border-radius: 10px;
 }
 
 #MediaDisplay {

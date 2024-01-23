@@ -24,40 +24,34 @@ const mutations = {
 const actions = {
     registerUser({ commit, getters }, userData) {
         axios.get('/sanctum/csrf-cookie').then(() => {
-            return new Promise((resolve, reject) => {
-                axios.post('/api/register', userData)
-                    .then(response => {
-                        commit('mutateRegisterResponse', response.data);
-                        localStorage.setItem(
-                            'registerResponse',
-                            JSON.stringify(response.data)
-                        );
-                        if (getters.getRegisterResponse.authenticated == true) {
-                            if (response.status == 200) {
-                                resolve(response);
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Đăng ký thành công',
-                                    text: `Chào Bạn ${getters.getRegisterResponse.response_data.user_data.email}`,
-                                    showConfirmButton: false,
-                                    timer: Config.notificationTimer ?? 3000
-                                })
-                                Router.push('/login');
-                            }
-                        } else {
+            axios.post('/api/register', userData)
+                .then(response => {
+                    commit('mutateRegisterResponse', response.data);
+                    localStorage.setItem(
+                        'registerResponse',
+                        JSON.stringify(response.data)
+                    );
+                    if (getters.getRegisterResponse.authenticated === true) {
+                        if (response.status === 200) {
                             Swal.fire({
-                                icon: 'error',
-                                title: 'Lỗi đăng ký',
-                                text: `Error ${getters.getRegisterResponse.response_data[0]}`,
+                                icon: 'success',
+                                title: 'Đăng ký thành công',
+                                text: `Chào Bạn ${getters.getRegisterResponse.response_data[0].user_name}`,
                                 showConfirmButton: false,
                                 timer: Config.notificationTimer ?? 3000
                             })
+                            Router.push('/login');
                         }
-                    })
-                    .catch(error => {
-                        reject(error);
-                    });
-            })
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi đăng ký',
+                            text: `Error ${getters.getRegisterResponse.response_data[0]}`,
+                            showConfirmButton: false,
+                            timer: Config.notificationTimer ?? 3000
+                        })
+                    }
+                })
         });
     },
     loginUser({ commit, getters }, loginData) {

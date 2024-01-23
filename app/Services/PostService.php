@@ -17,8 +17,8 @@ class PostService
         $directory = public_path('uploads');
         File::makeDirectory($directory, $mode = 0777, true, true);
         $filename = uniqid() . '.' . pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
-        $path = 'uploads/' . $filename;
-        $file->storeAs('uploads', $filename);
+        $path = 'uploads/Upload_posts/' . $filename;
+        $file->storeAs('uploads/Upload_posts', $filename);
         $media = new Media([
             'type' => $type,
             'path' => $path,
@@ -29,7 +29,6 @@ class PostService
     public function formatTimeAgo($dateTime)
     {
         $carbonDateTime = Carbon::parse($dateTime);
-
         $diffInMinutes = $carbonDateTime->diffInMinutes();
         $diffInHours = $carbonDateTime->diffInHours();
         $diffInDays = $carbonDateTime->diffInDays();

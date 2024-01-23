@@ -49,7 +49,7 @@ export default {
     },
     props: {
         image: String,
-        placeholder: String
+        placeholder: String,
     },
     methods: {
         showCreatepostBox() {
