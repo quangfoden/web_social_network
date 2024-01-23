@@ -100,9 +100,7 @@ export default {
         registerUser() {
             this.$store.dispatch('registerUser', this.user)
                 .then(() => {
-                    setTimeout(() => {
-                        this.$router.push('/login');
-                    }, 3000);
+
                 })
                 .catch((error) => {
                     console.log('Đăng ký thất bại:', error)

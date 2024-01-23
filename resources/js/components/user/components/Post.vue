@@ -11,7 +11,7 @@ import Close from 'vue-material-design-icons/Close.vue'
     <div id="post" class="pb-2">
         <div class="d-flex align-items-center py-3 px-0">
             <a class="mr-2">
-                <img class="img-cus" :src="user.avatclickRepCommentar" alt="">
+                <img class="img-cus" :src="user.avatar" alt="">
             </a>
             <div class="d-flex align-items-center justify-content-between p-2 rounded-full w-100">
                 <div>

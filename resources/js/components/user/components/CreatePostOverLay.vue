@@ -120,7 +120,7 @@ export default {
             this.$store.dispatch('post/addNewPost', this.form)
                 .then((addedPost) => {
                     this.isPostOverlay = false
-                    this.fetchPosts()
+                    // this.fetchPosts()
                     this.$swal.fire({
                         position: "top-end",
                         icon: "success",
