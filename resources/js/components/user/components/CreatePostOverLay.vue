@@ -21,8 +21,7 @@ const emit = defineEmits(['showModal'])
                 <div class="border-top">
                     <form @submit.prevent="submitPost" method="post" enctype="multipart/form-data" class="p-4">
                         <div class="d-flex align-items-center">
-                            <img :src="authUser.avatar" class="rounded-full img-cus"
-                                alt="">
+                            <img :src="authUser.avatar" class="rounded-full img-cus" alt="">
                             <div class="mx-2">
                                 <div class="font-extrabold">{{ authUser.user_name }}</div>
                                 <select v-model="form.privacy" id="privacy" required>
@@ -38,7 +37,7 @@ const emit = defineEmits(['showModal'])
                             <div v-if="form.media" class="p-2 position-relative cus-img-dis">
                                 <div v-for="(media, index) in form.media" :key="index">
                                     <Close @click="clearImage(index)"
-                                        class="position-absolute bg-white p-1 m-2 right-2 rounded-full border custom-cursor-pointer"
+                                        class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
                                         :size="22" fillColor="#5E6771" />
                                     <div v-if="media.type === 'image'"><img class="rounded-lg mx-auto w-100"
                                             :src="media.url" alt=""></div>
@@ -51,12 +50,12 @@ const emit = defineEmits(['showModal'])
                             </div>
                         </div>
                         <div class="border-2 rounded-xl mt-4 shadow-sm d-flex align-items-center justify-content-between">
-                            <div class="font-extrabold p-4 w-100 d-block">Tạo bài viết của bạn</div>
+                            <div class="font-extrabold w-100 d-block">Tạo bài viết của bạn</div>
                             <div class="d-flex align-items-center">
                                 <label class="hover-200 rounded-full p-2 custom-cursor-pointer" for="image">
                                     <Image :size="27" fillColor="#43BE62" />
                                 </label>
-                                <input type="file" id="image" accept="image/*,video/*" multiple class="hidden"
+                                <input type="file" ref="fieldCreatePost" id="image" accept="image/*,video/*" multiple class="hidden"
                                     @input="getUploadedImage($event)">
                                 <a class="hover-200 rounded-full p-2 custom-cursor-pointer">
                                     <EmoticonOutline :size="27" fillColor="#F8B927" />
@@ -70,7 +69,7 @@ const emit = defineEmits(['showModal'])
                             </div>
                         </div>
                         <button type="submit"
-                            class="w-100 bg-blue-500 hover-bg-blue-600 text-white font-extrabold p-1.5 mt-3 rounded-lg">
+                            class="w-100 bg-blue-500 hover-bg-blue-600 text-white font-extrabold p-1 mt-3 rounded-lg">
                             Đăng
                         </button>
                     </form>
@@ -80,13 +79,14 @@ const emit = defineEmits(['showModal'])
     </div>
 </template>
 <script>
+import { mapState, mapActions } from 'vuex';
 import { useGeneralStore } from '../../../../js/store/general';
 import { storeToRefs } from 'pinia';
 import { ref, reactive } from 'vue'
 export default {
     data() {
         const useGeneral = useGeneralStore()
-        const { isPostOverlay,isFileDisplay } = storeToRefs(useGeneral)
+        const { isPostOverlay, isFileDisplay } = storeToRefs(useGeneral)
         return {
             privacyOptions: [
                 { name: "Công khai", value: "public" },
@@ -105,6 +105,7 @@ export default {
         }
     },
     computed: {
+        ...mapState('post', ['posts']),
         authUser() {
             if (this.$store.getters.getAuthUser.id !== undefined) {
                 return this.$store.getters.getAuthUser;
@@ -113,36 +114,24 @@ export default {
         },
     },
     methods: {
+        ...mapActions('post', ['addNewPost']),
+        ...mapActions('post', ['fetchPosts']),
         submitPost() {
-            axios.post('/api/user/create-post', this.form, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-                .then(response => {
-                    if (response.status === 200 && response.data.success === true) {
-                        this.$swal.fire({
-                            position: "top-end",
-                            icon: "success",
-                            title: `${response.data.message}`,
-                            showConfirmButton: false,
-                            timer: this.$config.notificationTimer ?? 3000,
-                        });
-                        this.form = {}
-                    }
-                    else {
-                        this.$swal.fire({
-                            position: "top-end",
-                            icon: "error",
-                            title: `${response.data.message[0]}`,
-                            showConfirmButton: false,
-                            timer: this.$config.notificationTimer ?? 3000,
-                        });
-
-                    }
+            this.$store.dispatch('post/addNewPost', this.form)
+                .then((addedPost) => {
+                    this.isPostOverlay = false
+                    // this.fetchPosts()
+                    this.$swal.fire({
+                        position: "top-end",
+                        icon: "success",
+                        title: "Bài viết được thêm thành công",
+                        showConfirmButton: false,
+                        timer: this.$config.notificationTimer ?? 3000,
+                    });
+                    this.form = {};
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    // Xử lý khi có lỗi
                     this.$swal.fire({
                         position: "top-end",
                         icon: "error",

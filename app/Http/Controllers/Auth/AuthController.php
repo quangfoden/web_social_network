@@ -8,18 +8,25 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Services\AuthService;
 use App\Events\SetDefaultUserRole;
 use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
+    protected AuthService $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'user_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'password_confirmation' => 'required',
         ]);
@@ -53,25 +60,21 @@ class AuthController extends Controller
             return response()->json($res, 200);
         }
 
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'user_name' => $request->user_name,
-            'avatar' => '/images/avatar.gif',
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-        if ($user) {
+        $checkData = $this->authService->registerUser($request->all());
+        if ($checkData['success']) {
+            $res = [
+                'response_index' => true,
+                'response_type' => 'success',
+                'response_data' =>  [$checkData['data']],
+                'authenticated' => true,
+            ];
+        } else {
             $res = [
                 'response_index' => true,
                 'response_type' => 'error',
-                'response_data' => [
-                    "success",
-                    "user_data" => $user
-                ],
-                'authenticated' => true,
+                'response_data' =>  [$checkData['message']],
+                'authenticated' => false,
             ];
-            $user->assignRole('user');
         }
         return response()->json($res, 200);
     }
@@ -99,30 +102,26 @@ class AuthController extends Controller
 
             return response()->json($res, 200);
         }
-
-        if (Auth::attempt($request->only('email', 'password'))) {
+        $checkData = $this->authService->checkUser($request->all());
+        if (!$checkData['success']) {
+            return response()->json([
+                'response_index' => true,
+                'response_type' => 'error',
+                'response_data' => [$checkData['message']],
+                'authenticated' => false,
+            ]);
+        } else {
             $user = Auth::user();
             $userRoles = User::with('roles:name')->find($user->id)->roles->pluck('name');
             $status = $user->status;
-            $res = [
+            return response()->json([
                 'response_index' => true,
                 'response_type' => 'success',
                 'response_data' => ['You Have Logged In Successfully'],
                 'authenticated' => true,
                 'status' => $status,
                 'role' => $userRoles
-            ];
-
-            return response()->json($res, 200);
-        } else {
-            $res = [
-                'response_index' => true,
-                'response_type' => 'error',
-                'response_data' => ['Given Credentials Does Not Match Our Record'],
-                'authenticated' => false,
-            ];
-
-            return response()->json($res, 200);
+            ]);
         }
     }
     public function logout(Request $request)
