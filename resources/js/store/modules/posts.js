@@ -1,12 +1,17 @@
 import Swal from 'sweetalert2';
 
 const state = {
-    posts: []
+    posts: [],
+    comments:[]
 };
 const mutations = {
     setPosts(state, posts) {
         state.posts = posts;
     },
+    setComments(state, comments) {
+        state.comments = comments;
+    },
+  
 };
 const actions = {
     fetchPosts({ commit }) {
@@ -14,6 +19,7 @@ const actions = {
             .then(response => {
                 if (Array.isArray(response.data.data.posts)) {
                     commit('setPosts', response.data.data.posts);
+                    commit('setComments', response.data.data.posts.comments);
                 } else {
                     console.error('Invalid data format:', response.data.data.posts);
                 }
@@ -41,7 +47,6 @@ const actions = {
                         dispatch('fetchPosts');
                     }, 2000);
                 } else {
-                    // Giải quyết Promise với lỗi
                     Swal.fire({
                         icon: 'error',
                         title: 'Đăng bài viết không thành công',
@@ -61,6 +66,7 @@ const actions = {
                 })
             });
     },
+ 
 };
 
 export default {

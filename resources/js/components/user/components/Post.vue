@@ -86,8 +86,8 @@ import Close from 'vue-material-design-icons/Close.vue'
                     </video>
                 </div>
             </div>
-            <div v-if="listComments.length > 0" id="Comment" class="comment_array">
-                <div class="my-1 comment_list" v-for="(comment, index) in listComments" :key="index">
+            <div v-if="comments.length > 0" id="Comment" class="comment_array">
+                <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">
                     <div class="box-comment-cus">
                         <div class="box-comment-cus_2">
                             <div class="box-comment-cus_3">
@@ -130,9 +130,6 @@ import Close from 'vue-material-design-icons/Close.vue'
                                                     {{ repcomment.content }}
                                                 </div>
                                             </div>
-                                            <!-- <a class="rounded-full p-1.5 ml-2 custom-cursor-pointer">
-                                                <Delete fillColor="#64676B" size="20" />
-                                            </a> -->
                                         </div>
                                         <div class="w-100 position-relative" style="margin-left: 50px;">
                                             <img width="150"
@@ -161,7 +158,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                                         <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" alt="">
                                     </a>
                                     <div class="d-flex align-items-center bg-EFF2F5 rounded-full px-2 w-100">
-                                        <textarea v-model="formRepComment[index].content" :id="'repcomment' + comment.id"
+                                        <textarea v-model="formRepComment[index].content" :id="'repcomment' + comment.id + index"
                                             type="text" placeholder="Viết phản hồi ..."
                                             class="custom-input bg-EFF2F5 w-100 border-0 mx-1 border-none p-0 text-sm placeholder-[#64676B] focus-0">
                                         </textarea>
@@ -227,10 +224,10 @@ export default {
             type: Object,
             required: true,
         },
-        repcomments: {
-            type: Object,
-            required: true,
-        },
+        // repcomments: {
+        //     type: Object,
+        //     required: true,
+        // },
     },
     data() {
         const useGeneral = useGeneralStore()
@@ -276,8 +273,7 @@ export default {
             // this.formMediaComment.push({ type: mediaType, file, url });
             this.formMediaComment.type = mediaType;
             this.formMediaComment.url = url;
-            console.log(this.formMediaComment)
-            console.log(this.formMediarepComment)
+       
         },
         getUploadedImageComment(e, index) {
             const file = e.target.files[0];
@@ -319,7 +315,6 @@ export default {
             })
                 .then(response => {
                     if (response.status === 200 && response.data.data.success === true) {
-                        this.fetchPosts()
                         this.$swal.fire({
                             position: "top-end",
                             icon: "success",
