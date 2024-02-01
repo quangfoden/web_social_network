@@ -86,8 +86,8 @@ import Close from 'vue-material-design-icons/Close.vue'
                     </video>
                 </div>
             </div>
-            <div v-if="comments.length > 0" id="Comment" class="comment_array">
-                <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">
+            <div v-if="listComments.length > 0" id="Comment" class="comment_array">
+                <div class="my-1 comment_list" v-for="(comment, index) in listComments" :key="index">
                     <div class="box-comment-cus">
                         <div class="box-comment-cus_2">
                             <div class="box-comment-cus_3">
@@ -119,7 +119,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                                 <div v-if="comment.repcomments.length > 0" style="background: white;"
                                     class="repComment_array" id="repComment">
                                     <div class="mx-5 repcomment_list boxrepcomment-cus"
-                                        v-for="(repcomment,index2) in comment.repcomments " :key="index2">
+                                        v-for="(repcomment, index2) in comment.repcomments" :key="index2">
                                         <div class="d-flex gap-2 align-items-start w-100 mb-1">
                                             <a href="/" class="mr-2">
                                                 <img class="rounded-full ml-1 img-cus" :src="repcomment.user.avatar" alt="">
@@ -145,7 +145,8 @@ import Close from 'vue-material-design-icons/Close.vue'
                                         <div id="bottom-cus">
                                             <p class="custom-cursor-pointer">{{ repcomment.created_at_formatted }}</p>
                                             <p class="custom-cursor-pointer">like</p>
-                                            <p @click="clickRepComment2(index,index2)" class="custom-cursor-pointer">Phản hồi
+                                            <p @click="clickRepComment2(index, index2)" class="custom-cursor-pointer">Phản
+                                                hồi
                                             </p>
                                         </div>
                                     </div>
@@ -239,6 +240,7 @@ export default {
             formComment: reactive({
                 content: ''
             }),
+            listComments: this.comments,
             formMediaComment: reactive({
 
             }),
@@ -304,7 +306,7 @@ export default {
                 input.value = null;
             }
         },
-       
+
         CreateComment() {
             const fieldMediaCMRef = this.$refs['fieldMedia']
             const formData = new FormData();
@@ -325,9 +327,11 @@ export default {
                             showConfirmButton: false,
                             timer: this.$config.notificationTimer ?? 3000,
                         });
+                        this.listComments.unshift(response.data.data.comment)
                         this.formMediaComment = {};
                         this.formComment.content = null
                         this.$refs['fieldMedia'].value = null
+                        console.log(this.listComments)
                     } else {
                         this.$swal.fire({
                             position: "top-end",
@@ -407,7 +411,7 @@ export default {
             this.boxRepComment[index] = true
             this.formRepComment[index].content = this.comments[index].user.user_name
         },
-        clickRepComment2(index,index2) {
+        clickRepComment2(index, index2) {
             this.boxRepComment[index] = true
             this.formRepComment[index].content = this.comments[index].repcomments[index2].user.user_name
         },
@@ -433,15 +437,15 @@ export default {
                 $(".repComment_array").each(function () {
                     var $RepcommentArray = $(this);
                     var $RepcommentList = $RepcommentArray.find(".repcomment_list");
-                        $RepcommentList.slice(0, 1).show();
-                        $RepcommentArray.find("#loadMoreRepComment").on("click", function (e) {
-                            e.preventDefault();
-                            var $hiddenRepComments = $RepcommentList.filter(":hidden").slice(0, 3);
-                            $hiddenRepComments.slideDown();
-                            if ($hiddenRepComments.length === 0) {
-                                $(this).addClass("noContent");
-                            }
-                        });
+                    $RepcommentList.slice(0, 1).show();
+                    $RepcommentArray.find("#loadMoreRepComment").on("click", function (e) {
+                        e.preventDefault();
+                        var $hiddenRepComments = $RepcommentList.filter(":hidden").slice(0, 3);
+                        $hiddenRepComments.slideDown();
+                        if ($hiddenRepComments.length === 0) {
+                            $(this).addClass("noContent");
+                        }
+                    });
                 });
             });
         },

@@ -81,7 +81,7 @@ import Logout from 'vue-material-design-icons/Logout.vue';
         </div>
         <CreatePostOverLay v-if="isPostOverlay" />
         <!--  <CropperModal v-if="isCropperModal" @showModal="isCropperModal = false" /> -->
-        <MediaDisplay v-if="isFileDisplay" />
+        <MediaDisplay v-if="isFileDisplay.length > 0" />
 
     </div>
 </template>
