@@ -117,10 +117,11 @@ export default {
         submitPost() {
             this.$store.dispatch('post/addNewPost', this.form)
                 .then(() => {
-                   setTimeout(() => {
-                     this.form = {};
-                     this.isPostOverlay = false
-                   }, 5000);
+                    this.form.content = null;
+                    this.form.media = [];
+                    setTimeout(() => {
+                        this.isPostOverlay = false
+                    }, 3000);
                 })
                 .catch(error => {
                     // Xử lý khi có lỗi

@@ -50,18 +50,20 @@ class PostsController extends Controller
                 'success' => false,
             ];
         }
+        $postId = $post->id;
+        $posts = $this->postRepo->getPostById($postId);
         $res = [
             'status' => 200,
             'success' => true,
             'message' => "Bài viết đã được thêm thành công.",
-            'data_id' => $post->id
+            'data_id' => $postId,
+            'data' => $posts
         ];
         return response()->json(['data' => $res]);
     }
     public function all_post()
     {
         $posts = $this->postRepo->getAll();
-
         return response()->json([
             'status' => 200,
             'success' => true,

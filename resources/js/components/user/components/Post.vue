@@ -54,7 +54,8 @@ import Close from 'vue-material-design-icons/Close.vue'
         </div>
         <div id="comments" class="">
             <div id="CreateComment" class="">
-                <form @submit.prevent="CreateComment" class="d-flex align-items-center pt-2 justify-content-between w-100">
+                <form @submit.prevent="CreateComment()"
+                    class="d-flex align-items-center pt-2 justify-content-between w-100">
                     <a href="/" class="mx-2">
                         <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" alt="">
                     </a>
@@ -116,7 +117,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                                     <p class="custom-cursor-pointer">like</p>
                                     <p @click="clickRepComment(index)" class="custom-cursor-pointer">Phản hồi</p>
                                 </div>
-                                <div v-if="comment.repcomments.length > 0" style="background: white;"
+                                <!-- <div v-if="comment.repcomments.length > 0" style="background: white;"
                                     class="repComment_array" id="repComment">
                                     <div class="mx-5 repcomment_list boxrepcomment-cus"
                                         v-for="(repcomment, index2) in comment.repcomments" :key="index2">
@@ -150,16 +151,22 @@ import Close from 'vue-material-design-icons/Close.vue'
                                     <a href="#" class="text-center w-100" id="loadMoreRepComment"
                                         style="text-decoration:underline !important;color: black;font-weight: 500;">Xem
                                         thêm</a>
-                                </div>
-                                <form style="background: white;margin-left:46px ;"
+                                </div> -->
+                                <!-- <form style="background: white;margin-left:46px ;"
                                     @submit.prevent="CreateRepComment(comment.id, index)"
                                     class="d-flex align-items-center rounded-full justify-content-between w-100">
                                     <a href="/" class="mr-2">
                                         <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" alt="">
                                     </a>
                                     <div class="d-flex align-items-center bg-EFF2F5 rounded-full px-2 w-100">
+<<<<<<< HEAD
                                         <textarea v-model="formRepComment[index].content" :id="'repcomment' + comment.id + index"
                                             type="text" placeholder="Viết phản hồi ..."
+=======
+                                        <textarea v-model="formRepComment[index].content"
+                                            :id="'repcomment' + comment.id + index" type="text"
+                                            placeholder="Viết phản hồi ..."
+>>>>>>> af992cf33e76e35da7ae4f94b05e490849d46e8f
                                             class="custom-input bg-EFF2F5 w-100 border-0 mx-1 border-none p-0 text-sm placeholder-[#64676B] focus-0">
                                         </textarea>
                                         <label class="hover-200 rounded-full p-2 custom-cursor-pointer">
@@ -173,8 +180,8 @@ import Close from 'vue-material-design-icons/Close.vue'
                                             <Check />Gửi
                                         </button>
                                     </div>
-                                </form>
-                                <div style="margin-left: 60px;" v-if="formMediarepComment[index].url"
+                                </form> -->
+                                <!-- <div style="margin-left: 60px;" v-if="formMediarepComment[index].url"
                                     class="p-2 position-relative cus-img-dis">
                                     <Close @click="clearImageRepComment(index)"
                                         class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
@@ -188,7 +195,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                                             Your browser does not support the video tag.
                                         </video>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -203,6 +210,7 @@ import Close from 'vue-material-design-icons/Close.vue'
 <script>
 import { mapState, mapActions } from 'vuex';
 import { toRefs, reactive, ref } from 'vue';
+
 import { useGeneralStore } from '../../../store/general';
 import { storeToRefs } from 'pinia';
 
@@ -229,6 +237,7 @@ export default {
         //     required: true,
         // },
     },
+
     data() {
         const useGeneral = useGeneralStore()
         const { isFileDisplay } = storeToRefs(useGeneral)
@@ -237,7 +246,7 @@ export default {
             formComment: reactive({
                 content: ''
             }),
-            listComments: this.comments,
+            // listComments: ref(this.comments),
             formMediaComment: reactive({
 
             }),
@@ -258,6 +267,7 @@ export default {
     mounted() {
         this.loadMoreComments()
         this.loadMoreRepComments()
+        // console.log(this.comments)
     },
     methods: {
         ...mapActions('post', ['fetchPosts']),
@@ -315,6 +325,10 @@ export default {
             })
                 .then(response => {
                     if (response.status === 200 && response.data.data.success === true) {
+<<<<<<< HEAD
+=======
+                        // this.fetchPosts()
+>>>>>>> af992cf33e76e35da7ae4f94b05e490849d46e8f
                         this.$swal.fire({
                             position: "top-end",
                             icon: "success",
@@ -322,11 +336,10 @@ export default {
                             showConfirmButton: false,
                             timer: this.$config.notificationTimer ?? 3000,
                         });
-                        this.listComments.unshift(response.data.data.comment)
                         this.formMediaComment = {};
                         this.formComment.content = null
                         this.$refs['fieldMedia'].value = null
-                        console.log(this.listComments)
+                      
                     } else {
                         this.$swal.fire({
                             position: "top-end",
@@ -410,6 +423,7 @@ export default {
             this.boxRepComment[index] = true
             this.formRepComment[index].content = this.comments[index].repcomments[index2].user.user_name
         },
+       
         loadMoreComments() {
             $(document).ready(function () {
                 $(".comment_array").each(function () {

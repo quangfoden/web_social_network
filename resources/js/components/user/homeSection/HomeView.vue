@@ -18,7 +18,7 @@ export default {
     },
     data() {
         return {
-        
+
         };
     },
 
@@ -35,7 +35,7 @@ export default {
         this.$store.dispatch('post/fetchPosts');
     },
     methods: {
-     
+
     }
 }
 </script>

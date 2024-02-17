@@ -5,8 +5,11 @@ const state = {
     comments:[]
 };
 const mutations = {
-    setPosts(state, posts) {
-        state.posts = posts;
+    allPosts(state, allPosts) {
+        state.posts = allPosts;
+    },
+    setPosts(state, newData) {
+        state.posts.unshift(newData);
     },
     setComments(state, comments) {
         state.comments = comments;
@@ -19,7 +22,6 @@ const actions = {
             .then(response => {
                 if (Array.isArray(response.data.data.posts)) {
                     commit('setPosts', response.data.data.posts);
-                    commit('setComments', response.data.data.posts.comments);
                 } else {
                     console.error('Invalid data format:', response.data.data.posts);
                 }
@@ -28,7 +30,7 @@ const actions = {
                 console.log("Error fetching posts:", error);
             });
     },
-    addNewPost({ commit, dispatch }, formData) {
+    addNewPost({ commit }, formData) {
         axios.post('/api/user/create-post', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -36,23 +38,22 @@ const actions = {
         })
             .then(response => {
                 if (response.status === 200 && response.data.data.success === true) {
+                    const newData = response.data.data.data
+                    commit('setPosts', newData);
                     Swal.fire({
                         position: "top-end",
                         icon: "success",
                         title: "Bài viết được thêm thành công",
                         showConfirmButton: false,
-                        timer:3000,
+                        timer: 3000,
                     });
-                    setTimeout(() => {
-                        dispatch('fetchPosts');
-                    }, 2000);
                 } else {
                     Swal.fire({
                         icon: 'error',
                         title: 'Đăng bài viết không thành công',
                         text: `Error`,
                         showConfirmButton: false,
-                        timer:3000
+                        timer: 3000
                     })
                 }
             })
@@ -62,7 +63,7 @@ const actions = {
                     title: ' bài viết không thành công',
                     text: `Error ${error}`,
                     showConfirmButton: false,
-                    timer:3000
+                    timer: 3000
                 })
             });
     },
