@@ -27,10 +27,7 @@ class PermissionsDemoSeeder extends Seeder
         Permission::create(['name' => 'access_user']);
         $role = Role::create(['name' => 'admin'])
             ->givePermissionTo(['access_admin']);
-        // $role = Role::create(['name' => 'leader'])
-        //     ->givePermissionTo(['access_leader','access_user', 'access_department']);
-        // $role = Role::create(['name' => 'department'])
-        //     ->givePermissionTo(['access_department', 'access_user']);
+
         $role = Role::create(['name' => 'user'])
             ->givePermissionTo(['access_user']);
 
@@ -43,22 +40,6 @@ class PermissionsDemoSeeder extends Seeder
             'password' => Hash::make('123456'),
         ]);
         $admin->assignRole('admin');
-
-        // $leader = User::create([
-        //     'first_name' => "leader",
-        //     'last_name' => "leader",
-        //     'email' => "leader@gmail.com",
-        //     'password' => Hash::make('123456'),
-        // ]);
-        // $leader->assignRole('leader');
-
-        // $department = User::create([
-        //     'first_name' => "department",
-        //     'last_name' => "department",
-        //     'email' => "department@gmail.com",
-        //     'password' => Hash::make('123456'),
-        // ]);
-        // $department->assignRole('department');
 
         $user = User::create([
             'first_name' => "Quang",

@@ -70,10 +70,28 @@ class CommentController extends Controller
                 'success' => true,
             ];
         }
+
+        $formattedComments = [
+            'id' => $comment->id,
+            'post_id' => $postId,
+            'user_id' => $comment->user_id,
+            'content' => $comment->content,
+            'path' => $comment->path,
+            'type' => $comment->type,
+            'likes_count' => $comment->likes_count,
+            'status' => $comment->status,
+            'created_at' => $comment->created_at,
+            'updated_at' => $comment->updated_at,
+            'created_at_formatted' => $this->postService->formatTimeAgo($comment->created_at), // Example of formatting created_at
+            'user' => $comment->user,
+            'repcomments' => $comment->repcomments,
+        ];
+
+
         $res = [
             'message' => 'Bạn đã bình luận thành công',
             'success' => true,
-            'comment' =>  $comment,
+            'comment' =>  $formattedComments,
         ];
         return response()->json(['data' => $res]);
     }

@@ -55,8 +55,8 @@ const emit = defineEmits(['showModal'])
                                 <label class="hover-200 rounded-full p-2 custom-cursor-pointer" for="image">
                                     <Image :size="27" fillColor="#43BE62" />
                                 </label>
-                                <input type="file" ref="fieldCreatePost" id="image" accept="image/*,video/*" multiple class="hidden"
-                                    @input="getUploadedImage($event)">
+                                <input type="file" ref="fieldCreatePost" id="image" accept="image/*,video/*" multiple
+                                    class="hidden" @input="getUploadedImage($event)">
                                 <a class="hover-200 rounded-full p-2 custom-cursor-pointer">
                                     <EmoticonOutline :size="27" fillColor="#F8B927" />
                                 </a>
@@ -80,7 +80,7 @@ const emit = defineEmits(['showModal'])
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
-import { useGeneralStore } from '../../../../js/store/general';
+import { useGeneralStore } from '@resources/js/store/general';
 import { storeToRefs } from 'pinia';
 import { ref, reactive } from 'vue'
 export default {
@@ -95,7 +95,6 @@ export default {
             ],
             isPostOverlay,
             isFileDisplay,
-            medias: [],
             form: reactive({
                 content: null,
                 media: [],
@@ -115,20 +114,14 @@ export default {
     },
     methods: {
         ...mapActions('post', ['addNewPost']),
-        ...mapActions('post', ['fetchPosts']),
         submitPost() {
             this.$store.dispatch('post/addNewPost', this.form)
-                .then((addedPost) => {
-                    this.isPostOverlay = false
-                    // this.fetchPosts()
-                    this.$swal.fire({
-                        position: "top-end",
-                        icon: "success",
-                        title: "Bài viết được thêm thành công",
-                        showConfirmButton: false,
-                        timer: this.$config.notificationTimer ?? 3000,
-                    });
-                    this.form = {};
+                .then(() => {
+                    this.form.content = null;
+                    this.form.media = [];
+                    setTimeout(() => {
+                        this.isPostOverlay = false
+                    }, 3000);
                 })
                 .catch(error => {
                     // Xử lý khi có lỗi

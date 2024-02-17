@@ -14,8 +14,6 @@ const mutations = {
 
 const actions = {
     fetchUsers({ commit }) {
-        // Thực hiện API request để lấy danh sách người dùng
-        // Sau đó, gọi mutation để cập nhật state
         axios.get('api/users/allusers')
             .then(response => {
                 commit('setUsers', response.data.data);

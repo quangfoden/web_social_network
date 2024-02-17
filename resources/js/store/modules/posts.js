@@ -1,19 +1,29 @@
+import Swal from 'sweetalert2';
+
 const state = {
-    posts: []
+    posts: [],
+    comments:[]
 };
 const mutations = {
-    setPosts(state, posts) {
-        state.posts = posts;
+    allPosts(state, allPosts) {
+        state.posts = allPosts;
     },
+    setPosts(state, newData) {
+        state.posts.unshift(newData);
+    },
+    setComments(state, comments) {
+        state.comments = comments;
+    },
+  
 };
 const actions = {
     fetchPosts({ commit }) {
         axios.get("/api/user/allposts")
             .then(response => {
-                if (Array.isArray(response.data.posts)) {
-                    commit('setPosts', response.data.posts);
+                if (Array.isArray(response.data.data.posts)) {
+                    commit('setPosts', response.data.data.posts);
                 } else {
-                    console.error('Invalid data format:', response.data.posts);
+                    console.error('Invalid data format:', response.data.data.posts);
                 }
             })
             .catch(error => {
@@ -21,27 +31,43 @@ const actions = {
             });
     },
     addNewPost({ commit }, formData) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/user/create-post', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
+        axios.post('/api/user/create-post', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
             .then(response => {
                 if (response.status === 200 && response.data.data.success === true) {
-                    // Giải quyết Promise với dữ liệu bài viết được thêm
-                    resolve(response.data.data.post);
+                    const newData = response.data.data.data
+                    commit('setPosts', newData);
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "success",
+                        title: "Bài viết được thêm thành công",
+                        showConfirmButton: false,
+                        timer: 3000,
+                    });
                 } else {
-                    // Giải quyết Promise với lỗi
-                    reject(response.data.data.message[0]);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Đăng bài viết không thành công',
+                        text: `Error`,
+                        showConfirmButton: false,
+                        timer: 3000
+                    })
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                reject(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: ' bài viết không thành công',
+                    text: `Error ${error}`,
+                    showConfirmButton: false,
+                    timer: 3000
+                })
             });
-        });
     },
+ 
 };
 
 export default {
