@@ -325,10 +325,6 @@ export default {
             })
                 .then(response => {
                     if (response.status === 200 && response.data.data.success === true) {
-<<<<<<< HEAD
-=======
-                        // this.fetchPosts()
->>>>>>> af992cf33e76e35da7ae4f94b05e490849d46e8f
                         this.$swal.fire({
                             position: "top-end",
                             icon: "success",
