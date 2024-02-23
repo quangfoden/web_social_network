@@ -185,16 +185,6 @@ export default {
             this.formMediaComment = {};
             this.$refs.fieldMedia.value = null
         },
-        clearImageRepComment(index) {
-            this.formRepComment[index] = {};
-            this.formMediarepComment[index] = {}
-            this.$refs.fieldMediaRepCM.value = null
-            // Clear the input value for the specific iteration
-            const input = document.getElementById(`fieldMediaRepCM_${index}`);
-            if (input) {
-                input.value = null;
-            }
-        },
         CreateComment(postId) {
             const fieldMediaCMRef = this.$refs['fieldMedia']
             const formData = new FormData();
@@ -202,7 +192,6 @@ export default {
             formData.append('file', fieldMediaCMRef.files[0]);
             formData.append('postId', postId);
             console.log(formData)
-            // this.addNewComment(formData);
             axios.post('api/user/create_comment', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -245,13 +234,6 @@ export default {
                         timer: this.$config.notificationTimer ?? 3000,
                     });
                 });
-
-        },
-        
-     
-        clickRepComment2(index, index2) {
-            this.boxRepComment[index] = true
-            this.formRepComment[index].content = this.comments[index].repcomments[index2].user.user_name
         },
     },
 

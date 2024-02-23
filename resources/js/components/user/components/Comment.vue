@@ -1,3 +1,12 @@
+<script setup>
+import Image from 'vue-material-design-icons/Image.vue'
+import AccountMultiple from 'vue-material-design-icons/AccountMultiple.vue';
+import ThumbUp from 'vue-material-design-icons/ThumbUp.vue';
+import Check from 'vue-material-design-icons/Check.vue';
+import Delete from 'vue-material-design-icons/Delete.vue';
+import Close from 'vue-material-design-icons/Close.vue'
+
+</script>
 <template>
     <div class="box-comment-cus">
         <div class="box-comment-cus_2">
@@ -186,6 +195,16 @@ export default {
                     });
                 });
 
+        },
+        clearImageRepComment(index) {
+            this.formRepComment = {};
+            this.formMediarepComment= {}
+            this.$refs.fieldMediaRepCM.value = null
+            // Clear the input value for the specific iteration
+            const input = document.getElementById(`fieldMediaRepCM_${index}`);
+            if (input) {
+                input.value = null;
+            }
         },
         clickRepComment() {
             this.boxRepComment= true
