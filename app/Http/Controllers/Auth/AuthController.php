@@ -117,7 +117,7 @@ class AuthController extends Controller
             return response()->json([
                 'response_index' => true,
                 'response_type' => 'success',
-                'response_data' => ['You Have Logged In Successfully'],
+                'response_data' => ['Bạn đã đăng nhập thành công.'],
                 'authenticated' => true,
                 'status' => $status,
                 'role' => $userRoles

@@ -21,9 +21,7 @@ export default {
 
         };
     },
-    mounted() {
-        this.fetchData();
-    },
+
     computed: {
         ...mapState('post', ['posts']),
         authUser() {
@@ -33,11 +31,11 @@ export default {
             return JSON.parse(localStorage.getItem('authUser'));
         },
     },
+    mounted() {
+        this.$store.dispatch('post/fetchPosts');
+    },
     methods: {
-        ...mapActions('post', ['fetchPosts']),
-        fetchData() {
-            this.fetchPosts();
-        }
+
     }
 }
 </script>
