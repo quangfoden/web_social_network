@@ -448,12 +448,6 @@ a {
 #post #Comment {
   width: 90%;
 }
-#post #Comment .comment_list {
-  display: none;
-}
-#post #Comment .repcomment_list {
-  display: none;
-}
 #post #Comment .box-comment-cus {
   border-radius: 5px;
   padding: 10px;

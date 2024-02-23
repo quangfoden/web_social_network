@@ -54,7 +54,7 @@ import Close from 'vue-material-design-icons/Close.vue'
         </div>
         <div id="comments" class="">
             <div id="CreateComment" class="">
-                <form @submit.prevent="CreateComment()"
+                <form @submit.prevent="CreateComment(post.id)"
                     class="d-flex align-items-center pt-2 justify-content-between w-100">
                     <a href="/" class="mx-2">
                         <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" alt="">
@@ -208,7 +208,7 @@ import Close from 'vue-material-design-icons/Close.vue'
     </div>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import { toRefs, reactive, ref } from 'vue';
 
 import { useGeneralStore } from '../../../store/general';
@@ -246,17 +246,18 @@ export default {
             formComment: reactive({
                 content: ''
             }),
-            // listComments: ref(this.comments),
+
             formMediaComment: reactive({
 
             }),
-            formRepComment: this.comments.map(() => reactive({ content: '' })),
-            formMediarepComment: this.comments.map(() => reactive({})),
-            boxRepComment: this.comments.map(() => reactive(false)),
+            formRepComment: { content: '' },
+            formMediarepComment: {},
+            boxRepComment: reactive(false),
         }
     },
 
     computed: {
+        // ...mapState('post', ['comments']),
         authUser() {
             if (this.$store.getters.getAuthUser.id !== undefined) {
                 return this.$store.getters.getAuthUser;
@@ -264,13 +265,17 @@ export default {
             return JSON.parse(localStorage.getItem('authUser'));
         },
     },
+    // created() {
+    //     const postId = this.post.id;
+    //     this.fetchComments(postId);
+    // },
     mounted() {
-        this.loadMoreComments()
-        this.loadMoreRepComments()
-        // console.log(this.comments)
+
     },
     methods: {
         ...mapActions('post', ['fetchPosts']),
+        // ...mapActions('post', ['fetchComments']),
+        ...mapActions('post', ['addNewComment']),
         getUploadedImage(e) {
             const file = e.target.files[0];
             let mediaType;
@@ -312,19 +317,23 @@ export default {
                 input.value = null;
             }
         },
-
-        CreateComment() {
+        CreateComment(postId) {
             const fieldMediaCMRef = this.$refs['fieldMedia']
             const formData = new FormData();
             formData.append('content', this.formComment.content);
             formData.append('file', fieldMediaCMRef.files[0]);
-            axios.post(`api/user/create_comment/${this.post.id}`, formData, {
+            formData.append('postId',postId);
+            console.log(formData)
+            // this.addNewComment(formData);
+            axios.post('api/user/create_comment', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             })
                 .then(response => {
                     if (response.status === 200 && response.data.data.success === true) {
+                        console.log(this.post)
+                        this.post.comments.unshift(response.data.data.comment)
                         this.$swal.fire({
                             position: "top-end",
                             icon: "success",
@@ -335,7 +344,7 @@ export default {
                         this.formMediaComment = {};
                         this.formComment.content = null
                         this.$refs['fieldMedia'].value = null
-                      
+
                     } else {
                         this.$swal.fire({
                             position: "top-end",
@@ -419,42 +428,6 @@ export default {
             this.boxRepComment[index] = true
             this.formRepComment[index].content = this.comments[index].repcomments[index2].user.user_name
         },
-       
-        loadMoreComments() {
-            $(document).ready(function () {
-                $(".comment_array").each(function () {
-                    var $commentArray = $(this);
-                    var $commentList = $commentArray.find(".comment_list");
-                    $commentList.slice(0, 1).show();
-                    $commentArray.find("#loadMore").on("click", function (e) {
-                        e.preventDefault();
-                        var $hiddenComments = $commentList.filter(":hidden").slice(0, 3);
-                        $hiddenComments.slideDown();
-                        if ($hiddenComments.length === 0) {
-                            $(this).addClass("noContent");
-                        }
-                    });
-                });
-            });
-        },
-        loadMoreRepComments() {
-            $(document).ready(function () {
-                $(".repComment_array").each(function () {
-                    var $RepcommentArray = $(this);
-                    var $RepcommentList = $RepcommentArray.find(".repcomment_list");
-                    $RepcommentList.slice(0, 1).show();
-                    $RepcommentArray.find("#loadMoreRepComment").on("click", function (e) {
-                        e.preventDefault();
-                        var $hiddenRepComments = $RepcommentList.filter(":hidden").slice(0, 3);
-                        $hiddenRepComments.slideDown();
-                        if ($hiddenRepComments.length === 0) {
-                            $(this).addClass("noContent");
-                        }
-                    });
-                });
-            });
-        },
-
     },
 
 }
