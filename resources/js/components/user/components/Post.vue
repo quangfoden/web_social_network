@@ -159,14 +159,11 @@ import Close from 'vue-material-design-icons/Close.vue'
                                         <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" alt="">
                                     </a>
                                     <div class="d-flex align-items-center bg-EFF2F5 rounded-full px-2 w-100">
-<<<<<<< HEAD
                                         <textarea v-model="formRepComment[index].content" :id="'repcomment' + comment.id + index"
                                             type="text" placeholder="Viết phản hồi ..."
-=======
                                         <textarea v-model="formRepComment[index].content"
                                             :id="'repcomment' + comment.id + index" type="text"
                                             placeholder="Viết phản hồi ..."
->>>>>>> af992cf33e76e35da7ae4f94b05e490849d46e8f
                                             class="custom-input bg-EFF2F5 w-100 border-0 mx-1 border-none p-0 text-sm placeholder-[#64676B] focus-0">
                                         </textarea>
                                         <label class="hover-200 rounded-full p-2 custom-cursor-pointer">
