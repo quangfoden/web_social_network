@@ -197,14 +197,8 @@ export default {
 
         },
         clearImageRepComment(index) {
-            this.formRepComment = {};
             this.formMediarepComment= {}
             this.$refs.fieldMediaRepCM.value = null
-            // Clear the input value for the specific iteration
-            const input = document.getElementById(`fieldMediaRepCM_${index}`);
-            if (input) {
-                input.value = null;
-            }
         },
         clickRepComment() {
             this.boxRepComment= true
