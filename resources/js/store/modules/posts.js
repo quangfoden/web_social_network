@@ -2,6 +2,7 @@ import Swal from 'sweetalert2';
 
 const state = {
     posts: [],
+    comments:[]
 };
 const mutations = {
     allPosts(state, allPosts) {
@@ -16,7 +17,7 @@ const actions = {
         axios.get("/api/user/allposts")
             .then(response => {
                 if (Array.isArray(response.data.data.posts)) {
-                    commit('allPosts', response.data.data.posts);
+                    commit('setPosts', response.data.data.posts);
                 } else {
                     console.error('Invalid data format:', response.data.data.posts);
                 }
@@ -63,6 +64,7 @@ const actions = {
                 })
             });
     },
+ 
 };
 
 
