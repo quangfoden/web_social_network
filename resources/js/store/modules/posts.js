@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2';
 
 const state = {
-    posts: []
+    posts: [],
 };
 const mutations = {
     allPosts(state, allPosts) {
@@ -9,7 +9,7 @@ const mutations = {
     },
     setPosts(state, newData) {
         state.posts.unshift(newData);
-    },
+    }
 };
 const actions = {
     fetchPosts({ commit }) {
@@ -25,6 +25,7 @@ const actions = {
                 console.log("Error fetching posts:", error);
             });
     },
+
     addNewPost({ commit }, formData) {
         axios.post('/api/user/create-post', formData, {
             headers: {
@@ -64,9 +65,10 @@ const actions = {
     },
 };
 
+
 export default {
     namespaced: true,
     state,
     mutations,
-    actions
+    actions,
 };

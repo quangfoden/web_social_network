@@ -21,7 +21,7 @@ class CommentController extends Controller
     {
         $comments = Comment::where('status', 1)
             ->where('post_id', $postId)
-            ->with('user', 'post')
+            ->with('user', 'post','repcomments')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($comments) {
@@ -31,7 +31,7 @@ class CommentController extends Controller
         return response()->json(['data' => $comments]);
     }
     //
-    public function create_comment(Request $request, $postId)
+    public function create_comment(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'content' => 'required',
@@ -46,7 +46,8 @@ class CommentController extends Controller
         $user = Auth::user();
         $userId = $user->id;
         $comment = new Comment([
-            'post_id' => $postId,
+            // 'post_id' => $postId,
+            'post_id' => $request->postId,
             'user_id' => $userId,
             'content' => $request->input('content')
         ]);
@@ -73,7 +74,8 @@ class CommentController extends Controller
 
         $formattedComments = [
             'id' => $comment->id,
-            'post_id' => $postId,
+            // 'post_id' => $postId,
+            'post_id' =>  $comment->post_id,
             'user_id' => $comment->user_id,
             'content' => $comment->content,
             'path' => $comment->path,
@@ -86,7 +88,6 @@ class CommentController extends Controller
             'user' => $comment->user,
             'repcomments' => $comment->repcomments,
         ];
-
 
         $res = [
             'message' => 'Bạn đã bình luận thành công',
