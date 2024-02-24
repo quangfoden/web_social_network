@@ -5,7 +5,7 @@ import Close from 'vue-material-design-icons/Close.vue'
 
 <template>
     <div id="MediaDisplay">
-        <Close @click="isFileDisplay = null" fillColor="#000000" :size="30" class="imagedisplay_close" />
+        <Close @click="isFileDisplay = []" fillColor="#000000" :size="30" class="imagedisplay_close" />
         <!-- <div class="media_display">
             <img class="displ" :src="isFileDisplay" alt="">
         </div> -->

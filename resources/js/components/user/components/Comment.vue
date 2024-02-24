@@ -26,10 +26,11 @@ import Close from 'vue-material-design-icons/Close.vue'
                                     </a> -->
                 </div>
                 <div class="w-100 position-relative" style="margin-left: 50px;">
-                    <img width="150" v-if="comment.type != null && comment.type.includes('image')" :src="comment.path"
-                        alt="Image">
-                    <video width="150" v-else-if="comment.type != null && comment.type.includes('video')"
-                        :src="comment.path" controls></video>
+                    <img width="150" @click="isFileDisplay = comment.path"
+                        v-if="comment.type != null && comment.type.includes('image')" :src="comment.path" alt="Image">
+                    <video width="150" @click="isFileDisplay = comment.path"
+                        v-else-if="comment.type != null && comment.type.includes('video')" :src="comment.path"
+                        controls></video>
                 </div>
                 <div id="bottom-cus">
                     <p class="custom-cursor-pointer">{{ comment.created_at_formatted }}</p>
@@ -53,9 +54,9 @@ import Close from 'vue-material-design-icons/Close.vue'
                         </div>
                         <div class="w-100 position-relative" style="margin-left: 50px;">
                             <img width="150" v-if="repcomment.type != null && repcomment.type.includes('image')"
-                                :src="repcomment.path" alt="Image">
+                                @click="isFileDisplay = repcomment.path" :src="repcomment.path" alt="Image">
                             <video width="150" v-else-if="repcomment.type != null && repcomment.type.includes('video')"
-                                :src="repcomment.path" controls></video>
+                                @click="isFileDisplay = repcomment.path" :src="repcomment.path" controls></video>
                         </div>
                         <div id="bottom-cus">
                             <p class="custom-cursor-pointer">{{ repcomment.created_at_formatted }}</p>
@@ -65,9 +66,6 @@ import Close from 'vue-material-design-icons/Close.vue'
                             </p>
                         </div>
                     </div>
-                    <a href="#" class="text-center w-100" id="loadMoreRepComment"
-                        style="text-decoration:underline !important;color: black;font-weight: 500;">Xem
-                        thêm</a>
                 </div>
                 <form style="background: white;margin-left:46px ;" @submit.prevent="CreateRepComment(comment.id, index)"
                     class="d-flex align-items-center rounded-full justify-content-between w-100">
@@ -109,6 +107,8 @@ import Close from 'vue-material-design-icons/Close.vue'
 </template>
 <script>
 import { toRefs, reactive, ref } from 'vue';
+import { useGeneralStore } from '../../../store/general';
+import { storeToRefs } from 'pinia';
 export default {
     props: {
         comment: {
@@ -117,7 +117,10 @@ export default {
         },
     },
     data() {
+        const useGeneral = useGeneralStore()
+        const { isFileDisplay } = storeToRefs(useGeneral)
         return {
+            isFileDisplay,
             formRepComment: { content: '' },
             formMediarepComment: {},
             boxRepComment: reactive(false),
@@ -169,7 +172,7 @@ export default {
                             timer: this.$config.notificationTimer ?? 3000,
                         });
                         this.formRepComment = {}
-                        this.formMediarepComment= {};
+                        this.formMediarepComment = {};
                         this.$refs.fieldMediaRepCM.value = null
                     }
                     else {
@@ -197,15 +200,15 @@ export default {
 
         },
         clearImageRepComment(index) {
-            this.formMediarepComment= {}
+            this.formMediarepComment = {}
             this.$refs.fieldMediaRepCM.value = null
         },
         clickRepComment() {
-            this.boxRepComment= true
+            this.boxRepComment = true
             this.formRepComment.content = this.comment.user.user_name
         },
         clickRepComment2(index) {
-            this.boxRepComment= true
+            this.boxRepComment = true
             this.formRepComment.content = this.comment.repcomments[index].user.user_name
         },
     }
