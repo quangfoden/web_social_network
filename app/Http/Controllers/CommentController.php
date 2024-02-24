@@ -135,10 +135,25 @@ class CommentController extends Controller
                 'success' => true,
             ];
         }
+        $formattedNewRepComments = [
+            'id' => $replycomment->id,
+            // 'post_id' => $postId,
+            'comment_id' =>  $commentId,
+            'user_id' => $replycomment->user_id,
+            'content' => $replycomment->content,
+            'path' => $replycomment->path,
+            'type' => $replycomment->type,
+            'likes_count' => $replycomment->likes_count,
+            'status' => $replycomment->status,
+            'created_at' => $replycomment->created_at,
+            'updated_at' => $replycomment->updated_at,
+            'created_at_formatted' => $this->postService->formatTimeAgo($replycomment->created_at), // Example of formatting created_at
+            'user' => $replycomment->user,
+        ];
         $res = [
             'message' => 'Bạn đã trả lời bình luận thành công !',
             'success' => true,
-            'repcomment' =>  $replycomment,
+            'repcomment' =>  $formattedNewRepComments,
         ];
         return response()->json(['data' => $res]);
     }
