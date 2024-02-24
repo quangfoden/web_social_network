@@ -91,38 +91,6 @@ import Close from 'vue-material-design-icons/Close.vue'
             <div v-if="comments.length > 0" id="Comment" class="comment_array">
                 <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">
                    <Comment :comment="comment"/>
-                    <div class="box-comment-cus">
-                        <div class="box-comment-cus_2">
-                            <div class="box-comment-cus_3">
-                                <div class="d-flex gap-2 align-items-start w-100 mb-1">
-                                    <a href="/" class="mr-2">
-                                        <img class="rounded-full ml-1 img-cus" :src="comment.user.avatar" alt="">
-                                    </a>
-                                    <div class="bg-EFF2F5 p-2 rounded-lg">
-                                        <h6>{{ comment.user.user_name }}</h6>
-                                        <div class="d-flex align-items-center text-xs rounded-lg w-100">
-                                            {{ comment.content }}
-                                        </div>
-                                    </div>
-                                    <!-- <a class="rounded-full p-1.5 ml-2 custom-cursor-pointer">
-                                        <Delete fillColor="#64676B" size="20" />
-                                    </a> -->
-                                </div>
-                                <div class="w-100 position-relative" style="margin-left: 50px;">
-                                    <img width="150" v-if="comment.type != null && comment.type.includes('image')"
-                                        :src="comment.path" alt="Image">
-                                    <video width="150" v-else-if="comment.type != null && comment.type.includes('video')"
-                                        :src="comment.path" controls></video>
-                                </div>
-                                <div id="bottom-cus">
-                                    <p class="custom-cursor-pointer">{{ comment.created_at_formatted }}</p>
-                                    <p class="custom-cursor-pointer">like</p>
-                                    <p @click="clickRepComment(index)" class="custom-cursor-pointer">Phản hồi</p>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -210,19 +178,7 @@ export default {
             // this.formMediaComment.push({ type: mediaType, file, url });
             this.formMediaComment.type = mediaType;
             this.formMediaComment.url = url;
-        },
-        getUploadedImageComment(e, index) {
-            const file = e.target.files[0];
-            let mediaType;
-            if (file.type.startsWith('image/')) {
-                mediaType = 'image';
-            } else if (file.type.startsWith('video/')) {
-                mediaType = 'video';
-            }
-            const url = URL.createObjectURL(file);
-            this.formMediarepComment[index].type = mediaType;
-            this.formMediarepComment[index].url = url;
-            this.formMediarepComment[index].file = file;
+
         },
        
         clearImage() {
