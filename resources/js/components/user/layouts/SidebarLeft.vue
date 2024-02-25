@@ -21,19 +21,19 @@ import Restore from 'vue-material-design-icons/Restore.vue';
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
                 <AccountMultiple :size="40" fillColor="#5BD7C6" />
-                <div class="text-items">Friends</div>
+                <div class="text-items">Bạn bè</div>
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
                 <Flag :size="40" fillColor="#F2682C" />
-                <div class="text-items">Pages</div>
+                <div class="text-items">Trang</div>
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
                 <ClockTimetwoOutline :size="40" fillColor="#21AAFA" />
-                <div class="text-items">Most Recent</div>
+                <div class="text-items">Gần đây nhất</div>
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
                 <AccountGroup :size="40" fillColor="#2A09FD" />
-                <div class="text-items">Groups</div>
+                <div class="text-items">Nhóm</div>
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
                 <StorefrontOutline :size="40" fillColor="#48C0D8" />
@@ -41,11 +41,11 @@ import Restore from 'vue-material-design-icons/Restore.vue';
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
                 <TelevisionPlay :size="40" fillColor="#9739CF" />
-                <div class="text-items">Watch</div>
+                <div class="text-items">Video</div>
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
                 <Restore :size="40" fillColor="#32D4D0" />
-                <div class="text-items">Memories</div>
+                <div class="text-items">Kỷ niệm</div>
             </a>
         </div>
     </div>

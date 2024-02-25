@@ -16,7 +16,7 @@ import Logout from 'vue-material-design-icons/Logout.vue';
 <template>
     <div id="Mainnav">
         <router-link :to="{ name: '' }" class="text_name">
-            <img width="100" src="/images/logoclient.png" alt="">
+            <img width="40" src="/images/icons/FacebookLogoCircle.png" alt="">
         </router-link>
         <div id="Navleft">
             <Magnify class="p-2" :size="22" fillColor="#64676B" />
@@ -31,7 +31,7 @@ import Logout from 'vue-material-design-icons/Logout.vue';
                         <HomeOutline v-else class="mx-auto" :size="32" fillColor="#64676B" />
                     </div>
                 </div>
-                <div v-if="$route.path == '/'" class="border-b-4 border-b-blue-400 rounded-400"></div>
+                <div v-if="$route.path == '/'" class="border-b-4 border-b-blue-400 rounded-400 item-active"></div>
             </a>
             <div class="list_items d-flex align-items-center justify-content-center w-100">
                 <TelevisionPlay class="mx-auto" :size="27" fillColor="#64676B" />

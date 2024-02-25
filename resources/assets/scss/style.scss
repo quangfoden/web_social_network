@@ -157,7 +157,6 @@ a {
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     height: 56px;
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -165,7 +164,7 @@ a {
 
     a.text_name {
         padding-left: 0.75rem;
-        padding-left: 0.75rem;
+        padding-left: 1.5rem;
         min-width: 55px;
     }
 
@@ -176,6 +175,10 @@ a {
         border-radius: 9999px;
         justify-content: flex-start;
         width: 260px;
+
+        &:last-child {
+            order: 1;
+        }
 
         input.search[type=text] {
             display: none;
@@ -213,6 +216,10 @@ a {
         /* Tương đương với w-8/12 */
         max-width: 600px;
 
+        .item-active {
+            border-bottom: 4px solid blue;
+        }
+
         /* max-w-[600px] */
         @media (min-width: 1024px) {
             & {
@@ -234,7 +241,8 @@ a {
 
     #NavLeft {
         width: 16.66667%;
-        margin-right: 1rem;
+        margin-right: 1.5rem;
+        flex-grow: 3;
 
         .nav_left_items {
             padding: 0.5rem;
@@ -291,7 +299,7 @@ a {
 
     @media (min-width: 1280px) {
         & {
-            width: 345px;
+            width: 300px;
         }
     }
 
@@ -410,6 +418,10 @@ a {
     margin-right: auto;
     overflow: auto;
 
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
     @media (min-width: 1024px) {
         & {
             margin-left: 0;
@@ -446,6 +458,7 @@ a {
         .text-cus {
             color: #6f7275;
             font-weight: bold;
+            font-size: 0.8rem;
         }
     }
 }
@@ -459,6 +472,46 @@ a {
     margin-top: 1rem;
     margin-bottom: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    #Edit-posts {
+        position: relative;
+    }
+
+    .ellipsis {
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #6f7275;
+    }
+
+    .edit-post {
+        position: absolute;
+        right: 0;
+        z-index: 9999;
+        color: #222;
+        min-width: 300px;
+        padding: 10px;
+        background-color: white;
+        font-weight: 800;
+        border-radius: 10px 0 10px 10px;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+
+        ul {
+            list-style: none;
+            padding: 0;
+
+            li {
+                padding: 10px;
+                border-bottom: 1px solid #64676B;
+                border-radius: 10px;
+                transition: .1s;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #64676B;
+                }
+            }
+        }
+    }
 
     img.img-cus {
         border-radius: 9999px;
@@ -532,6 +585,7 @@ a {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 10px;
+
         .list_item_media {
             img {
                 border-radius: 10px;

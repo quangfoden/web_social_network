@@ -21,9 +21,6 @@ import Close from 'vue-material-design-icons/Close.vue'
                             {{ comment.content }}
                         </div>
                     </div>
-                    <!-- <a class="rounded-full p-1.5 ml-2 custom-cursor-pointer">
-                                        <Delete fillColor="#64676B" size="20" />
-                                    </a> -->
                 </div>
                 <div class="w-100 position-relative" style="margin-left: 50px;">
                     <img width="150" @click="isFileDisplay = comment.path"
@@ -81,7 +78,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                             <Image :size="27" fillColor="#43BE62" />
                         </label>
                         <input ref="fieldMediaRepCM" type="file" accept="image/*,video/*" class=""
-                            :id="`fieldMediaRepCM_${index}`" @change="getUploadedImageComment($event, index)">
+                            :id="`fieldMediaRepCM_${index}`" @change="getUploadedImageRepComment($event, index)">
                         <button type="submit"
                             class="d-flex border-0 align-items-center text-sm px-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">
                             <Check />Gửi
@@ -135,7 +132,7 @@ export default {
         },
     },
     methods: {
-        getUploadedImageComment(e) {
+        getUploadedImageRepComment(e) {
             const file = e.target.files[0];
             let mediaType;
             if (file.type.startsWith('image/')) {

@@ -69,4 +69,8 @@ class PostRepository
         $data['user_id'] = auth()->user()->id ?? 1;
         return $this->model->query()->create($data);
     }
+    public function update(int $id, array $data): bool|int
+    {
+        return $this->model->query()->find($id)->update($data);
+    }
 }
