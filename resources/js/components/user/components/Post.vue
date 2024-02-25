@@ -9,7 +9,7 @@ import Close from 'vue-material-design-icons/Close.vue'
 </script>
 <template>
     <div id="post" class="pb-2">
-        <div class="d-flex align-items-center py-3 px-0">
+        <div class="d-flex align-items-center px-0">
             <a class="mr-2">
                 <img class="img-cus" :src="user.avatar" alt="">
             </a>
@@ -24,11 +24,25 @@ import Close from 'vue-material-design-icons/Close.vue'
                     </div>
                 </div>
             </div>
-            <!-- <div class="d-flex align-items-center">
-                <a class="rounded-full p-1 custom-cursor-pointer">
-                    <Delete :size="20" fillColor="#64676B" />
-                </a>
-            </div> -->
+            <div id="Edit-posts" class="">
+                <span @click="showEditPost = !showEditPost" class="ellipsis"><i class="fa-solid fa-ellipsis"></i></span>
+                <div v-show="isEditPostOverlay === false" v-if="showEditPost && post.user_id === authUser.id"
+                    class="edit-post">
+                    <ul>
+                        <li>Ghim bài viết</li>
+                        <li>Lưu bài viết</li>
+                        <li @click="showBoxPostEdit(post.id)">Chỉnh sửa bài viết</li>
+                        <li>Chuyển vào thùng rác</li>
+                    </ul>
+                </div>
+                <div v-if="showEditPost && post.user_id !== authUser.id" class="edit-post friend">
+                    <ul>
+                        <li>Ẩn bài viết</li>
+                        <li>Lưu bài viết</li>
+                        <li>Chặn {{ post.user.user_name }}</li>
+                    </ul>
+                </div>
+            </div>
         </div>
         <div class="px-1 pb-2 text-cus-pos">
             {{ post.content }}
@@ -67,7 +81,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                             <Image :size="27" fillColor="#43BE62" />
                         </label>
                         <input ref="fieldMedia" type="file" class="" id="image" accept="image/*,video/*"
-                            @input="getUploadedImage($event)">
+                            @input="getUploadedCommentImage($event)">
                         <button type="submit"
                             class="d-flex border-0 align-items-center text-sm px-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">
                             <Check />Gửi
@@ -90,10 +104,14 @@ import Close from 'vue-material-design-icons/Close.vue'
             </div>
             <div v-if="comments.length > 0" id="Comment" class="comment_array">
                 <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">
-                   <Comment :comment="comment"/>
+                    <Comment :comment="comment" />
                 </div>
             </div>
         </div>
+    </div>
+    <div>
+        <EditPostOverlay :postEdit="post" v-if="isEditPostOverlay"
+            @close-modalEditPost="closeEditModalEditPost" />
     </div>
 </template>
 <script>
@@ -103,10 +121,13 @@ import { toRefs, reactive, ref } from 'vue';
 import { useGeneralStore } from '../../../store/general';
 import { storeToRefs } from 'pinia';
 import Comment from '../Components/Comment.vue'
+import EditPostOverlay from '../Components/EditPostOverlay.vue'
 
 export default {
-    components:{
-        Comment
+    components: {
+        Comment,
+        EditPostOverlay,
+
     },
     props: {
         comments: {
@@ -135,7 +156,9 @@ export default {
         const useGeneral = useGeneralStore()
         const { isFileDisplay } = storeToRefs(useGeneral)
         return {
+            showEditPost: false,
             isFileDisplay,
+            isEditPostOverlay: false,
             formComment: reactive({
                 content: ''
             }),
@@ -166,7 +189,16 @@ export default {
         ...mapActions('post', ['fetchPosts']),
         // ...mapActions('post', ['fetchComments']),
         ...mapActions('post', ['addNewComment']),
-        getUploadedImage(e) {
+        showBoxPostEdit(postId) {
+            if (postId === this.post.id) {
+                this.isEditPostOverlay = true
+                console.log(this.isEditPostOverlay)
+            }
+        },
+        closeEditModalEditPost() {
+            this.isEditPostOverlay = false;
+        },
+        getUploadedCommentImage(e) {
             const file = e.target.files[0];
             let mediaType;
             if (file.type.startsWith('image/')) {
@@ -174,13 +206,12 @@ export default {
             } else if (file.type.startsWith('video/')) {
                 mediaType = 'video';
             }
-            const url = URL.createObjectURL(file);
+            const urlComment = URL.createObjectURL(file);
             // this.formMediaComment.push({ type: mediaType, file, url });
             this.formMediaComment.type = mediaType;
-            this.formMediaComment.url = url;
-
+            this.formMediaComment.url = urlComment;
         },
-       
+
         clearImage() {
             this.formMediaComment = {};
             this.$refs.fieldMedia.value = null

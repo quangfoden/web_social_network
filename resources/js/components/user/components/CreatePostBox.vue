@@ -22,15 +22,15 @@ import EmoticonOutline from 'vue-material-design-icons/EmoticonOutline.vue';
         <div class="d-flex align-items-center py-3 border-bottom">
             <button class="icon-cus d-flex align-items-center justify-content-center p-1 w-100">
                 <VideoImage :size="35" fillColor="#F12848" />
-                <div class="text-cus">Live Video</div>
+                <div class="text-cus">Video trực tiếp</div>
             </button>
             <button  @click="showCreatepostBox" class="icon-cus d-flex align-items-center justify-content-center p-1 w-100">
                 <Image :size="35" fillColor="#43BE62" />
-                <div class="text-cus">PhoTo/Video</div>
+                <div class="text-cus">Ảnh/Video</div>
             </button>
             <button class="icon-cus d-flex align-items-center justify-content-center p-1 w-100">
                 <EmoticonOutline :size="35" fillColor="#F8B927" />
-                <div class="text-cus">Feeling/activity</div>
+                <div class="text-cus">Cảm xúc/Hoạt động</div>
             </button>
         </div>
     </div>

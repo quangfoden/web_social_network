@@ -71,4 +71,41 @@ class PostsController extends Controller
             'data' => $posts
         ]);
     }
+    public function updatePost(Request $request, $postId)
+    {
+        $ispost = Post::find($postId);
+        if (!$ispost) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+        $data = $request->all();
+        $post = $this->postRepo->update($postId, $data);
+        if ($request->has('media')) {
+            $requestData = $request->all();
+            foreach ($requestData['media'] as $mediaData) {
+                $file = $mediaData['file'];
+                $type = $mediaData['type'];
+                $response = $this->postService->updatemedia($post, $type, $file);
+            }
+            if ($response->getStatusCode() !== 200) {
+                return $response;
+            }
+            $res = [
+                'message' => 'UpLoad file thành công',
+                'success' => true,
+            ];
+        } else {
+            $res = [
+                'message' => 'Không tìm thấy file uploads',
+                'success' => false,
+            ];
+        }
+        $res = [
+            'status' => 200,
+            'success' => true,
+            'message' => "Bài viết đã được cập nhật thành công.",
+            'post_id' => $postId,
+            'data' => $post
+        ];
+        return response()->json(['data' => $res]);
+    }
 }
