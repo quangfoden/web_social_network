@@ -25,7 +25,6 @@ class AddPostRequest extends FormRequest
             //
             'content' => 'required',
             'privacy' => 'required|in:public,friends,only_me',
-            'media' => 'nullable',
         ];
     }
 }

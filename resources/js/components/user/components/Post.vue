@@ -49,15 +49,15 @@ import Close from 'vue-material-design-icons/Close.vue'
         </div>
         <div class="cus-post-media">
             <div class="list_item_media" v-for="medias in media" :key="media.id">
-                <div v-if="medias.type === 'image'">
-                    <img @click="isFileDisplay = medias.path" :src="medias.path" alt="Image"
+                <div>
+                    <img @click="isFileDisplay = medias.url" :src="medias.url" alt="Image"
                         class="mx-auto custom-cursor-pointer w-100">
                 </div>
-                <div class="" v-else-if="medias.type === 'video'">
-                    <video @click="isFileDisplay = medias.path" :src="medias.path"
+                <!-- <div class="" v-else-if="medias.type === 'video'">
+                    <video @click="isFileDisplay = medias.url" :src="medias.url"
                         class="mx-auto custom-cursor-pointer w-100">
                     </video>
-                </div>
+                </div> -->
             </div>
         </div>
         <div id="Likes" class="">

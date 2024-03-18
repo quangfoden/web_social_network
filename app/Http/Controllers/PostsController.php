@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 use App\Services\PostService;
-
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\URL;
 use Carbon\Carbon;
 use App\Models\Post;
 use App\Models\User;
@@ -30,25 +32,25 @@ class PostsController extends Controller
     {
         $data = $request->all();
         $post = $this->postRepo->create($data);
-        if ($request->has('media')) {
-            $requestData = $request->all();
-            foreach ($requestData['media'] as $mediaData) {
-                $file = $mediaData['file'];
-                $type = $mediaData['type'];
-                $response = $this->postService->updatemedia($post, $type, $file);
+        if ($request->hasFile('files')) {
+            $requestData = $request->file('files');
+            foreach ($requestData as $id => $mediaData) {
+                $path = 'uploads/Upload_posts/' . Str::random();
+                if (!Storage::exists($path)) {
+                    Storage::makeDirectory($path, 0755, true);
+                }
+                $name = Str::random() . '.' . $mediaData->getClientOriginalExtension();
+                if (!Storage::putFileAS('public/' . $path, $mediaData, $name)) {
+                    throw new \Exception("Unable to save file \"{$mediaData->getClientOriginalName()}\"");
+                }
+                $relativePath = $path . '/' . $name;
+                Media::create([
+                    'post_id' => $post->id,
+                    'path' => $relativePath,
+                    'url' => URL::to(Storage::url($relativePath)),
+                    'type' => $mediaData->getClientMimeType(),
+                ]);
             }
-            if ($response->getStatusCode() !== 200) {
-                return $response;
-            }
-            $res = [
-                'message' => 'UpLoad file thành công',
-                'success' => true,
-            ];
-        } else {
-            $res = [
-                'message' => 'Không tìm thấy file uploads',
-                'success' => false,
-            ];
         }
         $postId = $post->id;
         $posts = $this->postRepo->getPostById($postId);

@@ -14,7 +14,8 @@ const emit = defineEmits(['showModal'])
             <div class="w-100 crpost">
                 <div class="d-flex align-items-center position-relative my-3 mx-1">
                     <div class="w-100 text-center">Tạo bài viết</div>
-                    <div class="close position-absolute rounded-full custom-cursor-pointer" @click="isPostOverlay = false">
+                    <div class="close position-absolute rounded-full custom-cursor-pointer"
+                        @click="isPostOverlay = false">
                         <Close :size="20" fillColor="#5E6771" />
                     </div>
                 </div>
@@ -34,29 +35,31 @@ const emit = defineEmits(['showModal'])
                             <textarea cols="30" v-model="form.content" class="w-100"
                                 :placeholder="'bạn đang nghĩ gì ' + authUser.user_name + '...'">
                             </textarea>
-                            <div v-if="form.media" class="p-2 position-relative cus-img-dis">
-                                <div v-for="(media, index) in form.media" :key="index">
-                                    <Close @click="clearImage(index)"
+                            <div v-if="imageUrls" class="p-2 position-relative cus-img-dis">
+                                <div v-for="(image) in imageUrls" :key="index">
+                                    <Close @click="clearImage(image)"
                                         class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
                                         :size="22" fillColor="#5E6771" />
-                                    <div v-if="media.type === 'image'"><img class="rounded-lg mx-auto w-100"
-                                            :src="media.url" alt=""></div>
-                                    <div v-if="media.type === 'video'"> <video class="rounded-lg mx-auto w-100" controls>
-                                            <source :src="media.url" type="video/mp4">
+                                    <div><img class="rounded-lg mx-auto w-100" :src="image.url" alt=""></div>
+                                    <!-- <div v-if="image.type === 'video'"> <video class="rounded-lg mx-auto w-100"
+                                            controls>
+                                            <source :src="image.url" type="video/mp4">
                                             Your browser does not support the video tag.
                                         </video>
-                                    </div>
+                                    </div> -->
                                 </div>
+
                             </div>
                         </div>
-                        <div class="border-2 rounded-xl mt-4 shadow-sm d-flex align-items-center justify-content-between">
+                        <div
+                            class="border-2 rounded-xl mt-4 shadow-sm d-flex align-items-center justify-content-between">
                             <div class="font-extrabold w-100 d-block">Tạo bài viết của bạn</div>
                             <div class="d-flex align-items-center">
                                 <label class="hover-200 rounded-full p-2 custom-cursor-pointer" for="image">
                                     <Image :size="27" fillColor="#43BE62" />
                                 </label>
                                 <input type="file" ref="fieldCreatePost" id="image" accept="image/*,video/*" multiple
-                                    class="hidden" @input="getUploadedImage($event)">
+                                    class="hidden" @input="onFileChange($event)">
                                 <a class="hover-200 rounded-full p-2 custom-cursor-pointer">
                                     <EmoticonOutline :size="27" fillColor="#F8B927" />
                                 </a>
@@ -83,6 +86,9 @@ import { mapState, mapActions } from 'vuex';
 import { useGeneralStore } from '@resources/js/store/general';
 import { storeToRefs } from 'pinia';
 import { ref, reactive } from 'vue'
+import { v4 as uuidv4 } from 'uuid';
+
+
 export default {
     data() {
         const useGeneral = useGeneralStore()
@@ -95,12 +101,14 @@ export default {
             ],
             isPostOverlay,
             isFileDisplay,
-            form: reactive({
-                content: null,
-                media: [],
+            form: ref({
+                content: '',
                 privacy: ref('public'),
             }),
-
+            files: ref([]),
+            imageUrls: ref([]),
+            deletedImages: ref([]),
+            imagePositions: ref([])
         }
     },
     computed: {
@@ -115,7 +123,14 @@ export default {
     methods: {
         ...mapActions('post', ['addNewPost']),
         submitPost() {
-            this.$store.dispatch('post/addNewPost', this.form)
+            const formData = new FormData();
+            formData.append('content', this.form.content);
+            formData.append('privacy', this.form.privacy);
+            for (let file of this.files) {
+                file.id = uuidv4();
+                formData.append('files[]', file);
+            }
+            this.$store.dispatch('post/addNewPost', formData)
                 .then(() => {
                     this.form.content = null;
                     this.form.media = [];
@@ -134,22 +149,57 @@ export default {
                     });
                 });
         },
-        getUploadedImage(e) {
-            for (let i = 0; i < e.target.files.length; i++) {
-                const file = e.target.files[i];
-                let mediaType;
-
-                if (file.type.startsWith('image/')) {
-                    mediaType = 'image';
-                } else if (file.type.startsWith('video/')) {
-                    mediaType = 'video';
-                }
-                const url = URL.createObjectURL(file);
-                this.form.media.push({ type: mediaType, file, url });
+        onFileChange($event) {
+            const chosenFiles = [...$event.target.files];
+            this.files = [...this.files, ...chosenFiles];
+            $event.target.value = ''
+            const formData = new FormData();
+            const allPromises = [];
+            for (let file of chosenFiles) {
+                formData.append('files', file);
+                file.id = uuidv4()
+                const promise = this.readFile(file)
+                allPromises.push(promise)
+                promise
+                    .then(url => {
+                        this.imageUrls.push({
+                            url,
+                            id: file.id
+                        })
+                    })
             }
+            Promise.all(allPromises)
+                .then(() => {
+                    this.updateImagePositions()
+                })
         },
-        clearImage(index) {
-            this.form.media.splice(index, 1);
+        readFile(file) {
+            return new Promise((resolve, reject) => {
+                const fileReader = new FileReader()
+                fileReader.readAsDataURL(file)
+                fileReader.onload = () => {
+                    resolve(fileReader.result)
+                }
+                fileReader.onerror = reject
+            })
+        },
+        clearImage(image) {
+            this.files = this.files.filter(f => f.id !== image.id)
+            this.imageUrls = this.imageUrls.filter(f => f.id !== image.id)
+        },
+        updateImagePositions() {
+            /**
+             * [
+             *   [1, 1],
+             *   [4, 2],
+             *   [5, 3],
+             * ]
+             */
+            this.imagePositions = Object.fromEntries(
+                this.imageUrls.filter(im => !im.deleted)
+                    .map((im, ind) => [im.id, ind + 1])
+            )
+
         }
     }
 }
