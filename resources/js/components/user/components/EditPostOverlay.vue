@@ -7,6 +7,7 @@ import ChevronDown from 'vue-material-design-icons/ChevronDown.vue'
 import Earth from 'vue-material-design-icons/Earth.vue'
 import DotsHorizontal from 'vue-material-design-icons/DotsHorizontal.vue'
 const emit = defineEmits(['showModal'])
+
 </script>
 <template>
     <div id="CreatePostOverlay">
@@ -34,30 +35,25 @@ const emit = defineEmits(['showModal'])
                         <div class="text-ar">
                             <textarea cols="30" v-model="form.contentPostEdit" class="w-100">
                             </textarea>
-                            <div v-if="form.mediaPostEdit" class="p-2 position-relative cus-img-dis">
-                                <div v-for="(mediaPostedit, index) in form.mediaPostEdit" :key="index">
-                                    <Close @click="clearImage(index)"
-                                        class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
+                            <div v-if="imageUrls" class="p-2 position-relative cus-img-dis">
+                                <div v-for="(image) in imageUrls" :key="index">
+                                    <Close @click="clearImage(image)"
+                                        class="position-absolute bg-white p-1 m-2 right-2 z-10000 rounded-full border custom-cursor-pointer"
                                         :size="22" fillColor="#5E6771" />
-                                    <div v-if="mediaPostedit.type === 'image'">
-                                        <img class="rounded-lg mx-auto w-100" :src="mediaPostedit.path" alt="">
-                                    </div>
-                                    <div v-if="mediaPostedit.type === 'video'">
-                                        <video class="rounded-lg mx-auto w-100" controls>
-                                            <source :src="mediaPostedit.path" type="video/mp4">
-                                            Your browser does not support the video tag.
-                                        </video>
+                                    <div>
+                                        <img class="rounded-lg mx-auto w-100" :src="image.url" alt="">
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="border-2 rounded-xl mt-4 shadow-sm d-flex align-items-center justify-content-between">
+                        <div
+                            class="border-2 rounded-xl mt-4 shadow-sm d-flex align-items-center justify-content-between">
                             <div class="font-extrabold w-100 d-block">Thêm vào bài viết của bạn</div>
                             <div class="d-flex align-items-center">
                                 <label class="hover-200 rounded-full p-2 custom-cursor-pointer" for="image">
                                     <Image :size="27" fillColor="#43BE62" />
                                 </label>
-                                <input type="file" @change="getUploadedEditPostImage($event)" ref="EditPost" id="image"
+                                <input type="file" @change="onFileChange($event)" ref="EditPost" id="image"
                                     accept="image/*,video/*" multiple class="">
                                 <a class="hover-200 rounded-full p-2 custom-cursor-pointer">
                                     <EmoticonOutline :size="27" fillColor="#F8B927" />
@@ -85,12 +81,16 @@ import { mapState, mapActions } from 'vuex';
 import { useGeneralStore } from '@resources/js/store/general';
 import { storeToRefs } from 'pinia';
 import { ref, reactive } from 'vue'
+import { v4 as uuidv4 } from 'uuid';
 export default {
     props: {
         postEdit: {
             type: Object,
             required: true,
-
+        },
+        medias: {
+            type: Object,
+            required: true,
         },
         isEditPostOverlay: {
             type: Boolean,
@@ -110,10 +110,13 @@ export default {
             isFileDisplay,
             form: reactive({
                 contentPostEdit: this.postEdit.content,
-                mediaPostEdit: this.postEdit.media,
+                mediaPostEdit: this.medias,
                 privacyPostEdit: this.postEdit.privacy,
             }),
-
+            deletedImages: ref([]),
+            files: ref([]),
+            imageUrls: ref([]),
+            // imageDeleted: ref(false)
         }
     },
     computed: {
@@ -126,31 +129,28 @@ export default {
         },
     },
     created() {
-        console.log(this.form.mediaPostEdit)
+        // console.log(this.form.mediaPostEdit)
     },
     methods: {
         ...mapActions('post', ['addNewPost']),
+        ...mapActions('post', ['editPost']),
         closeModalEditPost() {
             this.$emit('close-modalEditPost');
         },
         submitEditPost(postId) {
             const formData = new FormData();
             formData.append('content', this.form.contentPostEdit);
-            formData.append('media[]', this.form.mediaPostEdit);
             formData.append('privacy', this.form.privacyPostEdit);
-            axios.post(`api/user/post/${postId}/editPost`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
+            for (let deletedImage of this.deletedImages) {
+                formData.append('deletedImages[]', deletedImage);
+            }
+            for (let file of this.files) {
+                file.id = uuidv4();
+                formData.append('files[]', file);
+            }
+            this.$store.dispatch('post/editPost', { postId: postId, formData: formData })
                 .then(() => {
-                    this.$swal.fire({
-                        position: "top-end",
-                        icon: "success",
-                        title: "Bài viết được cập nhật thành công",
-                        showConfirmButton: false,
-                        timer: 3000,
-                    });
+                   
                 })
                 .catch(error => {
                     // Xử lý khi có lỗi
@@ -163,24 +163,91 @@ export default {
                     });
                 });
         },
-        getUploadedEditPostImage(e) {
-            for (let i = 0; i < e.target.files.length; i++) {
-                const file = e.target.files[i];
-                let mediaType;
-
-                if (file.type.startsWith('image/')) {
-                    mediaType = 'image';
-                } else if (file.type.startsWith('video/')) {
-                    mediaType = 'video';
-                }
-                const url = URL.createObjectURL(file);
-                this.form.mediaPostEdit.push({ type: mediaType, file, url });
-                console.log(this.form.mediaPostEdit)
+        // submitEditPost(postId) {
+        //     const formData = new FormData();
+        //     formData.append('content', this.form.contentPostEdit);
+        //     formData.append('media[]', this.form.mediaPostEdit);
+        //     formData.append('privacy', this.form.privacyPostEdit);
+        //     axios.post(`api/user/post/${postId}/editPost`, formData, {
+        //         headers: {
+        //             'Content-Type': 'multipart/form-data',
+        //         },
+        //     })
+        //         .then(() => {
+        //             this.$swal.fire({
+        //                 position: "top-end",
+        //                 icon: "success",
+        //                 title: "Bài viết được cập nhật thành công",
+        //                 showConfirmButton: false,
+        //                 timer: 3000,
+        //             });
+        //         })
+        //         .catch(error => {
+        //             this.$swal.fire({
+        //                 position: "top-end",
+        //                 icon: "error",
+        //                 title: error,
+        //                 showConfirmButton: false,
+        //                 timer: this.$config.notificationTimer ?? 3000,
+        //             });
+        //         });
+        // },
+        onFileChange($event) {
+            const chosenFiles = [...$event.target.files];
+            this.files = [...this.files, ...chosenFiles];
+            $event.target.value = ''
+            const allPromises = [];
+            for (let file of chosenFiles) {
+                file.id = uuidv4()
+                const promise = this.readFile(file)
+                allPromises.push(promise)
+                promise
+                    .then(url => {
+                        this.imageUrls.push({
+                            url,
+                            id: file.id
+                        })
+                    })
             }
         },
-        clearImage(index) {
-            this.form.mediaPostEdit.splice(index, 1);
+        readFile(file) {
+            return new Promise((resolve, reject) => {
+                const fileReader = new FileReader()
+                fileReader.readAsDataURL(file)
+                fileReader.onload = () => {
+                    resolve(fileReader.result)
+                }
+                fileReader.onerror = reject
+            })
+        },
+        clearImage(image) {
+            if (image.isProp) {
+                this.deletedImages.push(image.id)
+                // image.deleted = true;
+                console.log(this.deletedImages);
+            } else {
+                this.files = this.files.filter(f => f.id !== image.id)
+                this.imageUrls = this.imageUrls.filter(f => f.id !== image.id)
+            }
+        },
+        revertImage() {
+            this.deletedImages = this.deletedImages.filter(id => id !== image.id)
+            // image.deleted = false;
         }
-    }
+    },
+    created() {
+        this.$watch(
+            () => this.medias,
+            (newImages, oldImages) => {
+                this.imageUrls = [
+                    ...this.imageUrls,
+                    ...newImages.map(im => ({ ...im, isProp: true }))
+                ];
+                console.log(newImages);
+                console.log(this.imageUrls);
+            },
+            { immediate: true, deep: true }
+        );
+    },
 }
 </script>

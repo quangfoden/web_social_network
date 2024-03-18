@@ -73,7 +73,7 @@ class PostsController extends Controller
             'data' => $posts
         ]);
     }
-    public function updatePost(Request $request, $postId)
+    public function updatePost(AddPostRequest $request, $postId)
     {
         $ispost = Post::find($postId);
         if (!$ispost) {
@@ -81,26 +81,40 @@ class PostsController extends Controller
         }
         $data = $request->all();
         $post = $this->postRepo->update($postId, $data);
-        if ($request->has('media')) {
-            $requestData = $request->all();
-            foreach ($requestData['media'] as $mediaData) {
-                $file = $mediaData['file'];
-                $type = $mediaData['type'];
-                $response = $this->postService->updatemedia($post, $type, $file);
+        $deletedImages = $data['deletedImages'] ?? [];
+        if (count($deletedImages) > 0) {
+            $medias = Media::query()
+                ->where('post_id', $postId)
+                ->whereIn('id', $deletedImages)
+                ->get();
+            foreach ($medias as $media) {
+                if ($media->path) {
+                    Storage::deleteDirectory('/public/' . dirname($media->path));
+                }
+                $media->delete();
             }
-            if ($response->getStatusCode() !== 200) {
-                return $response;
-            }
-            $res = [
-                'message' => 'UpLoad file thành công',
-                'success' => true,
-            ];
-        } else {
-            $res = [
-                'message' => 'Không tìm thấy file uploads',
-                'success' => false,
-            ];
         }
+        if ($request->hasFile('files')) {
+            $requestData = $request->file('files');
+            foreach ($requestData as $id => $mediaData) {
+                $path = 'uploads/Upload_posts/' . Str::random();
+                if (!Storage::exists($path)) {
+                    Storage::makeDirectory($path, 0755, true);
+                }
+                $name = Str::random() . '.' . $mediaData->getClientOriginalExtension();
+                if (!Storage::putFileAS('public/' . $path, $mediaData, $name)) {
+                    throw new \Exception("Unable to save file \"{$mediaData->getClientOriginalName()}\"");
+                }
+                $relativePath = $path . '/' . $name;
+                Media::create([
+                    'post_id' => $postId,
+                    'path' => $relativePath,
+                    'url' => URL::to(Storage::url($relativePath)),
+                    'type' => $mediaData->getClientMimeType(),
+                ]);
+            }
+        }
+        $post = $this->postRepo->getPostById($postId);
         $res = [
             'status' => 200,
             'success' => true,

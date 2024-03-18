@@ -153,10 +153,8 @@ export default {
             const chosenFiles = [...$event.target.files];
             this.files = [...this.files, ...chosenFiles];
             $event.target.value = ''
-            const formData = new FormData();
             const allPromises = [];
             for (let file of chosenFiles) {
-                formData.append('files', file);
                 file.id = uuidv4()
                 const promise = this.readFile(file)
                 allPromises.push(promise)

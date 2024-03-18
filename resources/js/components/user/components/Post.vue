@@ -110,7 +110,7 @@ import Close from 'vue-material-design-icons/Close.vue'
         </div>
     </div>
     <div>
-        <EditPostOverlay :postEdit="post" v-if="isEditPostOverlay"
+        <EditPostOverlay :postEdit="post" :medias="post.media" v-if="isEditPostOverlay"
             @close-modalEditPost="closeEditModalEditPost" />
     </div>
 </template>
@@ -192,7 +192,7 @@ export default {
         showBoxPostEdit(postId) {
             if (postId === this.post.id) {
                 this.isEditPostOverlay = true
-                console.log(this.isEditPostOverlay)
+                console.log(this.post.media);
             }
         },
         closeEditModalEditPost() {

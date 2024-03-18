@@ -64,6 +64,42 @@ const actions = {
                 })
             });
     },
+    editPost({ commit }, payload) {
+        const { postId, formData } = payload;
+        axios.post(`/api/user/post/${postId}/editPost`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+            .then(response => {
+                if (response.status === 200 && response.data.data.success === true) {
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "success",
+                        title: "Bài viết được cập nhật thành công thành công",
+                        showConfirmButton: false,
+                        timer: 3000,
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Bài viết cập nhật không thành công',
+                        text: `Error`,
+                        showConfirmButton: false,
+                        timer: 3000
+                    })
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: ' bài viết cập nhật thành công',
+                    text: `Error ${error}`,
+                    showConfirmButton: false,
+                    timer: 3000
+                })
+            });
+    },
 };
 
 
