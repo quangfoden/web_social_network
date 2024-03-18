@@ -40,13 +40,15 @@ const emit = defineEmits(['showModal'])
                                     <Close @click="clearImage(image)"
                                         class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
                                         :size="22" fillColor="#5E6771" />
-                                    <div><img class="rounded-lg mx-auto w-100" :src="image.url" alt=""></div>
-                                    <!-- <div v-if="image.type === 'video'"> <video class="rounded-lg mx-auto w-100"
-                                            controls>
+                                    <div v-if="image.fileType === 'image'">
+                                        <img class="rounded-lg mx-auto w-100" :src="image.url" alt="">
+                                    </div>
+                                    <div v-if="image.fileType === 'video'">
+                                        <video class="rounded-lg mx-auto w-100" autoplay controls>
                                             <source :src="image.url" type="video/mp4">
                                             Your browser does not support the video tag.
                                         </video>
-                                    </div> -->
+                                    </div>
                                 </div>
 
                             </div>
@@ -149,6 +151,22 @@ export default {
                     });
                 });
         },
+        getFileType(file) {
+            // Lấy phần mở rộng của tệp
+            const extension = file.name.split('.').pop().toLowerCase();
+            // Kiểm tra nếu phần mở rộng là của ảnh
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+            if (imageExtensions.includes(extension)) {
+                return 'image';
+            }
+            // Kiểm tra nếu phần mở rộng là của video
+            const videoExtensions = ['mp4', 'avi', 'mov', 'mkv'];
+            if (videoExtensions.includes(extension)) {
+                return 'video';
+            }
+            // Nếu không phải là ảnh hoặc video, trả về null
+            return null;
+        },
         onFileChange($event) {
             const chosenFiles = [...$event.target.files];
             this.files = [...this.files, ...chosenFiles];
@@ -156,20 +174,19 @@ export default {
             const allPromises = [];
             for (let file of chosenFiles) {
                 file.id = uuidv4()
+                const fileType = this.getFileType(file);
                 const promise = this.readFile(file)
                 allPromises.push(promise)
                 promise
                     .then(url => {
                         this.imageUrls.push({
                             url,
-                            id: file.id
+                            id: file.id,
+                            fileType
                         })
                     })
             }
-            Promise.all(allPromises)
-                .then(() => {
-                    this.updateImagePositions()
-                })
+            console.log(this.imageUrls);
         },
         readFile(file) {
             return new Promise((resolve, reject) => {

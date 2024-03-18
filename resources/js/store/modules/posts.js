@@ -10,6 +10,12 @@ const mutations = {
     },
     setPosts(state, newData) {
         state.posts.unshift(newData);
+    },
+    updatePost(state, { postId, newData }) {
+        const updatedPostIndex = state.posts.findIndex(post => post.id === postId);
+        if (updatedPostIndex !== -1) {
+            state.posts[updatedPostIndex] = newData;
+        }
     }
 };
 const actions = {
@@ -73,6 +79,9 @@ const actions = {
         })
             .then(response => {
                 if (response.status === 200 && response.data.data.success === true) {
+                    setTimeout(() => {
+                        commit('updatePost', { postId, newData: response.data.data.data });
+                    }, 2000);
                     Swal.fire({
                         position: "top-end",
                         icon: "success",

@@ -3,7 +3,7 @@ import VideoImage from 'vue-material-design-icons/VideoImage.vue'
 import Image from 'vue-material-design-icons/Image.vue'
 import EmoticonOutline from 'vue-material-design-icons/EmoticonOutline.vue'
 import Close from 'vue-material-design-icons/Close.vue'
-import ChevronDown from 'vue-material-design-icons/ChevronDown.vue'
+import Undo from 'vue-material-design-icons/Undo.vue'
 import Earth from 'vue-material-design-icons/Earth.vue'
 import DotsHorizontal from 'vue-material-design-icons/DotsHorizontal.vue'
 const emit = defineEmits(['showModal'])
@@ -36,12 +36,23 @@ const emit = defineEmits(['showModal'])
                             <textarea cols="30" v-model="form.contentPostEdit" class="w-100">
                             </textarea>
                             <div v-if="imageUrls" class="p-2 position-relative cus-img-dis">
-                                <div v-for="(image) in imageUrls" :key="index">
-                                    <Close @click="clearImage(image)"
-                                        class="position-absolute bg-white p-1 m-2 right-2 z-10000 rounded-full border custom-cursor-pointer"
+                                <div v-for="(image) in  imageUrls " :key="index">
+                                    <Undo v-show="image.deleted" @click="revertImage(image)"
+                                        class="position-absolute bg-secondary p-1 m-2 z-1000 right-2 rounded-full border custom-cursor-pointer"
                                         :size="22" fillColor="#5E6771" />
-                                    <div>
-                                        <img class="rounded-lg mx-auto w-100" :src="image.url" alt="">
+                                    <div :class="{ 'opacity-50': image.deleted }">
+                                        <Close style="z-index: 999;" v-show="!image.deleted" @click="clearImage(image)"
+                                            class="position-absolute bg-white p-1 m-2 right-2 rounded-full border custom-cursor-pointer"
+                                            :size="22" fillColor="#5E6771" />
+                                        <div v-if="image.type === 'image' || image.type==='image/jpeg'">
+                                            <img class=" rounded-lg mx-auto w-100" :src="image.url" alt="">
+                                        </div>
+                                        <div v-if="image.type === 'video' || image.type==='video/mp4'"> <video
+                                                class="rounded-lg mx-auto w-100" autoplay controls>
+                                                <source :src="image.url" type="video/mp4">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -110,13 +121,11 @@ export default {
             isFileDisplay,
             form: reactive({
                 contentPostEdit: this.postEdit.content,
-                mediaPostEdit: this.medias,
                 privacyPostEdit: this.postEdit.privacy,
             }),
             deletedImages: ref([]),
             files: ref([]),
             imageUrls: ref([]),
-            // imageDeleted: ref(false)
         }
     },
     computed: {
@@ -129,11 +138,12 @@ export default {
         },
     },
     created() {
-        // console.log(this.form.mediaPostEdit)
+
     },
     methods: {
         ...mapActions('post', ['addNewPost']),
         ...mapActions('post', ['editPost']),
+
         closeModalEditPost() {
             this.$emit('close-modalEditPost');
         },
@@ -150,7 +160,7 @@ export default {
             }
             this.$store.dispatch('post/editPost', { postId: postId, formData: formData })
                 .then(() => {
-                   
+
                 })
                 .catch(error => {
                     // Xử lý khi có lỗi
@@ -163,35 +173,22 @@ export default {
                     });
                 });
         },
-        // submitEditPost(postId) {
-        //     const formData = new FormData();
-        //     formData.append('content', this.form.contentPostEdit);
-        //     formData.append('media[]', this.form.mediaPostEdit);
-        //     formData.append('privacy', this.form.privacyPostEdit);
-        //     axios.post(`api/user/post/${postId}/editPost`, formData, {
-        //         headers: {
-        //             'Content-Type': 'multipart/form-data',
-        //         },
-        //     })
-        //         .then(() => {
-        //             this.$swal.fire({
-        //                 position: "top-end",
-        //                 icon: "success",
-        //                 title: "Bài viết được cập nhật thành công",
-        //                 showConfirmButton: false,
-        //                 timer: 3000,
-        //             });
-        //         })
-        //         .catch(error => {
-        //             this.$swal.fire({
-        //                 position: "top-end",
-        //                 icon: "error",
-        //                 title: error,
-        //                 showConfirmButton: false,
-        //                 timer: this.$config.notificationTimer ?? 3000,
-        //             });
-        //         });
-        // },
+        getFileType(file) {
+            // Lấy phần mở rộng của tệp
+            const extension = file.name.split('.').pop().toLowerCase();
+            // Kiểm tra nếu phần mở rộng là của ảnh
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+            if (imageExtensions.includes(extension)) {
+                return 'image';
+            }
+            // Kiểm tra nếu phần mở rộng là của video
+            const videoExtensions = ['mp4', 'avi', 'mov', 'mkv'];
+            if (videoExtensions.includes(extension)) {
+                return 'video';
+            }
+            // Nếu không phải là ảnh hoặc video, trả về null
+            return null;
+        },
         onFileChange($event) {
             const chosenFiles = [...$event.target.files];
             this.files = [...this.files, ...chosenFiles];
@@ -200,12 +197,14 @@ export default {
             for (let file of chosenFiles) {
                 file.id = uuidv4()
                 const promise = this.readFile(file)
+                const type = this.getFileType(file);
                 allPromises.push(promise)
                 promise
                     .then(url => {
                         this.imageUrls.push({
                             url,
-                            id: file.id
+                            id: file.id,
+                            type
                         })
                     })
             }
@@ -223,16 +222,15 @@ export default {
         clearImage(image) {
             if (image.isProp) {
                 this.deletedImages.push(image.id)
-                // image.deleted = true;
-                console.log(this.deletedImages);
+                image.deleted = true;
             } else {
                 this.files = this.files.filter(f => f.id !== image.id)
                 this.imageUrls = this.imageUrls.filter(f => f.id !== image.id)
             }
         },
-        revertImage() {
+        revertImage(image) {
             this.deletedImages = this.deletedImages.filter(id => id !== image.id)
-            // image.deleted = false;
+            image.deleted = false;
         }
     },
     created() {
@@ -241,7 +239,7 @@ export default {
             (newImages, oldImages) => {
                 this.imageUrls = [
                     ...this.imageUrls,
-                    ...newImages.map(im => ({ ...im, isProp: true }))
+                    ...newImages.map(im => ({ ...im, isProp: true, deleted: false }))
                 ];
                 console.log(newImages);
                 console.log(this.imageUrls);
