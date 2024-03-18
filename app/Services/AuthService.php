@@ -23,6 +23,7 @@ class AuthService
                 "message" => 'Tài khoản không tồn tại.'
             ];
         } else {
+            $userRoles = $user->roles->pluck('name');
             if ($user->status === 0 || $user->is_lock === 1) {
                 return [
                     'success' => false,
@@ -30,9 +31,24 @@ class AuthService
                 ];
             } else {
                 if (!Hash::check($requests['password'], $user->password)) {
+                    if ($userRoles->contains('admin')) {
+                        return [
+                            'success' => false,
+                            'message' => 'Mật khẩu không chính xác.'
+                        ];
+                    }
+                    $user->increment('login_attempts');
+                    if ($user->login_attempts >= 5) {
+                        $user->status = 0;
+                        $user->save();
+                        return ([
+                            'success' => false,
+                            'message' => 'Tài khoản của bạn đã bị khóa do nhập sai mật khẩu quá 5 lần. Vui lòng liên hệ với bộ phận hỗ trợ để mở khóa tài khoản.',
+                        ]);
+                    }
                     return [
                         'success' => false,
-                        'message' => 'Mật khẩu không đúng.'
+                        'message' => 'Mật khẩu không chính xác. Bạn còn ' . (5 - $user->login_attempts) . ' lần đăng nhập.',
                     ];
                 } else {
                     // Đăng nhập người dùng

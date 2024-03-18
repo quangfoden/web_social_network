@@ -2,6 +2,7 @@ import axios from 'axios';
 import Router from '../../router';
 import Swal from 'sweetalert2';
 import Config from '../../config';
+import { error } from 'jquery';
 
 const state = {
     registrationStatus: null,
@@ -64,50 +65,60 @@ const actions = {
                         'loginResponse',
                         JSON.stringify(response.data)
                     );
-
                     if (getters.getLoginResponse.response_type == 'success' && getters.getLoginResponse.status == 1) {
-                        axios.get('/api/user').then(response => {
-                            if (response.status === 200 && getters.getLoginResponse.role.includes('admin')) {
-                                commit('mutateAuthUser', response.data.data.user);
-                                localStorage.setItem(
-                                    'authUser',
-                                    JSON.stringify(response.data.data.user)
-                                );
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Chào mừng Admin',
-                                    text: `Success ${getters.getLoginResponse.response_data[0]}`,
-                                    showConfirmButton: false,
-                                    timer: Config.notificationTimer ?? 3000
-                                })
-                                Router.push('/admin');
-                            }
-                            else if (getters.getLoginResponse.response_type == 'success' && getters.getLoginResponse.role == 'user') {
-                                commit('mutateAuthUser', response.data.data.user);
-                                localStorage.setItem(
-                                    'authUser',
-                                    JSON.stringify(response.data.data.user)
-                                );
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Đăng nhập thành công',
-                                    text: `Success ${getters.getLoginResponse.response_data[0]}`,
-                                    showConfirmButton: false,
-                                    timer: Config.notificationTimer ?? 3000
-                                })
-                                Router.push('/');
-                            }
-                        });
+                        axios.get('/api/user')
+                            .then(response => {
+                                if (response.status === 200 && getters.getLoginResponse.role.includes('admin')) {
+                                    commit('mutateAuthUser', response.data.data.user);
+                                    localStorage.setItem(
+                                        'authUser',
+                                        JSON.stringify(response.data.data.user)
+                                    );
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Chào mừng Admin',
+                                        text: `Success ${getters.getLoginResponse.response_data[0]}`,
+                                        showConfirmButton: false,
+                                        timer: Config.notificationTimer ?? 3000
+                                    })
+                                    Router.push('/admin');
+                                }
+                                else if (getters.getLoginResponse.response_type == 'success' && getters.getLoginResponse.role == 'user') {
+                                    commit('mutateAuthUser', response.data.data.user);
+                                    localStorage.setItem(
+                                        'authUser',
+                                        JSON.stringify(response.data.data.user)
+                                    );
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Đăng nhập thành công',
+                                        text: `Success ${getters.getLoginResponse.response_data[0]}`,
+                                        showConfirmButton: false,
+                                        timer: Config.notificationTimer ?? 3000
+                                    })
+                                    Router.push('/');
+                                }
+                            })
                     }
                     else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Lỗi đăng nhập',
-                            text: `Error ${getters.getLoginResponse.response_data[0]}`,
+                            text: `${getters.getLoginResponse.response_data[0]}`,
                             showConfirmButton: false,
                             timer: Config.notificationTimer ?? 3000
                         })
                     }
+                })
+                .catch(error => {
+                    console.log(error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi đăng nhập',
+                        text: `${error.response.data.message}`,
+                        showConfirmButton: false,
+                        timer: Config.notificationTimer ?? 3000
+                    })
                 })
         })
 

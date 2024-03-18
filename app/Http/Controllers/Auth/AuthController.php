@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Services\AuthService;
 use App\Events\SetDefaultUserRole;
+use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
@@ -78,31 +79,10 @@ class AuthController extends Controller
         }
         return response()->json($res, 200);
     }
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            $msg = [];
-
-            foreach (array_values($validator->errors()->toArray()) as $val) {
-                foreach ($val as $error) {
-                    $msg[] = $error;
-                }
-            }
-            $res = [
-                'response_index' => true,
-                'response_type' => 'error',
-                'response_data' => $msg,
-                'authenticated' => false,
-            ];
-
-            return response()->json($res, 200);
-        }
-        $checkData = $this->authService->checkUser($request->all());
+        $validator = $request->validated();
+        $checkData = $this->authService->checkUser($validator);
         if (!$checkData['success']) {
             return response()->json([
                 'response_index' => true,
