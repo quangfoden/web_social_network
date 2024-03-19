@@ -37,6 +37,7 @@ class User extends Authenticatable
         'is_lock',
         'first_login',
         'remember_token',
+        'login_attempts'
     ];
 
     /**

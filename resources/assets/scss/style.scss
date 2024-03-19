@@ -429,6 +429,12 @@ a {
     }
 }
 
+.createFile_ {
+    max-width: 500px;
+    max-height: 100px;
+    margin-top: 45px
+}
+
 #CreatePostBox {
     width: 100%;
     background-color: #ffffff;
@@ -437,6 +443,7 @@ a {
     padding-right: 0.75rem;
     margin-top: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
 
     img.img-pr {
         border-radius: 9999px;
@@ -472,6 +479,11 @@ a {
     margin-top: 1rem;
     margin-bottom: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    word-wrap: break-word;
+
+    .iframePost {
+        padding: 20px;
+    }
 
     #Edit-posts {
         position: relative;

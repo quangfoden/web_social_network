@@ -58,6 +58,13 @@ import Close from 'vue-material-design-icons/Close.vue'
                         class="mx-auto custom-cursor-pointer w-100" autoplay controls>
                     </video>
                 </div>
+                <div v-else>
+                    <a :href="medias.url" target="_blank">
+                        {{ medias.url }}</a>
+                    <div class="iframePost">
+                        <iframe :src="medias.url" width="100%" height="200px"></iframe>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="Likes" class="">
@@ -95,11 +102,14 @@ import Close from 'vue-material-design-icons/Close.vue'
                     :size="22" fillColor="#5E6771" />
                 <div v-if="formMediaComment.type === 'image'"><img class="rounded-lg mx-auto w-50"
                         :src="formMediaComment.url" alt=""></div>
-                <div v-if="formMediaComment.type === 'video'">
+                <div v-else-if="formMediaComment.type === 'video'">
                     <video class="rounded-lg mx-auto w-50" controls>
                         <source :src="formMediaComment.url" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
+                </div>
+                <div v-else>
+                    <a href="formMediaComment.url"></a>
                 </div>
             </div>
             <div v-if="comments.length > 0" id="Comment" class="comment_array">
@@ -146,10 +156,6 @@ export default {
             type: Object,
             required: true,
         },
-        // repcomments: {
-        //     type: Object,
-        //     required: true,
-        // },
     },
 
     data() {
@@ -159,11 +165,11 @@ export default {
             showEditPost: false,
             isFileDisplay,
             isEditPostOverlay: false,
-            formComment: reactive({
+            formComment: ref({
                 content: ''
             }),
 
-            formMediaComment: reactive({
+            formMediaComment: ref({
 
             }),
         }
@@ -178,21 +184,15 @@ export default {
             return JSON.parse(localStorage.getItem('authUser'));
         },
     },
-    // created() {
-    //     const postId = this.post.id;
-    //     this.fetchComments(postId);
-    // },
     mounted() {
 
     },
     methods: {
         ...mapActions('post', ['fetchPosts']),
-        // ...mapActions('post', ['fetchComments']),
         ...mapActions('post', ['addNewComment']),
         showBoxPostEdit(postId) {
             if (postId === this.post.id) {
                 this.isEditPostOverlay = true
-                console.log(this.post.media);
             }
         },
         closeEditModalEditPost() {
@@ -207,7 +207,6 @@ export default {
                 mediaType = 'video';
             }
             const urlComment = URL.createObjectURL(file);
-            // this.formMediaComment.push({ type: mediaType, file, url });
             this.formMediaComment.type = mediaType;
             this.formMediaComment.url = urlComment;
         },

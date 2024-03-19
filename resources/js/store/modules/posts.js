@@ -34,7 +34,7 @@ const actions = {
     },
 
     addNewPost({ commit }, formData) {
-        axios.post('/api/user/create-post', formData, {
+        return axios.post('/api/user/create-post', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -61,13 +61,17 @@ const actions = {
                 }
             })
             .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: ' bài viết không thành công',
-                    text: `Error ${error}`,
-                    showConfirmButton: false,
-                    timer: 3000
-                })
+                if (error.response && error.response.status === 422) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Tạo bài viết không thành công',
+                        text: `Lỗi: ${error.response.data.message}`,
+                        showConfirmButton: false,
+                        timer: 3000
+                    })
+                } else {
+                    console.error(error);
+                }
             });
     },
     editPost({ commit }, payload) {

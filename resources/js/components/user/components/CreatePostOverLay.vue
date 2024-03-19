@@ -43,11 +43,15 @@ const emit = defineEmits(['showModal'])
                                     <div v-if="image.fileType === 'image'">
                                         <img class="rounded-lg mx-auto w-100" :src="image.url" alt="">
                                     </div>
-                                    <div v-if="image.fileType === 'video'">
+                                    <div v-else-if="image.fileType === 'video'">
                                         <video class="rounded-lg mx-auto w-100" autoplay controls>
                                             <source :src="image.url" type="video/mp4">
                                             Your browser does not support the video tag.
                                         </video>
+                                    </div>
+                                    <div v-else class="createFile_" style="word-wrap: break-word;">
+                                        <a :href="image.url" target="_blank">
+                                            {{ image.url }}</a>
                                     </div>
                                 </div>
 
@@ -134,21 +138,16 @@ export default {
             }
             this.$store.dispatch('post/addNewPost', formData)
                 .then(() => {
-                    this.form.content = null;
+                    this.form.content = '';
                     this.form.media = [];
-                    setTimeout(() => {
-                        this.isPostOverlay = false
-                    }, 3000);
+                    formData.values = ''
+                    this.isPostOverlay = false
                 })
                 .catch(error => {
-                    // Xử lý khi có lỗi
-                    this.$swal.fire({
-                        position: "top-end",
-                        icon: "error",
-                        title: error,
-                        showConfirmButton: false,
-                        timer: this.$config.notificationTimer ?? 3000,
-                    });
+                    this.form.content = '';
+                    this.form.media = [];
+                    formData.values = ''
+                    this.isPostOverlay = false
                 });
         },
         getFileType(file) {

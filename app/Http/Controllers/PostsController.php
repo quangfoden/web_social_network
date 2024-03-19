@@ -30,7 +30,7 @@ class PostsController extends Controller
 
     public function create_post(AddPostRequest $request)
     {
-        $data = $request->all();
+        $data = $request->validated();
         $post = $this->postRepo->create($data);
         if ($request->hasFile('files')) {
             $requestData = $request->file('files');

@@ -52,6 +52,8 @@ class AuthService
                     ];
                 } else {
                     // Đăng nhập người dùng
+                    $user->login_attempts = 0;
+                    $user->save();
                     auth()->login($user);
                     return ['success' => true];
                 }

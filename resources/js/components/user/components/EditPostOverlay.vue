@@ -44,14 +44,18 @@ const emit = defineEmits(['showModal'])
                                         <Close style="z-index: 999;" v-show="!image.deleted" @click="clearImage(image)"
                                             class="position-absolute bg-white p-1 m-2 right-2 rounded-full border custom-cursor-pointer"
                                             :size="22" fillColor="#5E6771" />
-                                        <div v-if="image.type === 'image' || image.type==='image/jpeg'">
+                                        <div v-if="image.type === 'image' || image.type === 'image/jpeg'">
                                             <img class=" rounded-lg mx-auto w-100" :src="image.url" alt="">
                                         </div>
-                                        <div v-if="image.type === 'video' || image.type==='video/mp4'"> <video
+                                        <div v-else="image.type === 'video' || image.type==='video/mp4'"> <video
                                                 class="rounded-lg mx-auto w-100" autoplay controls>
                                                 <source :src="image.url" type="video/mp4">
                                                 Your browser does not support the video tag.
                                             </video>
+                                        </div>
+                                        <div v-else class="createFile_" style="word-wrap: break-word;">
+                                            <a :href="image.url" target="_blank">
+                                                {{ image.url }}</a>
                                         </div>
                                     </div>
                                 </div>
