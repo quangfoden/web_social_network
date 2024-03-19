@@ -41,6 +41,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('change-password', [UserController::class, 'change_password']);
     Route::post('create-post', [PostsController::class, 'create_post']);
     Route::get('allposts', [PostsController::class, 'all_post']);
+    Route::get('allposts_byuser', [PostsController::class, 'all_PostByUserId']);
     Route::post('post/{postId}/editPost', [PostsController::class, 'updatePost']);
     Route::post('create_comment', [CommentController::class, 'create_comment']);
     Route::post('create_rep_comment/{commentId}', [CommentController::class, 'create_rep_comment']);

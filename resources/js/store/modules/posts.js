@@ -3,13 +3,34 @@ import Swal from 'sweetalert2';
 
 const state = {
     posts: [],
+    postsByUser: [],
+    page: 1,
+    page2: 1,
+    loading: false
 };
 const mutations = {
-    allPosts(state, allPosts) {
-        state.posts = allPosts;
+
+    SET_LOADING(state, value) {
+        state.loading = value;
+    },
+    INCREMENT_PAGE(state) {
+        state.page++;
+    },
+    INCREMENT_PAGE2(state) {
+        state.page2++;
+    },
+    allPosts(state, posts) {
+        // state.posts = posts;
+        state.posts.push(...posts)
+    },
+    allPostsByUser(state, posts) {
+        state.postsByUser.push(...posts)
     },
     setPosts(state, newData) {
         state.posts.unshift(newData);
+    },
+    setPostsbyUser(state, newData) {
+        state.postsByUser.unshift(newData);
     },
     updatePost(state, { postId, newData }) {
         const updatedPostIndex = state.posts.findIndex(post => post.id === postId);
@@ -20,13 +41,24 @@ const mutations = {
 };
 const actions = {
     fetchPosts({ commit }) {
-        axios.get("/api/user/allposts")
-            .then(response => {
-                if (Array.isArray(response.data.data.posts)) {
-                    commit('allPosts', response.data.data.posts);
-                } else {
-                    console.error('Invalid data format:', response.data.data.posts);
-                }
+        axios.get(`/api/user/allposts?page=${state.page}`)
+            .then(({ data }) => {
+                console.log(data);
+                commit('allPosts', data.data.data);
+                commit('INCREMENT_PAGE');
+                commit('SET_LOADING', false);
+            })
+            .catch(error => {
+                console.log("Error fetching posts:", error);
+                commit('SET_LOADING', false);
+            });
+    },
+    fetchPostsByUser({ commit }) {
+        axios.get(`/api/user/allposts_byuser?page=${state.page2}`)
+            .then(({ data }) => {
+                console.log(data);
+                commit('allPostsByUser', data.data.data);
+                commit('INCREMENT_PAGE2');
             })
             .catch(error => {
                 console.log("Error fetching posts:", error);
@@ -42,7 +74,9 @@ const actions = {
             .then(response => {
                 if (response.status === 200 && response.data.data.success === true) {
                     const newData = response.data.data.data
+                    const newData2 = response.data.data.data
                     commit('setPosts', newData);
+                    commit('setPostsbyUser', newData2);
                     Swal.fire({
                         position: "top-end",
                         icon: "success",

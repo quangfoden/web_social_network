@@ -13,12 +13,13 @@ import DotsHorizontal from 'vue-material-design-icons/DotsHorizontal.vue';
 import Restore from 'vue-material-design-icons/Restore.vue';
 </script>
 <template>
-    <div id="LeftSection">
+    <div id="LeftSection" class="card mb-3 mt-3">
         <div class="leffsidebar_lists">
-            <a href="/" class="d-flex align-items-center justify-content-start w-100 left-item">
+            <router-link :to="{ name: 'Profile User' }" href="/"
+                class="d-flex align-items-center justify-content-start w-100 left-item">
                 <img :src="authUser.avatar" alt="" class="img-cus">
                 <div class="text-profile">{{ authUser.user_name }}</div>
-            </a>
+            </router-link>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
                 <AccountMultiple :size="40" fillColor="#5BD7C6" />
                 <div class="text-items">Bạn bè</div>

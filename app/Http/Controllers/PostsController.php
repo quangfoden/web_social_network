@@ -73,6 +73,17 @@ class PostsController extends Controller
             'data' => $posts
         ]);
     }
+    public function all_PostByUserId()
+    {
+        $userId = Auth::id();
+        $posts = $this->postRepo->getAllByUserId($userId);
+        return response()->json([
+            'status' => 200,
+            'success' => true,
+            'message' => 'success',
+            'data' => $posts
+        ]);
+    }
     public function updatePost(AddPostRequest $request, $postId)
     {
         $ispost = Post::find($postId);

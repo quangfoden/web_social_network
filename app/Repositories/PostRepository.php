@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Services\PostService;
 use App\Models\Post;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PostRepository
 {
@@ -14,27 +15,29 @@ class PostRepository
         $this->model = $post;
         $this->postService = $postService;
     }
-    public function getAll(): array
+
+    public function getAll()
     {
-        $result = $this->model->query()->with('user', 'media', 'comments.user', 'comments.repcomments.user')
-            ->orderBy('created_at', 'desc')->get()
-            ->map(function ($post) {
-                $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
-                $post->comments->each(function ($comment) {
-                    $comment->created_at_formatted = $this->postService->formatTimeAgo($comment->created_at);
-                    if ($comment->repcomments) {
-                        foreach ($comment->repcomments as $repcomment) {
-                            $repcomment->created_at_formatted = $this->postService->formatTimeAgo($repcomment->created_at);
-                        }
+        $query = $this->model->query()->with('user', 'media', 'comments.user', 'comments.repcomments.user')
+            ->where(function ($query) {
+                $query->where('privacy', 'public')
+                    ->orWhere('privacy', 'friends');
+            })
+            ->orderBy('created_at', 'desc');
+        $posts = $query->paginate(5);
+        $posts->getCollection()->transform(function ($post) {
+            $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
+            $post->comments->each(function ($comment) {
+                $comment->created_at_formatted = $this->postService->formatTimeAgo($comment->created_at);
+                if ($comment->repcomments) {
+                    foreach ($comment->repcomments as $repcomment) {
+                        $repcomment->created_at_formatted = $this->postService->formatTimeAgo($repcomment->created_at);
                     }
-                });
-                return $post;
+                }
             });
-        $countAll = $result->count();
-        return [
-            'posts' => $result->toArray(),
-            'count_all' => $countAll
-        ];
+            return $post;
+        });
+        return $posts;
     }
     public function getPostById($postId): array
     {
@@ -64,6 +67,31 @@ class PostRepository
         // Trường hợp không tìm thấy bài viết, trả về null
         return null;
     }
+    public function getAllByUserId(int $userId): LengthAwarePaginator
+    {
+        $query = $this->model->query()
+            ->where('user_id', $userId) // Lọc bài viết theo ID của người dùng
+            ->with('user', 'media', 'comments.user', 'comments.repcomments.user')
+            ->orderBy('created_at', 'desc');
+
+        $posts = $query->paginate(10);
+
+        $posts->getCollection()->transform(function ($post) {
+            $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
+            $post->comments->each(function ($comment) {
+                $comment->created_at_formatted = $this->postService->formatTimeAgo($comment->created_at);
+                if ($comment->repcomments) {
+                    foreach ($comment->repcomments as $repcomment) {
+                        $repcomment->created_at_formatted = $this->postService->formatTimeAgo($repcomment->created_at);
+                    }
+                }
+            });
+            return $post;
+        });
+
+        return $posts;
+    }
+
     public function create(array $data): \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder
     {
         $data['user_id'] = auth()->user()->id ?? 1;

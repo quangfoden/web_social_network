@@ -13,7 +13,7 @@ import DotsHorizontal from 'vue-material-design-icons/DotsHorizontal.vue';
 import Restore from 'vue-material-design-icons/Restore.vue';
 </script>
 <template>
-    <div id="RightSection">
+    <div id="RightSection" class="card mb-3 mt-3">
         <div class="rightsection_cus">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="font-semibold">Contacts</div>

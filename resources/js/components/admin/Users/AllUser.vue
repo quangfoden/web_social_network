@@ -107,7 +107,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                         <div class="col-md-12 d-flex gap-2 align-items-center justify-content-center">
-                            <router-link :to="{ name: 'Profile User' }" class="btn btn-primary" @click="closeModal">Go to Profile </router-link>
+                            <router-link :to="{ name: 'Profile Admin' }" class="btn btn-primary" @click="closeModal">Go to Profile </router-link>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>

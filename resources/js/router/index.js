@@ -9,7 +9,7 @@ import ForgotPasswordView from '../components/account/ForgotPasswordView.vue'
 import AdminView from '../components/admin/adminView.vue';
 
 import ProfileParent from '../components/admin/profile/ProfileParent.vue';
-import Profile from '../components/admin/profile/ProfileView.vue';
+import ProfileAdmin from '../components/admin/profile/ProfileView.vue';
 import ChangePasswordProfile from '../components/admin/profile/ChangePassword.vue';
 
 import UserParent from '../components/admin/Users/UserParent.vue'
@@ -25,6 +25,7 @@ import AllComment from '../components/admin/Comments/AllComment.vue'
 import PageUserParent from '../components/user/PageUserParent.vue'
 import LayoutUserParent from '../components/user/layouts/LayoutsUserParent.vue'
 import HomeView from '../components/user/homeSection/HomeView.vue'
+import ProfileParentUser from '../components/user/profile/ProfileParent.vue';
 
 const ErrorPaBlogge = {
     template:
@@ -79,13 +80,13 @@ export const routes = [
             },
             {
                 name: 'Profile',
-                path: 'profile',
+                path: '',
                 component: ProfileParent,
                 children: [
                     {
-                        name: 'Profile User',
-                        path: 'profile-user',
-                        component: Profile,
+                        name: 'Profile Admin',
+                        path: 'profile-admin',
+                        component: ProfileAdmin,
                     },
                     {
                         name: 'Change Password',
@@ -136,8 +137,13 @@ export const routes = [
                         path: '',
                         name: 'Home Section',
                         component: HomeView,
-                    }
+                    },
                 ]
+            },
+            {
+                path: 'profile',
+                name: 'Profile User',
+                component: ProfileParentUser,
             }
         ]
     }
@@ -148,6 +154,7 @@ const router = createRouter({
     routes
 })
 import { store } from '../store/store';
+
 router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
     const requiresAuthUser = to.matched.some(record => record.meta.requiresAuthUser)

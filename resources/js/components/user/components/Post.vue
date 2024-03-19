@@ -51,7 +51,7 @@ import Close from 'vue-material-design-icons/Close.vue'
             <div class="list_item_media" v-for="medias in media" :key="media.id">
                 <div v-if="medias.type === 'image/jpeg'">
                     <img @click="isFileDisplay = medias.url" :src="medias.url" alt="Image"
-                        class="mx-auto custom-cursor-pointer w-100">
+                        class="mx-auto custom-cursor-pointer w-100" loading="lazy">
                 </div>
                 <div class="" v-else-if="medias.type === 'video/mp4'">
                     <video @click="isFileDisplay = medias.url" :src="medias.url"
@@ -176,7 +176,7 @@ export default {
     },
 
     computed: {
-        // ...mapState('post', ['comments']),
+        ...mapState('post', ['comments']),
         authUser() {
             if (this.$store.getters.getAuthUser.id !== undefined) {
                 return this.$store.getters.getAuthUser;
