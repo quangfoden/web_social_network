@@ -15,7 +15,7 @@ import Restore from 'vue-material-design-icons/Restore.vue';
 <template>
     <div id="LeftSection" class="card mb-3 mt-3">
         <div class="leffsidebar_lists">
-            <router-link :to="{ name: 'Profile User' }" href="/"
+            <router-link :to="{ name: 'Profile User', params: { id: authUser.id } }"
                 class="d-flex align-items-center justify-content-start w-100 left-item">
                 <img :src="authUser.avatar" alt="" class="img-cus">
                 <div class="text-profile">{{ authUser.user_name }}</div>
@@ -52,6 +52,7 @@ import Restore from 'vue-material-design-icons/Restore.vue';
     </div>
 </template>
 <script>
+import { mapState, mapActions } from 'vuex';
 export default {
     computed: {
         authUser() {
@@ -61,5 +62,10 @@ export default {
             return JSON.parse(localStorage.getItem('authUser'));
         },
     },
+    methods: {
+        // setStatePage() {
+        //     this.$store.dispatch('post/setStateToOne');
+        // }
+    }
 }
 </script>

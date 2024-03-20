@@ -7,10 +7,9 @@
             <div class="card-body text-center" style="margin-top: -100px;">
                 <img :src="authUser.avatar" alt="Jassa Jas" class="img-fluid rounded-circle mb-2" width="128"
                     height="128">
-                <h4 class="card-title mb-2">{{ authUser.user_name }}</h4>
+                <h4 class="card-title mb-2">{{ inUser.user_name }}</h4>
                 <!-- <div class="text-muted mb-2">Front-end Developer</div> -->
-
-                <div v-if="!authUser">
+                <div v-if="!isAuthUser">
                     <a class="btn btn-primary btn-sm" href="#">Follow</a>
                     <a class="btn btn-primary btn-sm" href="#">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -161,6 +160,11 @@
 </template>
 <script>
 export default {
+    data(){
+        return{
+           
+        }
+    },
     computed: {
         authUser() {
             if (this.$store.getters.getAuthUser.id !== undefined) {
@@ -168,9 +172,16 @@ export default {
             }
             return JSON.parse(localStorage.getItem('authUser'));
         },
+        isAuthUser() {
+            return this.inUser.id == this.authUser.id;
+        }
     },
     props: {
         postsByUsers: {
+            type: Object,
+            required: true,
+        },
+        inUser: {
             type: Object,
             required: true,
         },

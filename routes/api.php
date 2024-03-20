@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CommentController;
@@ -33,6 +34,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
         return response()->json($responseData);
     });
     Route::get('allusers', [UserController::class, 'allusers']);
+    Route::get('getUserById/{id}', [UsersController::class, 'getUserById']);
     Route::get('roles', [UserController::class, 'roles']);
     Route::post('create-new-user', [UserController::class, 'createNewUser']);
     Route::post('change-role-user/{id}', [UserController::class, 'changeRoleUser']);
@@ -41,7 +43,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('change-password', [UserController::class, 'change_password']);
     Route::post('create-post', [PostsController::class, 'create_post']);
     Route::get('allposts', [PostsController::class, 'all_post']);
-    Route::get('allposts_byuser', [PostsController::class, 'all_PostByUserId']);
+    Route::get('post/{userId}/allposts_byuser', [PostsController::class, 'all_PostByUserId']);
     Route::post('post/{postId}/editPost', [PostsController::class, 'updatePost']);
     Route::post('create_comment', [CommentController::class, 'create_comment']);
     Route::post('create_rep_comment/{commentId}', [CommentController::class, 'create_rep_comment']);

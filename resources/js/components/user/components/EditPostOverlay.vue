@@ -123,7 +123,7 @@ export default {
             ],
             isEditPostOverlay,
             isFileDisplay,
-            form: reactive({
+            form: ref({
                 contentPostEdit: this.postEdit.content,
                 privacyPostEdit: this.postEdit.privacy,
             }),
@@ -164,7 +164,8 @@ export default {
             }
             this.$store.dispatch('post/editPost', { postId: postId, formData: formData })
                 .then(() => {
-
+                    formData.values = ''
+                    this.closeModalEditPost()
                 })
                 .catch(error => {
                     // Xử lý khi có lỗi
@@ -175,6 +176,7 @@ export default {
                         showConfirmButton: false,
                         timer: this.$config.notificationTimer ?? 3000,
                     });
+                    this.isEditPostOverlay = false
                 });
         },
         getFileType(file) {

@@ -4,6 +4,7 @@ export const useGeneralStore = defineStore('general', {
         isPostOverlay: false,
         isEditPostOverlay:false,
         isCropperModal: false,
+        myProfile: false,
         isFileDisplay: []
     }),
     persist: true,

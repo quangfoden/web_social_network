@@ -17,6 +17,11 @@ class UserRepository
     {
         return $this->model->query()->where('email', $email)->first();
     }
+    public function getUserById(int $id): User
+    {
+        return $this->model->query()->find($id);
+    }
+
     public function createUser(array $userData)
     {
         return User::create($userData);

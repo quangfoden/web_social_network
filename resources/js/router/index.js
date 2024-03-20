@@ -141,7 +141,7 @@ export const routes = [
                 ]
             },
             {
-                path: 'profile',
+                path: 'profile/:id',
                 name: 'Profile User',
                 component: ProfileParentUser,
             }

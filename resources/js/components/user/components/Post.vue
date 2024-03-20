@@ -10,12 +10,13 @@ import Close from 'vue-material-design-icons/Close.vue'
 <template>
     <div id="post" class="pb-2">
         <div class="d-flex align-items-center px-0">
-            <a class="mr-2">
-                <img class="img-cus" :src="user.avatar" alt="">
-            </a>
+            <router-link :to="{ name: 'Profile User', params: { id: user.id } }" class="mr-2">
+                <img class="img-cus custom-cursor-pointer" :src="user.avatar" alt="">
+            </router-link>
             <div class="d-flex align-items-center justify-content-between p-2 rounded-full w-100">
                 <div>
-                    <div class="text-pr">{{ user.user_name }}</div>
+                    <router-link :to="{ name: 'Profile User', params: { id: user.id } }"
+                        class="text-pr custom-cursor-pointer">{{ user.user_name }}</router-link>
                     <div class="d-flex align-items-center text-xs text-gray-600">
                         {{ post.created_at_formatted }}
                         <i v-if="post.privacy === 'public'" class="mx-2 fas fa-globe"></i>

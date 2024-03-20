@@ -23,7 +23,7 @@ import Logout from 'vue-material-design-icons/Logout.vue';
             <input class="search" placeholder="Search..." type="text">
         </div>
         <div id="NavCenter">
-            <router-link :to="{ name:'Home Section' }" class="w-100">
+            <router-link :to="{ name: 'Home Section' }" class="w-100">
                 <div :class="$route.path == '/' ? 'mt-1' : ''"
                     class="list_items d-flex align-items-center justify-content-center w-100">
                     <div>
@@ -63,7 +63,7 @@ import Logout from 'vue-material-design-icons/Logout.vue';
                     <img :src="authUser.avatar" alt="" class="custom">
                 </div>
                 <div v-if="showMenu" class="show_menu position-absolute">
-                    <router-link :to="{name:'Profile User'}" @click="showMenu = !showMenu">
+                    <router-link :to="{ name: 'Profile User', params: { id: authUser.id } }" @click="loadUserbyId">
                         <div class="d-flex menu_item align-items-center gap-3 ">
                             <img :src="authUser.avatar" alt="" class="custom">
                             <span>{{ authUser.user_name }}</span>
@@ -124,7 +124,16 @@ export default {
         logoutSubmit() {
             this.logout();
         },
-
+        loadUserbyId() {
+            this.showMenu = false
+            this.$store.dispatch('post/getUserbyId', this.authUser.id)
+                .then(response => {
+                    this.myprofile = true
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
     }
 }
 </script>
