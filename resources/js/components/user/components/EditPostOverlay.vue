@@ -38,7 +38,7 @@ const emit = defineEmits(['showModal'])
                             <div v-if="imageUrls" class="p-2 position-relative cus-img-dis">
                                 <div v-for="(image) in  imageUrls " :key="index">
                                     <Undo v-show="image.deleted" @click="revertImage(image)"
-                                        class="position-absolute bg-secondary p-1 m-2 z-1000 right-2 rounded-full border custom-cursor-pointer"
+                                        class="position-absolute bg-white p-1 m-2 z-1000 right-2 rounded-full border custom-cursor-pointer"
                                         :size="22" fillColor="#5E6771" />
                                     <div :class="{ 'opacity-50': image.deleted }">
                                         <Close style="z-index: 999;" v-show="!image.deleted" @click="clearImage(image)"

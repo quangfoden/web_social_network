@@ -85,6 +85,18 @@ class PostsController extends Controller
             'data' => $posts
         ]);
     }
+    public function allposts_deleted()
+    {
+        $userId = Auth::id();
+        $posts = $this->postRepo->getAllByUserIdDeleted($userId);
+        // dd($userId);
+        return response()->json([
+            'status' => 200,
+            'success' => true,
+            'message' => 'success',
+            'data' => $posts
+        ]);
+    }
     public function updatePost(AddPostRequest $request, $postId)
     {
         $ispost = Post::find($postId);
@@ -135,5 +147,25 @@ class PostsController extends Controller
             'data' => $post
         ];
         return response()->json(['data' => $res]);
+    }
+
+    public function trash(Request $request, $id)
+    {
+        $post = Post::findOrFail($id);
+        $post->status = !$post->status;;
+        $post->save();
+
+        return response()->json([
+            'message' => $post->status ? 'Bài viết đã được khôi phục thành công.' : 'Bài viết đã được chuyển vào thùng rác.'
+        ]);    }
+    public function pin(Request $request, $id)
+    {
+        $post = Post::findOrFail($id);
+        $post->pinned = !$post->pinned; // Đảo ngược trạng thái ghim bài viết
+        $post->save();
+
+        return response()->json([
+            'message' => $post->pinned ? 'Bài viết đã được ghim lên đầu.' : 'Bài viết đã được bỏ ghim.'
+        ]);
     }
 }

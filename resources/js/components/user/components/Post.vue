@@ -5,10 +5,13 @@ import ThumbUp from 'vue-material-design-icons/ThumbUp.vue';
 import Check from 'vue-material-design-icons/Check.vue';
 import Delete from 'vue-material-design-icons/Delete.vue';
 import Close from 'vue-material-design-icons/Close.vue'
+import Pin from 'vue-material-design-icons/Pin.vue'
 
 </script>
 <template>
     <div id="post" class="pb-2">
+        <p v-if="pinned === 1 || pinned === true"> Bài viết đã ghim</p>
+        <hr>
         <div class="d-flex align-items-center px-0">
             <router-link :to="{ name: 'Profile User', params: { id: user.id } }" class="mr-2">
                 <img class="img-cus custom-cursor-pointer" :src="user.avatar" alt="">
@@ -17,6 +20,9 @@ import Close from 'vue-material-design-icons/Close.vue'
                 <div>
                     <router-link :to="{ name: 'Profile User', params: { id: user.id } }"
                         class="text-pr custom-cursor-pointer">{{ user.user_name }}</router-link>
+                    <Pin v-if="pinned === 1 || pinned === true"
+                        class="bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer" :size="22"
+                        fillColor="#5E6771" />
                     <div class="d-flex align-items-center text-xs text-gray-600">
                         {{ post.created_at_formatted }}
                         <i v-if="post.privacy === 'public'" class="mx-2 fas fa-globe"></i>
@@ -30,10 +36,12 @@ import Close from 'vue-material-design-icons/Close.vue'
                 <div v-show="isEditPostOverlay === false" v-if="showEditPost && post.user_id === authUser.id"
                     class="edit-post">
                     <ul>
-                        <li>Ghim bài viết</li>
+                        <li v-if="pinned === 0 || pinned === false" @click="togglePin(post.id)">Ghim bài viết</li>
+                        <li v-if="pinned === 1 || pinned === true" @click="togglePin(post.id)">Bỏ ghim</li>
                         <li>Lưu bài viết</li>
                         <li @click="showBoxPostEdit(post.id)">Chỉnh sửa bài viết</li>
-                        <li>Chuyển vào thùng rác</li>
+                        <li v-if="status" @click="trashPost(post.id)">Chuyển vào thùng rác</li>
+                        <li v-if="!status"@click="trashPost(post.id)">Khôi phục</li>
                     </ul>
                 </div>
                 <div v-if="showEditPost && post.user_id !== authUser.id" class="edit-post friend">
@@ -49,7 +57,7 @@ import Close from 'vue-material-design-icons/Close.vue'
             {{ post.content }}
         </div>
         <div class="cus-post-media">
-            <div class="list_item_media" v-for="medias in media" :key="media.id">
+            <div class="list_item_media" v-for=" medias  in  media " :key="media.id">
                 <div v-if="medias.type === 'image/jpeg'">
                     <img @click="isFileDisplay = medias.url" :src="medias.url" alt="Image"
                         class="mx-auto custom-cursor-pointer w-100" loading="lazy">
@@ -114,7 +122,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                 </div>
             </div>
             <div v-if="comments.length > 0" id="Comment" class="comment_array">
-                <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">
+                <div class="my-1 comment_list" v-for="( comment, index ) in  comments " :key="comment.id">
                     <Comment :comment="comment" />
                 </div>
             </div>
@@ -148,6 +156,14 @@ export default {
         post: {
             type: Object,
             required: true,
+        },
+        pinned: {
+            type: Object,
+            required: true
+        },
+        status: {
+            type: Object,
+            required: true
         },
         user: {
             type: Object,
@@ -266,7 +282,18 @@ export default {
                     });
                 });
         },
-    },
+        trashPost(postId) {
+            this.$store.dispatch('post/trashPost', postId)
+                .then(message => {
 
+                })
+                .catch(error => {
+                    console.error("Error moving post to trash:", error);
+                });
+        },
+        togglePin(postId) {
+            this.$store.dispatch('post/togglePin', postId);
+        }
+    },
 }
 </script>

@@ -6,8 +6,10 @@ const state = {
     user: [],
     posts: [],
     postsByUser: [],
+    postsDeleted: [],
     page: 1,
     page2: 1,
+    page3: 1,
     loading: false
 };
 const getters = {
@@ -16,6 +18,10 @@ const getters = {
 
 const mutations = {
     RESET_POSTS_BY_USER(state) {
+        state.postsDeleted = [];
+        state.page3 = 1;
+    },
+    RESET_POSTS_BY_USER_DELETED(state) {
         state.postsByUser = [];
         state.page2 = 1;
     },
@@ -31,6 +37,9 @@ const mutations = {
     INCREMENT_PAGE2(state) {
         state.page2++;
     },
+    INCREMENT_PAGE3(state) {
+        state.page3++;
+    },
     SET_INCREMENT_PAGE(state) {
         state.page = 1;
     },
@@ -43,7 +52,9 @@ const mutations = {
     },
     allPostsByUser(state, posts) {
         state.postsByUser.push(...posts)
-        // state.postsByUser[userId] = [...state.postsByUser[userId], ...posts];
+    },
+    allPostsDeleted(state, posts) {
+        state.postsDeleted.push(...posts)
     },
     setPosts(state, newData) {
         state.posts.unshift(newData);
@@ -62,7 +73,49 @@ const mutations = {
         if (updatedPostIndex !== -1) {
             state.postsByUser[updatedPostIndex] = newData;
         }
+    },
+    MOVE_TO_TRASH(state, postId) {
+        const index = state.posts.findIndex(post => post.id === postId);
+        if (index !== -1) {
+            state.posts.splice(index, 1);
+        }
+
+    },
+    MOVE_TO_TRASH2(state, postId) {
+        const index = state.postsByUser.findIndex(post => post.id === postId);
+        if (index !== -1) {
+            state.postsByUser.splice(index, 1);
+        }
+
+    },
+    MOVE_TO_TRASH3(state, postId) {
+        const index = state.postsDeleted.findIndex(post => post.id === postId);
+        if (index !== -1) {
+            state.postsDeleted[index].status = !state.postsDeleted[index].status;
+            if (state.postsDeleted[index].status) {
+                state.postsDeleted.splice(index, 1)[0];
+            } else {
+                const statusPost = state.postsDeleted.splice(index, 1)[0];
+                state.postsDeleted.push(statusPost);
+            }
+        }
+
+    },
+    TOGGLE_PIN(state, postId) {
+        const index = state.postsByUser.findIndex(post => post.id === postId);
+        if (index !== -1) {
+            state.postsByUser[index].pinned = !state.postsByUser[index].pinned;
+            if (state.postsByUser[index].pinned) {
+                const pinnedPost = state.postsByUser.splice(index, 1)[0];
+                state.postsByUser.unshift(pinnedPost);
+            } else {
+                const unpinnedPost = state.postsByUser.splice(index, 1)[0];
+                state.postsByUser.push(unpinnedPost);
+            }
+        }
+
     }
+
 };
 const actions = {
     setStateToOne({ commit }) {
@@ -100,6 +153,17 @@ const actions = {
             .then(({ data }) => {
                 commit('allPostsByUser', data.data.data);
                 commit('INCREMENT_PAGE2');
+            })
+            .catch(error => {
+                console.log("Error fetching posts:", error);
+            });
+    },
+    fetchPostsDeleted({ commit }) {
+        axios.get(`/api/user/post/allposts_deleted/?page=${state.page3}`)
+            .then(({ data }) => {
+                commit('allPostsDeleted', data.data.data);
+                commit('INCREMENT_PAGE3');
+                console.log(state.postsDeleted);
             })
             .catch(error => {
                 console.log("Error fetching posts:", error);
@@ -189,6 +253,45 @@ const actions = {
                 })
             });
     },
+    trashPost({ commit }, postId) {
+        return new Promise((resolve, reject) => {
+            axios.put(`/api/user/post/${postId}/trash`)
+                .then(response => {
+                    console.log(response.data.message);
+                    commit('MOVE_TO_TRASH', postId);
+                    commit('MOVE_TO_TRASH2', postId);
+                    commit('MOVE_TO_TRASH3', postId);
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "success",
+                        title: `${response.data.message}`,
+                        showConfirmButton: false,
+                        timer: 3000,
+                    });
+                    resolve(response.data.message);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+        });
+    },
+    togglePin({ commit }, postId) {
+        console.log(state.postsByUser);
+        axios.put(`/api/user/post/${postId}/pin`)
+            .then(response => {
+                commit('TOGGLE_PIN', postId);
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: `${response.data.message}`,
+                    showConfirmButton: false,
+                    timer: 3000,
+                });
+            })
+            .catch(error => {
+                console.error("Error toggling pin:", error);
+            });
+    }
 };
 
 

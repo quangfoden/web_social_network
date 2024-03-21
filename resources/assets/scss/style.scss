@@ -1043,3 +1043,14 @@ body {
 .btn-sm {
     margin-right: 3px;
 }
+
+// repository
+#RepoParent {
+    padding-top: 56px;
+
+    .left-item {
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 0.375rem
+    }
+}

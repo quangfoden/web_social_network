@@ -24,7 +24,7 @@
             <div class="card-header">
                 <div class="card-actions float-right">
                     <div class="dropdown show">
-                        <a href="#" data-toggle="dropdown" data-display="static">
+                        <a href="#" data-bs-toggle="dropdown" data-bs-display="static">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="feather feather-more-horizontal align-middle">
@@ -35,9 +35,9 @@
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
+                            <a class="dropdown-item" href="#">Tuỳ chỉnh</a>
+                            <a class="dropdown-item" href="#">Thêm tiểu sử</a>
+                            <a class="dropdown-item" href="#">Chỉnh sửa thông tin cá nhân</a>
                         </div>
                     </div>
                 </div>
@@ -160,9 +160,9 @@
 </template>
 <script>
 export default {
-    data(){
-        return{
-           
+    data() {
+        return {
+
         }
     },
     computed: {

@@ -2,7 +2,7 @@
     <div id="PostsSection" class="">
         <CreatePostBox :image="authUser.avatar" :placeholder="'Bạn đang nghĩ gì vậy ' + authUser.user_name" />
         <div id="posts" v-for="post in  posts " :key="post.id">
-            <Post v-if="post.privacy === 'public' || post.privacy === 'friends'" :post="post" :user="post.user"
+            <Post v-if="post.privacy === 'public' || post.privacy === 'friends'" :status="post.status" :post="post" :user="post.user"
                 :media="post.media" :comments="post.comments" />
         </div>
         <div v-if="loading">Đang tải ...</div>

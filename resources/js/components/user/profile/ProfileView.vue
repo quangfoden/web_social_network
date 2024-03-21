@@ -11,8 +11,8 @@
                     <CreatePostBox v-if="isAuthUser" :image="authUser.avatar"
                         :placeholder="'Bạn đang nghĩ gì vậy ' + authUser.user_name" />
                     <div id="posts" v-for="post in postsByUser" :key="post.id">
-                        <Post v-if="isUser(post)" :post="post" :user="post.user" :media="post.media"
-                            :comments="post.comments" />
+                        <Post v-if="isUser(post) && checkPrivacy(post)" :post="post" :pinned="post.pinned" :status="post.status" :user="post.user"
+                            :media="post.media" :comments="post.comments" />
                     </div>
                     <!-- <div v-if="loading">Đang tải ...</div> -->
                     <div v-if="loading" class="spinner-border text-primary z-1000"
@@ -21,7 +21,7 @@
                     </div>
                 </div>
             </div>
-            <RightProfile id="RightProfile" />
+            <RightProfile v-if="isAuthUser" id="RightProfile" />
         </div>
     </div>
 </template>
@@ -72,6 +72,15 @@ export default {
         isUser(post) {
             return post.user_id === this.userId;
         },
+        checkPrivacy(post) {
+            if (post.privacy == 'only_me') {
+                if (this.isAuthUser) {
+                    return true
+                }
+                return false
+            }
+            return true
+        },
         handleScroll() {
             const scrollPosition = window.innerHeight + window.scrollY;
             const bodyHeight = document.body.offsetHeight;
@@ -118,6 +127,9 @@ export default {
     mounted() {
         window.addEventListener('scroll', this.handleScroll);
     },
+    destroyed() {
+        window.removeEventListener('scroll', this.handleScroll);
+    }
 
 }
 

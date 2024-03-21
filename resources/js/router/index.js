@@ -26,6 +26,8 @@ import PageUserParent from '../components/user/PageUserParent.vue'
 import LayoutUserParent from '../components/user/layouts/LayoutsUserParent.vue'
 import HomeView from '../components/user/homeSection/HomeView.vue'
 import ProfileParentUser from '../components/user/profile/ProfileParent.vue';
+import RepositoryParent from '../components/user/profile/RepositoryParent.vue';
+import Trash from '../components/user/profile/Trash.vue';
 
 const ErrorPaBlogge = {
     template:
@@ -144,7 +146,20 @@ export const routes = [
                 path: 'profile/:id',
                 name: 'Profile User',
                 component: ProfileParentUser,
-            }
+            },
+            {
+                path: 'repository',
+                name: 'Repository User',
+                component: RepositoryParent,
+                children:[
+                    {
+                        path:'Trash',
+                        name:'Trash User',
+                        component:Trash
+                    }
+                ]
+            },
+            
         ]
     }
 ]

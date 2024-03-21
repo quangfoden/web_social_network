@@ -19,6 +19,7 @@ class PostRepository
     public function getAll()
     {
         $query = $this->model->query()->with('user', 'media', 'comments.user', 'comments.repcomments.user')
+            ->where('status', 1)
             ->where(function ($query) {
                 $query->where('privacy', 'public')
                     ->orWhere('privacy', 'friends');
@@ -70,8 +71,36 @@ class PostRepository
     public function getAllByUserId(int $userId): LengthAwarePaginator
     {
         $query = $this->model->query()
+            ->where('status', 1)
             ->where('user_id', $userId) // Lọc bài viết theo ID của người dùng
             ->with('user', 'media', 'comments.user', 'comments.repcomments.user')
+            ->orderByRaw('CASE WHEN pinned = 1 THEN 0 ELSE 1 END')
+            ->orderBy('created_at', 'desc');
+
+        $posts = $query->paginate(10);
+
+        $posts->getCollection()->transform(function ($post) {
+            $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
+            $post->comments->each(function ($comment) {
+                $comment->created_at_formatted = $this->postService->formatTimeAgo($comment->created_at);
+                if ($comment->repcomments) {
+                    foreach ($comment->repcomments as $repcomment) {
+                        $repcomment->created_at_formatted = $this->postService->formatTimeAgo($repcomment->created_at);
+                    }
+                }
+            });
+            return $post;
+        });
+
+        return $posts;
+    }
+    public function getAllByUserIdDeleted(int $userId): LengthAwarePaginator
+    {
+        $query = $this->model->query()
+            ->where('status', 0)
+            ->where('user_id', $userId)
+            ->with('user', 'media', 'comments.user', 'comments.repcomments.user')
+            ->orderByRaw('CASE WHEN pinned = 1 THEN 0 ELSE 1 END')
             ->orderBy('created_at', 'desc');
 
         $posts = $query->paginate(10);

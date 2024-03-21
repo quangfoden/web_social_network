@@ -44,7 +44,10 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('create-post', [PostsController::class, 'create_post']);
     Route::get('allposts', [PostsController::class, 'all_post']);
     Route::get('post/{userId}/allposts_byuser', [PostsController::class, 'all_PostByUserId']);
+    Route::get('post/allposts_deleted', [PostsController::class, 'allposts_deleted']);
     Route::post('post/{postId}/editPost', [PostsController::class, 'updatePost']);
+    Route::put('post/{id}/trash', [PostsController::class, 'trash']);
+    Route::put('post/{id}/pin', [PostsController::class, 'pin']);
     Route::post('create_comment', [CommentController::class, 'create_comment']);
     Route::post('create_rep_comment/{commentId}', [CommentController::class, 'create_rep_comment']);
     // Route::post('get_all_comments/{postId}', [CommentController::class, 'get_all_comments']);
