@@ -15,12 +15,14 @@ import Logout from 'vue-material-design-icons/Logout.vue';
 
 <template>
     <div id="Mainnav">
-        <router-link :to="{ name: '' }" class="text_name">
-            <img width="40" src="/images/icons/FacebookLogoCircle.png" alt="">
-        </router-link>
-        <div id="Navleft">
-            <Magnify class="p-2" :size="22" fillColor="#64676B" />
-            <input class="search" placeholder="Search..." type="text">
+        <div class="d-flex gap-2">
+            <router-link :to="{ name: '' }" class="text_name">
+                <img width="40" src="/images/icons/FacebookLogoCircle.png" alt="">
+            </router-link>
+            <div id="Navleft">
+                <Magnify class="p-2" :size="22" fillColor="#64676B" />
+                <input class="search" placeholder="Search..." type="text">
+            </div>
         </div>
         <div id="NavCenter">
             <router-link :to="{ name: 'Home Section' }" class="w-100">
@@ -69,6 +71,18 @@ import Logout from 'vue-material-design-icons/Logout.vue';
                             <span>{{ authUser.user_name }}</span>
                         </div>
                     </router-link>
+                    <router-link v-if="!authUser.user_face_regs.length > 0" :to="{ name: 'RgFaceIF User' }"
+                        class="w-full  ml-2" as="button" method="post">
+                        <div class="d-flex menu_item align-items-center justify-content-center gap-1">
+                            <span>Đăng ký khuôn mặt</span>
+                        </div>
+                    </router-link>
+                    <span v-if="authUser.user_face_regs.length > 0" lass="w-full  ml-2">
+                        <div style="cursor: pointer;"
+                            class="d-flex menu_item align-items-center justify-content-center gap-1">
+                            <span @click="deleteFaceId">Xoá khuôn mặt đã đăng ký</span>
+                        </div>
+                    </span>
                     <a @click="logoutSubmit" class="w-full  ml-2" as="button" method="post">
                         <div class="d-flex menu_item align-items-center justify-content-center gap-1">
                             <Logout :size="30" class="pl-2" />
@@ -86,6 +100,8 @@ import Logout from 'vue-material-design-icons/Logout.vue';
     </div>
 </template>
 <script>
+import Router from '../../../router';
+import Swal from 'sweetalert2';
 import { mapGetters, mapMutations, mapActions } from "vuex"
 import { useGeneralStore } from '../../../store/general';
 import { ref } from 'vue';
@@ -133,6 +149,36 @@ export default {
                 .catch(error => {
                     console.error('Error:', error);
                 });
+        },
+        deleteFaceId() {
+            const data = { user_id: this.authUser.id, username: this.authUser.user_name };
+            axios.post('http://127.0.0.1:5000/delete_face', data)
+                .then(response => {
+                    console.log(response);
+                    Swal.fire({
+                        icon: 'success',
+                        text: `Success ${response.data.message}`,
+                        showConfirmButton: false,
+                        timer: 3000
+                    })
+                    this.$store.dispatch('setAuthuser')
+                    Router.push('/');
+                })
+                .catch(error => {
+                    console.error('Lỗi khi gửi yêu cầu:', error);
+                    console.error('Lỗi khi gửi yêu cầu:', error);
+                    let errorMessage = 'Có lỗi xảy ra khi gửi yêu cầu';
+                    if (error.response && error.response.data && error.response.data.message) {
+                        errorMessage = error.response.data.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        text: errorMessage,
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+
+                })
         }
     }
 }

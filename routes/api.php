@@ -21,10 +21,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login-faceid', [AuthController::class, 'loginWithFaceID']);
 Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/', function (Request $request) {
         $user = $request->user();
+        $userFaceRegs = $user->userFaceRegs()->get();
+        $user->user_face_regs = $userFaceRegs;
         $responseData = [
             'status' => 200,
             'success' => true,

@@ -2,10 +2,10 @@
   <div class="col-lg-9">
     <div class="text-center">
       <div>
-        <a href="/" class="logo">
+        <!-- <a href="/" class="logo"> -->
           <!-- ../../../assets/images/logo.png -->
-          <img src="" height="50" alt="logo" />
-        </a>
+          <!-- <img src="" height="50" alt="logo" />
+        </a> -->
       </div>
       <h4 class="font-size-18 mt-4">Welcome Back !</h4>
       <!-- <div class="form-group"> -->
@@ -29,7 +29,6 @@
           <input v-model="user.password" type="password" class="form-control" id="userpassword"
             placeholder="Enter password" />
         </div>
-
         <div class="custom-control custom-checkbox">
           <input type="checkbox" class="custom-control-input" id="customControlInline" />
           <label class="custom-control-label" for="customControlInline">
@@ -38,10 +37,15 @@
         </div>
         <div class="mt-4 text-center">
           <button class="btn btn-all-add-edit w-md waves-effect waves-light" type="submit">
-            Log In
+            LogIn
           </button>
         </div>
       </form>
+      <div class="mt-4 text-center">
+        <button @click="loginFaceId" class="btn btn-all-add-edit w-md waves-effect waves-light">
+          login with faceID
+        </button>
+      </div>
       <div class="mt-5 text-center">
         <p>
           Don't have an account ?
@@ -58,12 +62,17 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2';
 export default {
   data() {
     return {
       user: {
         email: '',
         password: '',
+      },
+      dataUser: {
+        user_id: null,
+        username: null
       }
     }
   },
@@ -77,6 +86,30 @@ export default {
           console.log('Đăng nhập thất bại:', error)
         });
     },
+    loginFaceId() {
+      axios.post('http://127.0.0.1:5000/start')
+        .then(response => {
+          this.dataUser.user_id = response.data.user.user_id
+          this.dataUser.username = response.data.user.username
+
+          this.$store.dispatch('loginWithFaceId', this.dataUser)
+            .then(() => {
+
+            })
+            .catch((error) => {
+              console.log('Đăng nhập thất bại:', error)
+            });
+        })
+        .catch(error => {
+          console.error('Lỗi khi gửi yêu cầu:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Xác thực thất bại',
+            showConfirmButton: false,
+            timer: 3000
+          })
+        });
+    }
   },
 }
 </script>

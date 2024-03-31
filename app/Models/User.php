@@ -63,4 +63,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class);
     }
+    public function faceIds()
+    {
+        return $this->hasMany(FaceId::class);
+    }
+
+    // Định nghĩa mối quan hệ 1-n với bảng user_face_regs
+    public function userFaceRegs()
+    {
+        return $this->hasMany(UserFaceReg::class);
+    }
 }

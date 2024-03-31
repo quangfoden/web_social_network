@@ -123,6 +123,85 @@ const actions = {
         })
 
     },
+    loginWithFaceId({ commit, getters }, userData) {
+        axios.get('/sanctum/csrf-cookie').then(() => {
+            axios.post('/api/login-faceid', userData)
+                .then(response => {
+                    commit('mutateLoginResponse', response.data);
+                    localStorage.setItem(
+                        'loginResponse',
+                        JSON.stringify(response.data)
+                    );
+                    console.log(getters.getLoginResponse.response_type);
+                    console.log(getters.getLoginResponse.status);
+                    if (getters.getLoginResponse.response_type == 'success' && getters.getLoginResponse.status == 1) {
+                        axios.get('/api/user')
+                            .then(response => {
+                                if (response.status === 200 && getters.getLoginResponse.role.includes('admin')) {
+
+                                    commit('mutateAuthUser', response.data.data.user);
+                                    localStorage.setItem(
+                                        'authUser',
+                                        JSON.stringify(response.data.data.user)
+                                    );
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Chào mừng Admin',
+                                        text: `Success ${getters.getLoginResponse.response_data[0]}`,
+                                        showConfirmButton: false,
+                                        timer: Config.notificationTimer ?? 3000
+                                    })
+                                    Router.push('/admin');
+                                }
+                                else if (getters.getLoginResponse.response_type == 'success' && getters.getLoginResponse.role == 'user') {
+                                    commit('mutateAuthUser', response.data.data.user);
+
+                                    localStorage.setItem(
+                                        'authUser',
+                                        JSON.stringify(response.data.data.user)
+                                    );
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Đăng nhập thành công',
+                                        text: `Success ${getters.getLoginResponse.response_data[0]}`,
+                                        showConfirmButton: false,
+                                        timer: Config.notificationTimer ?? 3000
+                                    })
+                                    Router.push('/');
+                                }
+                            })
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi đăng nhập',
+                            showConfirmButton: false,
+                            timer: Config.notificationTimer ?? 3000
+                        })
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi đăng nhập',
+                        text: `${error.response.data.message}`,
+                        showConfirmButton: false,
+                        timer: Config.notificationTimer ?? 3000
+                    })
+                })
+        })
+    },
+    setAuthuser({ commit, getters }) {
+        axios.get('/api/user')
+            .then(response => {
+                commit('mutateAuthUser', response.data.data.user);
+                localStorage.setItem(
+                    'authUser',
+                    JSON.stringify(response.data.data.user)
+                );
+            })
+    },
     logout() {
         axios.post('/api/user/logout').then(() => {
             localStorage.removeItem('loginResponse');

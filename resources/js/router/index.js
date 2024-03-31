@@ -6,6 +6,8 @@ import LoginView from '../components/account/LoginView.vue'
 import RegisterView from '../components/account/RegisterView.vue'
 import ForgotPasswordView from '../components/account/ForgotPasswordView.vue'
 
+import RgFaceIF from '../../js/components/user/components/regFaceId.vue'
+
 import AdminView from '../components/admin/adminView.vue';
 
 import ProfileParent from '../components/admin/profile/ProfileParent.vue';
@@ -141,6 +143,11 @@ export const routes = [
                         component: HomeView,
                     },
                 ]
+            },
+            {
+                path: 'face-id',
+                name: 'RgFaceIF User',
+                component: RgFaceIF,
             },
             {
                 path: 'profile/:id',

@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\AuthService;
 use App\Events\SetDefaultUserRole;
 use App\Http\Requests\Auth\LoginRequest;
+use GuzzleHttp\Psr7\Request as Psr7Request;
 use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
@@ -103,6 +104,38 @@ class AuthController extends Controller
                 'role' => $userRoles
             ]);
         }
+    }
+    public function loginWithFaceID(Request $request)
+    {
+        $user_id = $request['user_id'];
+        $username = $request['username'];
+        if ($user_id && $username) {
+            // Tìm người dùng trong cơ sở dữ liệu
+            $user = User::where('id', $user_id)
+                ->where('user_name', $username)
+                ->first();
+            if ($user) {
+                // Đăng nhập người dùng và tạo phiên đăng nhập
+                Auth::login($user);
+                $userRoles = User::with('roles:name')->find($user->id)->roles->pluck('name');
+                $status = $user->status;
+                // Đăng nhập thành công, trả về phản hồi thành công
+                return response()->json([
+                    'response_index' => true,
+                    'response_type' => 'success',
+                    'response_data' => ['Bạn đã đăng nhập thành công.'],
+                    'authenticated' => true,
+                    'status' => $status,
+                    'role' => $userRoles
+                ]);
+            }
+        }
+        return response()->json([
+            'response_index' => true,
+            'response_type' => 'error',
+            'response_data' => 'Vui lòng thử lại sau',
+            'authenticated' => false,
+        ], 401);
     }
     public function logout(Request $request)
     {
