@@ -41,7 +41,7 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                         <li>Lưu bài viết</li>
                         <li @click="showBoxPostEdit(post.id)">Chỉnh sửa bài viết</li>
                         <li v-if="status" @click="trashPost(post.id)">Chuyển vào thùng rác</li>
-                        <li v-if="!status"@click="trashPost(post.id)">Khôi phục</li>
+                        <li v-if="!status" @click="trashPost(post.id)">Khôi phục</li>
                     </ul>
                 </div>
                 <div v-if="showEditPost && post.user_id !== authUser.id" class="edit-post friend">
@@ -59,7 +59,7 @@ import Pin from 'vue-material-design-icons/Pin.vue'
         <div class="cus-post-media">
             <div class="list_item_media" v-for=" medias  in  media " :key="media.id">
                 <div v-if="medias.type === 'image/jpeg'">
-                    <img @click="isFileDisplay = medias.url" :src="medias.url" alt="Image"
+                    <img @click="convertImageUrl(medias)" :src="medias.url" alt="Image"
                         class="mx-auto custom-cursor-pointer w-100" loading="lazy">
                 </div>
                 <div class="" v-else-if="medias.type === 'video/mp4'">
@@ -293,7 +293,55 @@ export default {
         },
         togglePin(postId) {
             this.$store.dispatch('post/togglePin', postId);
+        },
+        isFileDisplayer(media) {
+            this.isFileDisplay = media.url
+            this.imageData = media.url
+
+        },
+        convertImageUrl(media) {
+            let imageUrl = media.url;
+
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    // Create a new FormData object
+                    const formData = new FormData();
+                    // Append the blob data to the FormData object
+                    formData.append('image', blob, 'image.jpg');
+
+                    // Send the FormData object containing the image data to the server
+                    fetch('http://127.0.0.1:5000/checkimage', {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                // If the request is successful, process the response
+                                return response.blob();
+                            } else {
+                                // If the request fails, throw an error
+                                throw new Error('Failed to send image to server');
+                            }
+                        })
+                        .then(blob => {
+                            // Process the response blob if needed
+                            // For example, you can create a URL for the blob and display it in the UI
+                            const imageUrl = URL.createObjectURL(blob);
+                            this.isFileDisplay = imageUrl;
+                        })
+                        .catch(error => {
+                            // Handle errors if any occur during the request process
+                            console.error('Error sending image to server:', error);
+                        });
+                })
+                .catch(error => {
+                    // Handle errors if any occur during the image loading process
+                    console.error('Error loading image:', error);
+                });
         }
+
+
     },
 }
 </script>

@@ -42,7 +42,7 @@
         </div>
       </form>
       <div class="mt-4 text-center">
-        <button @click="loginFaceId" class="btn btn-all-add-edit w-md waves-effect waves-light">
+        <button @click="loginFaceId" class="btn btn-all-add-edit w-md waves-effect waves-light bg-info">
           login with faceID
         </button>
       </div>
