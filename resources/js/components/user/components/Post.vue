@@ -9,6 +9,9 @@ import Pin from 'vue-material-design-icons/Pin.vue'
 
 </script>
 <template>
+    <div style="position: absolute;z-index: 200000;" class="spinner-border text-primary" v-if="isLoading1"ole="status">
+        <span class="sr-only">Loading...</span>
+    </div>
     <div id="post" class="pb-2">
         <p v-if="pinned === 1 || pinned === true"> Bài viết đã ghim</p>
         <hr>
@@ -181,6 +184,7 @@ export default {
         return {
             showEditPost: false,
             isFileDisplay,
+            isLoading1: false,
             isEditPostOverlay: false,
             formComment: ref({
                 content: ''
@@ -301,7 +305,7 @@ export default {
         },
         convertImageUrl(media) {
             let imageUrl = media.url;
-
+            this.isLoading1 = true
             fetch(imageUrl)
                 .then(response => response.blob())
                 .then(blob => {
@@ -325,6 +329,7 @@ export default {
                             }
                         })
                         .then(blob => {
+                            this.isLoading1 = false
                             // Process the response blob if needed
                             // For example, you can create a URL for the blob and display it in the UI
                             const imageUrl = URL.createObjectURL(blob);
