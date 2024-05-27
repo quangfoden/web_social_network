@@ -11,7 +11,7 @@
                         :placeholder="'Bạn đang nghĩ gì vậy ' + authUser.user_name" />
                     <div id="posts" v-for="post in postsByUser" :key="post.id">
                         <Post v-if="isUser(post) && checkPrivacy(post)" :post="post" :pinned="post.pinned"
-                            :status="post.status" :user="post.user" :media="post.media" :comments="post.comments" />
+                            :status="post.status" :user="post.user" :media="post.media" :comments="post.comments" :comment_count="post.comment_count"/>
                     </div>
                     <!-- <div v-if="loading">Đang tải ...</div> -->
                     <div v-if="loading" class="spinner-border text-primary z-1000"

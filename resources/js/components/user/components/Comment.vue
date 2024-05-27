@@ -10,13 +10,18 @@ import Close from 'vue-material-design-icons/Close.vue'
 <template>
     <div class="box-comment-cus">
         <div class="box-comment-cus_2">
-            <div class="box-comment-cus_3">
+            <div class="box-comment-cus_3" style="position: relative;">
                 <div class="d-flex gap-2 align-items-start w-100 mb-1">
                     <router-link :to="{ name: 'Profile User', params: { id: comment.user.id } }" class="mr-2">
                         <img class="rounded-full ml-1 img-cus" :src="comment.user.avatar" alt="">
                     </router-link>
-                    <div class="bg-EFF2F5 p-2 rounded-lg">
-                        <h6>{{ comment.user.user_name }}</h6>
+                    <div class="bg-EFF2F5 p-2 rounded-lg w-50">
+                        <div class="d-flex gap-2 justify-content-between">
+                            <h6 class="m-0">{{ comment.user.user_name }}</h6>
+                            <span @click="toggleEditComment(comment.id)" v-if="comment.user.id === authUser.id"
+                                class="ellipsis" style="margin-top: -10px;"><i
+                                    class="fa-solid fa-ellipsis fs-5"></i></span>
+                        </div>
                         <div class="d-flex align-items-center text-xs rounded-lg w-100">
                             {{ comment.content }}
                         </div>
@@ -27,7 +32,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                         v-if="comment.type != null && comment.type.includes('image')" :src="comment.url" alt="Image">
                     <video width="150" @click="isFileDisplay = comment.url"
                         v-else-if="comment.type != null && comment.type.includes('video')" :src="comment.url"
-                        controls></video>
+                        controls autoplay muted></video>
                 </div>
                 <div id="bottom-cus">
                     <p class="custom-cursor-pointer">{{ comment.created_at_formatted }}</p>
@@ -37,7 +42,8 @@ import Close from 'vue-material-design-icons/Close.vue'
                 <div v-if="comment.repcomments.length > 0" style="background: white;" class="repComment_array"
                     id="repComment">
                     <div v-if="!showAllRepComments" class="text-center mb-1">
-                        <button class="px-2" @click="toggleRepComments">Xem tất cả {{ repcomment_count }} phản hồi</button>
+                        <button class="px-2" @click="toggleRepComments">Xem tất cả {{ repcomment_count }} phản
+                            hồi</button>
                     </div>
                     <div v-if="showAllRepComments" class="mx-5 repcomment_list boxrepcomment-cus"
                         v-for="(repcomment, index) in comment.repcomments" :key="index">
@@ -46,8 +52,12 @@ import Close from 'vue-material-design-icons/Close.vue'
                                 class="mr-2">
                                 <img class="rounded-full ml-1 img-cus" :src="repcomment.user.avatar" alt="">
                             </router-link>
-                            <div class="bg-EFF2F5 p-2 rounded-lg">
-                                <h6>{{ repcomment.user.user_name }}</h6>
+                            <div class="bg-EFF2F5 p-2 w-50 rounded-lg">
+                                <div class="d-flex gap-2 justify-content-between">
+                                    <h6 class="m-0">{{ repcomment.user.user_name }}</h6>
+                                    <span v-if="repcomment.user.id === authUser.id" class="ellipsis"
+                                        style="margin-top: -10px;"><i class="fa-solid fa-ellipsis fs-5"></i></span>
+                                </div>
                                 <div class="d-flex align-items-center text-xs rounded-lg w-100">
                                     {{ repcomment.content }}
                                 </div>
@@ -57,7 +67,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                             <img width="150" v-if="repcomment.type != null && repcomment.type.includes('image')"
                                 @click="isFileDisplay = repcomment.url" :src="repcomment.url" alt="Image">
                             <video width="150" v-else-if="repcomment.type != null && repcomment.type.includes('video')"
-                                @click="isFileDisplay = repcomment.url" :src="repcomment.url" controls></video>
+                                @click="isFileDisplay = repcomment.url" :src="repcomment.url" controls autoplay muted></video>
                         </div>
                         <div id="bottom-cus">
                             <p class="custom-cursor-pointer">{{ repcomment.created_at_formatted }}</p>
@@ -108,6 +118,13 @@ import Close from 'vue-material-design-icons/Close.vue'
                         </video>
                     </div>
                 </div>
+                <div v-if="comment.user.id === authUser.id && showmodelEditComment" class="edit_comment"
+                    style="position: absolute;top: 0;">
+                    <ul>
+                        <li>chỉnh sửa</li>
+                        <li>xoá</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -136,6 +153,7 @@ export default {
             formMediarepComment: {},
             boxRepComment: reactive(false),
             showAllRepComments: false,
+            showmodelEditComment: false,
         }
     },
     computed: {
@@ -210,6 +228,11 @@ export default {
                     });
                 });
 
+        },
+        toggleEditComment(commentid) {
+            if (this.comment.id === commentid) {
+                this.showmodelEditComment = !this.showmodelEditComment
+            }
         },
         toggleRepComments() {
             this.showAllRepComments = !this.showAllRepComments;  // Đảo trạng thái hiển thị khi click

@@ -12,28 +12,35 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use App\Http\Requests\Comment\AddCommentRequest;
-
+use App\Repositories\CommentRepository;
 
 class CommentController extends Controller
 {
     protected $postService;
-
-    public function __construct(PostService $postService)
+    protected $comments;
+    public function __construct(PostService $postService,CommentRepository $comments)
     {
         $this->postService = $postService;
+        $this->comments = $comments;
     }
-    public function getAllComments($postId)
+    // public function getAllComments($postId)
+    // {
+    //     $comments = Comment::where('status', 1)
+    //         ->where('post_id', $postId)
+    //         ->with('user', 'post','repcomments')
+    //         ->orderBy('created_at', 'desc')
+    //         ->get()
+    //         ->map(function ($comments) {
+    //             $comments->created_at_formatted = $this->postService->formatTimeAgo($comments->created_at);
+    //             return  $comments;
+    //         });
+    //     return response()->json(['data' => $comments]);
+    // }
+    //
+    public function getAllCommentsByPostId($postId)
     {
-        $comments = Comment::where('status', 1)
-            ->where('post_id', $postId)
-            ->with('user', 'post','repcomments')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($comments) {
-                $comments->created_at_formatted = $this->postService->formatTimeAgo($comments->created_at);
-                return  $comments;
-            });
-        return response()->json(['data' => $comments]);
+        $comments = $this->comments->allCommentsByPost($postId);
+        return response()->json($comments);
     }
     //
     public function create_comment(AddCommentRequest $request)

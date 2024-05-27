@@ -93,6 +93,7 @@ class AuthController extends Controller
             ]);
         } else {
             $user = Auth::user();
+            $token = $user->createToken('Personal Access Token')->plainTextToken;
             $userRoles = User::with('roles:name')->find($user->id)->roles->pluck('name');
             $status = $user->status;
             return response()->json([
@@ -101,7 +102,9 @@ class AuthController extends Controller
                 'response_data' => ['Bạn đã đăng nhập thành công.'],
                 'authenticated' => true,
                 'status' => $status,
-                'role' => $userRoles
+                'role' => $userRoles,
+                'access_token' => $token, // Trả về token
+                'token_type' => 'Bearer'
             ]);
         }
     }
@@ -110,16 +113,13 @@ class AuthController extends Controller
         $user_id = $request['user_id'];
         $username = $request['username'];
         if ($user_id && $username) {
-            // Tìm người dùng trong cơ sở dữ liệu
             $user = User::where('id', $user_id)
                 ->where('user_name', $username)
                 ->first();
             if ($user) {
-                // Đăng nhập người dùng và tạo phiên đăng nhập
                 Auth::login($user);
                 $userRoles = User::with('roles:name')->find($user->id)->roles->pluck('name');
                 $status = $user->status;
-                // Đăng nhập thành công, trả về phản hồi thành công
                 return response()->json([
                     'response_index' => true,
                     'response_type' => 'success',
