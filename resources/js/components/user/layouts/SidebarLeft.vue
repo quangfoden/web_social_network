@@ -63,9 +63,7 @@ export default {
         },
     },
     methods: {
-        // setStatePage() {
-        //     this.$store.dispatch('post/setStateToOne');
-        // }
+      
     }
 }
 </script>

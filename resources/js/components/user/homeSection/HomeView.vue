@@ -1,15 +1,18 @@
 <template>
     <div id="PostsSection" class="">
         <CreatePostBox :image="authUser.avatar" :placeholder="'Bạn đang nghĩ gì vậy ' + authUser.user_name" />
-        <div id="posts" v-for="post in  posts " :key="post.id">
-            <Post v-if="post.privacy === 'public' || post.privacy === 'friends'" :status="post.status" :post="post" :user="post.user"
-                :media="post.media" :comments="post.comments" />
+        <div id="posts" v-for="post in posts " :key="post.id">
+            <Post v-if="post.privacy === 'public' || post.privacy === 'friends'" :status="post.status" :post="post"
+                :user="post.user" :media="post.media" :comments="post.comments" :comment_count="post.comment_count"/>
+        </div>
+        <div v-if="isLoading" class="spinner-border custom-loading text-primary z-1000" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
         <div v-if="loading">Đang tải ...</div>
     </div>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import { ref } from 'vue';
 import CreatePostBox from '../Components/CreatePostBox.vue'
 import Post from '../Components/Post.vue'
@@ -26,6 +29,7 @@ export default {
 
     computed: {
         ...mapState('post', ['posts']),
+        ...mapGetters('post', ['isLoading']),
         authUser() {
             if (this.$store.getters.getAuthUser.id !== undefined) {
                 return this.$store.getters.getAuthUser;
@@ -37,25 +41,23 @@ export default {
         ...mapActions('post', ['fetchPosts']),
         handleScroll() {
             if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-                this.loading = true
-                setTimeout(() => {
-                    this.$store.dispatch('post/fetchPosts')
-                        .then(() => {
-                            this.loading = false
-                        })
-                }, 3000);
-
-            }
-            else {
-                let scrollTop = window.scrollY;
-                if (scrollTop === 0) {
-                    return;
+                if (!this.loading) { 
+                    this.loading = true;
+                    setTimeout(() => {
+                        this.$store.dispatch('post/fetchPosts')
+                            .then(() => {
+                                this.loading = false;
+                            })
+                    }, 3000);
                 }
             }
         }
+
+    },
+    created() {
+        this.fetchPosts();
     },
     mounted() {
-        this.fetchPosts();
         window.addEventListener('scroll', this.handleScroll);
     },
     destroyed() {

@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Services\PostService;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use App\Http\Requests\Comment\AddCommentRequest;
+
 
 class CommentController extends Controller
 {
@@ -31,35 +36,32 @@ class CommentController extends Controller
         return response()->json(['data' => $comments]);
     }
     //
-    public function create_comment(Request $request)
+    public function create_comment(AddCommentRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'content' => 'required',
-        ]);
-        if ($validator->fails()) {
-            $res = [
-                'message' => 'Nội dung bình luận trống !',
-                'success' => false,
-            ];
-            return response()->json(['data' => $res]);
-        }
+        $data = $request->validated();
         $user = Auth::user();
         $userId = $user->id;
         $comment = new Comment([
-            // 'post_id' => $postId,
             'post_id' => $request->postId,
             'user_id' => $userId,
-            'content' => $request->input('content')
+            'content' =>$data['content']
         ]);
         $comment->save();
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $filename = $file->getClientOriginalName();
-            $path = 'uploads/Upload_comments/' . $filename;
-            $file->storeAs('uploads/Upload_comments', $filename);
+            $path = 'uploads/Upload_comments/' . Str::random();
+            if (!Storage::exists($path)) {
+                Storage::makeDirectory($path, 0755, true);
+            }
+            $name = Str::random() . '.' .  $file->getClientOriginalExtension();
+            if (!Storage::putFileAS('public/' . $path, $file, $name)) {
+                throw new \Exception("Unable to save file \"{$file->getClientOriginalName()}\"");
+            }
+            $relativePath = $path . '/' . $name;
             $comment->update([
-                'type' => $file->getMimeType(),
-                'path' => $path,
+                'type' => $file->getClientMimeType(),
+                'path' => $relativePath,
+                'url' => URL::to(Storage::url($relativePath)),
             ]);
             $res = [
                 'message' => 'upload file thành công !',
@@ -74,12 +76,12 @@ class CommentController extends Controller
 
         $formattedComments = [
             'id' => $comment->id,
-            // 'post_id' => $postId,
             'post_id' =>  $comment->post_id,
             'user_id' => $comment->user_id,
             'content' => $comment->content,
             'path' => $comment->path,
             'type' => $comment->type,
+            'url' => $comment->url,
             'likes_count' => $comment->likes_count,
             'status' => $comment->status,
             'created_at' => $comment->created_at,
@@ -118,12 +120,19 @@ class CommentController extends Controller
         $replycomment->save();
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $filename = $file->getClientOriginalName();
-            $path = 'uploads/Upload_comments/rep_comment/' . $filename;
-            $file->storeAs('uploads/Upload_comments/rep_comment', $filename);
+            $path = 'uploads/Upload_comments/rep_comment/' . Str::random();
+            if (!Storage::exists($path)) {
+                Storage::makeDirectory($path, 0755, true);
+            }
+            $name = Str::random() . '.' .  $file->getClientOriginalExtension();
+            if (!Storage::putFileAS('public/' . $path, $file, $name)) {
+                throw new \Exception("Unable to save file \"{$file->getClientOriginalName()}\"");
+            }
+            $relativePath = $path . '/' . $name;
             $replycomment->update([
-                'type' => $file->getMimeType(),
-                'path' => $path,
+                'type' => $file->getClientMimeType(),
+                'path' => $relativePath,
+                'url' => URL::to(Storage::url($relativePath)),
             ]);
             $res = [
                 'message' => 'upload file thành công !',
@@ -137,12 +146,12 @@ class CommentController extends Controller
         }
         $formattedNewRepComments = [
             'id' => $replycomment->id,
-            // 'post_id' => $postId,
             'comment_id' =>  $commentId,
             'user_id' => $replycomment->user_id,
             'content' => $replycomment->content,
             'path' => $replycomment->path,
             'type' => $replycomment->type,
+            'url' => $replycomment->url,
             'likes_count' => $replycomment->likes_count,
             'status' => $replycomment->status,
             'created_at' => $replycomment->created_at,

@@ -12,9 +12,9 @@ import Close from 'vue-material-design-icons/Close.vue'
         <div class="box-comment-cus_2">
             <div class="box-comment-cus_3">
                 <div class="d-flex gap-2 align-items-start w-100 mb-1">
-                    <a href="/" class="mr-2">
+                    <router-link :to="{ name: 'Profile User', params: { id: comment.user.id } }" class="mr-2">
                         <img class="rounded-full ml-1 img-cus" :src="comment.user.avatar" alt="">
-                    </a>
+                    </router-link>
                     <div class="bg-EFF2F5 p-2 rounded-lg">
                         <h6>{{ comment.user.user_name }}</h6>
                         <div class="d-flex align-items-center text-xs rounded-lg w-100">
@@ -23,10 +23,10 @@ import Close from 'vue-material-design-icons/Close.vue'
                     </div>
                 </div>
                 <div class="w-100 position-relative" style="margin-left: 50px;">
-                    <img width="150" @click="isFileDisplay = comment.path"
-                        v-if="comment.type != null && comment.type.includes('image')" :src="comment.path" alt="Image">
-                    <video width="150" @click="isFileDisplay = comment.path"
-                        v-else-if="comment.type != null && comment.type.includes('video')" :src="comment.path"
+                    <img width="150" @click="isFileDisplay = comment.url"
+                        v-if="comment.type != null && comment.type.includes('image')" :src="comment.url" alt="Image">
+                    <video width="150" @click="isFileDisplay = comment.url"
+                        v-else-if="comment.type != null && comment.type.includes('video')" :src="comment.url"
                         controls></video>
                 </div>
                 <div id="bottom-cus">
@@ -36,12 +36,16 @@ import Close from 'vue-material-design-icons/Close.vue'
                 </div>
                 <div v-if="comment.repcomments.length > 0" style="background: white;" class="repComment_array"
                     id="repComment">
-                    <div class="mx-5 repcomment_list boxrepcomment-cus" v-for="(repcomment, index) in comment.repcomments"
-                        :key="index">
+                    <div v-if="!showAllRepComments" class="text-center mb-1">
+                        <button class="px-2" @click="toggleRepComments">Xem tất cả {{ repcomment_count }} phản hồi</button>
+                    </div>
+                    <div v-if="showAllRepComments" class="mx-5 repcomment_list boxrepcomment-cus"
+                        v-for="(repcomment, index) in comment.repcomments" :key="index">
                         <div class="d-flex gap-2 align-items-start w-100 mb-1">
-                            <a href="/" class="mr-2">
+                            <router-link :to="{ name: 'Profile User', params: { id: repcomment.user.id } }"
+                                class="mr-2">
                                 <img class="rounded-full ml-1 img-cus" :src="repcomment.user.avatar" alt="">
-                            </a>
+                            </router-link>
                             <div class="bg-EFF2F5 p-2 rounded-lg">
                                 <h6>{{ repcomment.user.user_name }}</h6>
                                 <div class="d-flex align-items-center text-xs rounded-lg w-100">
@@ -51,9 +55,9 @@ import Close from 'vue-material-design-icons/Close.vue'
                         </div>
                         <div class="w-100 position-relative" style="margin-left: 50px;">
                             <img width="150" v-if="repcomment.type != null && repcomment.type.includes('image')"
-                                @click="isFileDisplay = repcomment.path" :src="repcomment.path" alt="Image">
+                                @click="isFileDisplay = repcomment.url" :src="repcomment.url" alt="Image">
                             <video width="150" v-else-if="repcomment.type != null && repcomment.type.includes('video')"
-                                @click="isFileDisplay = repcomment.path" :src="repcomment.path" controls></video>
+                                @click="isFileDisplay = repcomment.url" :src="repcomment.url" controls></video>
                         </div>
                         <div id="bottom-cus">
                             <p class="custom-cursor-pointer">{{ repcomment.created_at_formatted }}</p>
@@ -62,6 +66,9 @@ import Close from 'vue-material-design-icons/Close.vue'
                                 hồi
                             </p>
                         </div>
+                    </div>
+                    <div v-if="showAllRepComments" class="text-center mb-1">
+                        <button @click="toggleRepComments">Ẩn bớt</button>
                     </div>
                 </div>
                 <form style="background: white;margin-left:46px ;" @submit.prevent="CreateRepComment(comment.id, index)"
@@ -74,18 +81,21 @@ import Close from 'vue-material-design-icons/Close.vue'
                             placeholder="Viết phản hồi ..."
                             class="custom-input bg-EFF2F5 w-100 border-0 mx-1 border-none p-0 text-sm placeholder-[#64676B] focus-0">
                                         </textarea>
-                        <label class="hover-200 rounded-full p-2 custom-cursor-pointer">
+                        <label :for="`fieldMediaRepCM_${comment.id}`"
+                            class="hover-200 rounded-full p-2 custom-cursor-pointer">
                             <Image :size="27" fillColor="#43BE62" />
                         </label>
-                        <input ref="fieldMediaRepCM" type="file" accept="image/*,video/*" class=""
-                            :id="`fieldMediaRepCM_${index}`" @change="getUploadedImageRepComment($event, index)">
+                        <input :ref="`fieldMediaRepCM_${comment.id}`" type="file" accept="image/*,video/*"
+                            class="hidden" :id="`fieldMediaRepCM_${comment.id}`"
+                            @change="getUploadedImageRepComment($event)">
                         <button type="submit"
                             class="d-flex border-0 align-items-center text-sm px-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">
                             <Check />Gửi
                         </button>
                     </div>
                 </form>
-                <div style="margin-left: 60px;" v-if="formMediarepComment.url" class="p-2 position-relative cus-img-dis">
+                <div style="margin-left: 60px;" v-if="formMediarepComment.url"
+                    class="p-2 position-relative cus-img-dis">
                     <Close @click="clearImageRepComment(index)"
                         class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
                         :size="22" fillColor="#5E6771" />
@@ -112,6 +122,10 @@ export default {
             type: Object,
             required: true,
         },
+        repcomment_count: {
+            type: Number,
+            required: true,
+        },
     },
     data() {
         const useGeneral = useGeneralStore()
@@ -121,6 +135,7 @@ export default {
             formRepComment: { content: '' },
             formMediarepComment: {},
             boxRepComment: reactive(false),
+            showAllRepComments: false,
         }
     },
     computed: {
@@ -145,18 +160,14 @@ export default {
             this.formMediarepComment.url = url;
             this.formMediarepComment.file = file;
         },
-        CreateRepComment(commentId, index) {
+        CreateRepComment(commentId) {
             const formData = new FormData();
             formData.append('content', this.formRepComment.content);
             formData.append('file', this.formMediarepComment.file);
-            axios.post(`api/user/create_rep_comment/${commentId}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
+            this.$store.dispatch('post/createRepComment', { commentId: commentId, formData: formData })
                 .then(response => {
                     if (response.status === 200 && response.data.data.success === true) {
-                        const input = document.getElementById(`fieldMediaRepCM_${index}`);
+                        const input = document.getElementById(`fieldMediaRepCM_${commentId}`);
                         if (input) {
                             input.value = null;
                         }
@@ -168,11 +179,15 @@ export default {
                             showConfirmButton: false,
                             timer: this.$config.notificationTimer ?? 3000,
                         });
-                        this.formRepComment = {}
-                        this.formMediarepComment = {};
-                        this.$refs.fieldMediaRepCM.value = null
+                        this.formRepComment.content = ''; // Reset nội dung comment
+                        this.formMediarepComment = {}
+                        this.formMediarepComment.file = null; // Reset file đã chọn
                     }
                     else {
+                        const input = document.getElementById(`fieldMediaRepCM_${commentId}`);
+                        if (input) {
+                            input.value = null;
+                        }
                         this.$swal.fire({
                             position: "top-end",
                             icon: "error",
@@ -180,9 +195,9 @@ export default {
                             showConfirmButton: false,
                             timer: this.$config.notificationTimer ?? 3000,
                         });
-                        this.formMediaComment = {};
-                        this.formComment.content = null
-                        this.$refs['fieldMedia'].value = null
+                        this.formRepComment.content = '';
+                        this.formMediarepComment = {}
+                        this.formMediarepComment.file = null;
                     }
                 })
                 .catch(error => {
@@ -196,9 +211,15 @@ export default {
                 });
 
         },
-        clearImageRepComment(index) {
+        toggleRepComments() {
+            this.showAllRepComments = !this.showAllRepComments;  // Đảo trạng thái hiển thị khi click
+        },
+        clearImageRepComment(commentId) {
             this.formMediarepComment = {}
-            this.$refs.fieldMediaRepCM.value = null
+            const input = document.getElementById(`fieldMediaRepCM_${commentId}`);
+            if (input) {
+                console.log(input.value);
+            }
         },
         clickRepComment() {
             this.boxRepComment = true

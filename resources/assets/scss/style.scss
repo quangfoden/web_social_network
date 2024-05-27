@@ -420,6 +420,7 @@ a {
 #PostsSection {
     grid-row: span 6;
     max-width: 600px;
+    width: 600px;
     margin-left: auto;
     margin-right: auto;
     overflow: auto;
@@ -592,11 +593,7 @@ a {
                 color: #4a5568c5;
                 font-weight: 500;
             }
-
         }
-
-
-
     }
 
     .cus-post-media {
@@ -607,6 +604,10 @@ a {
         .list_item_media {
             img {
                 border-radius: 10px;
+            }
+
+            video {
+                max-height: 400px;
             }
         }
 

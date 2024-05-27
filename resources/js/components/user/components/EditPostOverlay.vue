@@ -168,7 +168,6 @@ export default {
                     this.closeModalEditPost()
                 })
                 .catch(error => {
-                    // Xử lý khi có lỗi
                     this.$swal.fire({
                         position: "top-end",
                         icon: "error",

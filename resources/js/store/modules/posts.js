@@ -13,17 +13,22 @@ const state = {
     loading: false
 };
 const getters = {
-    getUserStatus: state => state.user.status
+    getUserStatus: state => state.user.status,
+    isLoading: state => state.loading
 };
 
 const mutations = {
-    RESET_POSTS_BY_USER(state) {
-        state.postsDeleted = [];
-        state.page3 = 1;
+    RESET_ALL_POSTS(state) {
+        state.posts = [];
+        state.page = 1;
     },
-    RESET_POSTS_BY_USER_DELETED(state) {
+    RESET_POSTS_BY_USER(state) {
         state.postsByUser = [];
         state.page2 = 1;
+    },
+    RESET_POSTS_BY_USER_DELETED(state) {
+        state.postsDeleted = [];
+        state.page3 = 1;
     },
     SET_USER(state, user) {
         state.user = user;
@@ -47,7 +52,6 @@ const mutations = {
         state.page2 = 1;
     },
     allPosts(state, posts) {
-        // state.posts = posts;
         state.posts.push(...posts)
     },
     allPostsByUser(state, posts) {
@@ -137,6 +141,7 @@ const actions = {
             });
     },
     fetchPosts({ commit }) {
+        commit('SET_LOADING', true);
         axios.get(`/api/user/allposts?page=${state.page}`)
             .then(({ data }) => {
                 commit('allPosts', data.data.data);
@@ -291,7 +296,23 @@ const actions = {
             .catch(error => {
                 console.error("Error toggling pin:", error);
             });
-    }
+    },
+
+    createComment({ commit }, formData) {
+        return axios.post('api/user/create_comment', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+    },
+    createRepComment({ commit }, payload) {
+        const { commentId, formData } = payload;
+        return axios.post(`api/user/create_rep_comment/${commentId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+    },
 };
 
 

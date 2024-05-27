@@ -1,5 +1,4 @@
 <template>
-
     <div v-if="!myProfile" class="spinner-border custom-loading text-primary z-1000" role="status">
         <span class="visually-hidden">Loading...</span>
     </div>
@@ -11,8 +10,8 @@
                     <CreatePostBox v-if="isAuthUser" :image="authUser.avatar"
                         :placeholder="'Bạn đang nghĩ gì vậy ' + authUser.user_name" />
                     <div id="posts" v-for="post in postsByUser" :key="post.id">
-                        <Post v-if="isUser(post) && checkPrivacy(post)" :post="post" :pinned="post.pinned" :status="post.status" :user="post.user"
-                            :media="post.media" :comments="post.comments" />
+                        <Post v-if="isUser(post) && checkPrivacy(post)" :post="post" :pinned="post.pinned"
+                            :status="post.status" :user="post.user" :media="post.media" :comments="post.comments" />
                     </div>
                     <!-- <div v-if="loading">Đang tải ...</div> -->
                     <div v-if="loading" class="spinner-border text-primary z-1000"
@@ -88,13 +87,16 @@ export default {
             // Khoảng cách còn lại đến cuối trang
             const distanceToBottom = bodyHeight - scrollPosition;
             if (distanceToBottom < 100) {
-                this.loading = true
-                setTimeout(() => {
-                    this.$store.dispatch('post/fetchPostsByUser', this.userId)
-                        .then(() => {
-                            this.loading = false
-                        })
-                }, 3000);
+                if (!this.loading) {
+                    this.loading = true
+                    setTimeout(() => {
+                        this.$store.dispatch('post/fetchPostsByUser', this.userId)
+                            .then(() => {
+                                this.loading = false
+                            })
+                    }, 3000);
+                }
+
             }
             else {
                 let scrollTop = window.scrollY;

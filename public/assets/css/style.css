@@ -379,6 +379,7 @@ a {
 #PostsSection {
   grid-row: span 6;
   max-width: 600px;
+  width: 600px;
   margin-left: auto;
   margin-right: auto;
   overflow: auto;
@@ -528,6 +529,9 @@ a {
 }
 #post .cus-post-media .list_item_media img {
   border-radius: 10px;
+}
+#post .cus-post-media .list_item_media video {
+  max-height: 400px;
 }
 
 #MediaDisplay {

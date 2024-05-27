@@ -25,7 +25,7 @@ import Logout from 'vue-material-design-icons/Logout.vue';
             </div>
         </div>
         <div id="NavCenter">
-            <router-link :to="{ name: 'Home Section' }" class="w-100">
+            <router-link @click="clickHome" :to="{ name: 'Home Section' }" class="w-100">
                 <div :class="$route.path == '/' ? 'mt-1' : ''"
                     class="list_items d-flex align-items-center justify-content-center w-100">
                     <div>
@@ -123,7 +123,8 @@ export default {
             showMenu: false,
             isPostOverlay,
             isCropperModal,
-            isFileDisplay
+            isFileDisplay,
+            isLoading: false
         }
     },
     computed: {
@@ -136,7 +137,23 @@ export default {
     },
     methods: {
         ...mapActions(["logout"]),
-
+        clickHome() {
+            if (this.$route.path === '/') {
+                this.isLoading = true;
+                this.$store.commit('post/RESET_ALL_POSTS');
+                this.$store.dispatch('post/fetchPosts')
+                    .then(response => {
+                        this.isLoading = false;
+                    })
+                    .catch(error => {
+                        this.isLoading = false;
+                        console.error('Error:', error);
+                    });
+            } else {
+                console.log("Bạn không ở trang Home, không thực hiện tải lại bài viết.");
+            }
+        }
+,
         logoutSubmit() {
             this.logout();
         },

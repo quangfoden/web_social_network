@@ -31,11 +31,9 @@ class AddPostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
             'content' => 'required_without:files',
             'privacy' => 'required|in:public,friends,only_me',
             'files' => [
-                'required_if:content,null',
                 'max:50',
                 function ($attribute, $value, $fail) {
                     $totalSize = collect($value)->sum(fn (UploadedFile $file) => $file->getSize());
@@ -62,7 +60,6 @@ class AddPostRequest extends FormRequest
             'content.required_without' => 'Vui lòng nhập nội dung hoặc chọn tệp tin.',
             'privacy.required' => 'Vui lòng chọn quyền riêng tư cho bài viết.',
             'privacy.in' => 'Quyền riêng tư không hợp lệ.',
-            'files.required_if' => 'Vui lòng nhập nội dung hoặc chọn tệp tin.',
             'files.max' => 'Số lượng tệp tin tối đa là 50 tệp.',
             'files.*.mimes' => 'Định dạng tệp tin không hợp lệ.',
         ];

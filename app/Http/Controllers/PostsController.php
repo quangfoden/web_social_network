@@ -157,11 +157,12 @@ class PostsController extends Controller
 
         return response()->json([
             'message' => $post->status ? 'Bài viết đã được khôi phục thành công.' : 'Bài viết đã được chuyển vào thùng rác.'
-        ]);    }
+        ]);
+    }
     public function pin(Request $request, $id)
     {
         $post = Post::findOrFail($id);
-        $post->pinned = !$post->pinned; // Đảo ngược trạng thái ghim bài viết
+        $post->pinned = !$post->pinned;
         $post->save();
 
         return response()->json([

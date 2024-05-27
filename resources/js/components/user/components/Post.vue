@@ -9,15 +9,16 @@ import Pin from 'vue-material-design-icons/Pin.vue'
 
 </script>
 <template>
-    <div style="position: absolute;z-index: 200000;" class="spinner-border text-primary" v-if="isLoading1"ole="status">
-        <span class="sr-only">Loading...</span>
-    </div>
-    <div id="post" class="pb-2">
-        <p v-if="pinned === 1 || pinned === true"> Bài viết đã ghim</p>
+    <div style="position: relative;" id="post" class="pb-2" :class="{ 'px-5': pinned }">
+        <div style="position: absolute; top: 50%;left: 50%;" class="spinner-border text-primary" v-if="isLoading1"
+            ole="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <p class="pt-2 m-0" v-if="pinned === 1 || pinned === true"> Bài viết đã ghim</p>
         <hr>
         <div class="d-flex align-items-center px-0">
             <router-link :to="{ name: 'Profile User', params: { id: user.id } }" class="mr-2">
-                <img class="img-cus custom-cursor-pointer" :src="user.avatar" alt="">
+                <img class="img-cus custom-cursor-pointer" :src="user.avatar" loading="lazy" alt="">
             </router-link>
             <div class="d-flex align-items-center justify-content-between p-2 rounded-full w-100">
                 <div>
@@ -35,8 +36,8 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                 </div>
             </div>
             <div id="Edit-posts" class="">
-                <span @click="showEditPost = !showEditPost" class="ellipsis"><i class="fa-solid fa-ellipsis"></i></span>
-                <div v-show="isEditPostOverlay === false" v-if="showEditPost && post.user_id === authUser.id"
+                <span @click="showMorePost = !showMorePost" class="ellipsis"><i class="fa-solid fa-ellipsis"></i></span>
+                <div v-show="isEditPostOverlay === false" v-if="showMorePost && post.user_id === authUser.id"
                     class="edit-post">
                     <ul>
                         <li v-if="pinned === 0 || pinned === false" @click="togglePin(post.id)">Ghim bài viết</li>
@@ -47,7 +48,7 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                         <li v-if="!status" @click="trashPost(post.id)">Khôi phục</li>
                     </ul>
                 </div>
-                <div v-if="showEditPost && post.user_id !== authUser.id" class="edit-post friend">
+                <div v-if="showMorePost && post.user_id !== authUser.id" class="edit-post friend">
                     <ul>
                         <li>Ẩn bài viết</li>
                         <li>Lưu bài viết</li>
@@ -60,14 +61,14 @@ import Pin from 'vue-material-design-icons/Pin.vue'
             {{ post.content }}
         </div>
         <div class="cus-post-media">
-            <div class="list_item_media" v-for=" medias  in  media " :key="media.id">
+            <div class="list_item_media" v-for=" medias in media " :key="media.id">
                 <div v-if="medias.type === 'image/jpeg'">
-                    <img @click="convertImageUrl(medias)" :src="medias.url" alt="Image"
-                        class="mx-auto custom-cursor-pointer w-100" loading="lazy">
+                    <img @click="convertImageUrl(medias)" :src="medias.url" loading="lazy" alt="Image"
+                        class="mx-auto custom-cursor-pointer w-100">
                 </div>
                 <div class="" v-else-if="medias.type === 'video/mp4'">
                     <video @click="isFileDisplay = medias.url" :src="medias.url"
-                        class="mx-auto custom-cursor-pointer w-100" autoplay controls>
+                        class="mx-auto custom-cursor-pointer w-100" autoplay controls muted>
                     </video>
                 </div>
                 <div v-else>
@@ -90,17 +91,17 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                 <form @submit.prevent="CreateComment(post.id)"
                     class="d-flex align-items-center pt-2 justify-content-between w-100">
                     <a href="/" class="mx-2">
-                        <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" alt="">
+                        <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" loading="lazy" alt="">
                     </a>
                     <div class="d-flex align-items-center bg-EFF2F5 rounded-full w-100  px-2">
                         <textarea v-model="formComment.content" type="text" placeholder="Viết bình luận ..."
                             class="custom-input w-100 focus-0 border-0 mx-1 border-none p-0 text-sm bg-EFF2F5 placeholder-[#64676B] ring-0 focus:ring-0">
                         </textarea>
-                        <label class="hover-200 rounded-full p-2 custom-cursor-pointer" for="image">
+                        <label class="hover-200 rounded-full p-2 custom-cursor-pointer" :for="'fileComment' + post.id">
                             <Image :size="27" fillColor="#43BE62" />
                         </label>
-                        <input ref="fieldMedia" type="file" class="" id="image" accept="image/*,video/*"
-                            @input="getUploadedCommentImage($event)">
+                        <input :ref="'fieldMedia' + post.id" type="file" class="hidden" :id="'fileComment' + post.id"
+                            accept="image/*,video/*" @input="getUploadedCommentImage($event)">
                         <button type="submit"
                             class="d-flex border-0 align-items-center text-sm px-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">
                             <Check />Gửi
@@ -109,11 +110,11 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                 </form>
             </div>
             <div v-if="formMediaComment.url" class="p-2 position-relative cus-img-dis">
-                <Close @click="clearImage()"
+                <Close @click="clearImage(post.id)"
                     class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
                     :size="22" fillColor="#5E6771" />
                 <div v-if="formMediaComment.type === 'image'"><img class="rounded-lg mx-auto w-50"
-                        :src="formMediaComment.url" alt=""></div>
+                        :src="formMediaComment.url" loading="lazy" alt=""></div>
                 <div v-else-if="formMediaComment.type === 'video'">
                     <video class="rounded-lg mx-auto w-50" controls>
                         <source :src="formMediaComment.url" type="video/mp4">
@@ -121,12 +122,19 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                     </video>
                 </div>
                 <div v-else>
-                    <a href="formMediaComment.url"></a>
+                    <a href="formMediaComment.url">{{ formMediaComment.url }}</a>
                 </div>
             </div>
             <div v-if="comments.length > 0" id="Comment" class="comment_array">
-                <div class="my-1 comment_list" v-for="( comment, index ) in  comments " :key="comment.id">
-                    <Comment :comment="comment" />
+                <div class="my-1 comment_list" v-if="!showAllComments">
+                    <Comment :comment="comments[0]" :repcomment_count="comments[0].repcomment_count"/>
+                    <button class="px-2" @click="toggleComments">Xem tất cả {{ comment_count }} bình luận</button>
+                </div>
+                <div v-if="showAllComments">
+                    <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">
+                        <Comment :comment="comment" :repcomment_count="comment.repcomment_count"/>
+                    </div>
+                    <button class="px-2" @click="toggleComments">Ẩn bớt</button>
                 </div>
             </div>
         </div>
@@ -156,6 +164,10 @@ export default {
             type: Object,
             required: true,
         },
+        comment_count: {
+            type: Number,
+            required: true,
+        },
         post: {
             type: Object,
             required: true,
@@ -182,7 +194,7 @@ export default {
         const useGeneral = useGeneralStore()
         const { isFileDisplay } = storeToRefs(useGeneral)
         return {
-            showEditPost: false,
+            showMorePost: false,
             isFileDisplay,
             isLoading1: false,
             isEditPostOverlay: false,
@@ -193,6 +205,7 @@ export default {
             formMediaComment: ref({
 
             }),
+            showAllComments: false,
         }
     },
 
@@ -206,12 +219,12 @@ export default {
         },
     },
     mounted() {
-
     },
     methods: {
         ...mapActions('post', ['fetchPosts']),
         ...mapActions('post', ['addNewComment']),
         showBoxPostEdit(postId) {
+            this.showMorePost = false
             if (postId === this.post.id) {
                 this.isEditPostOverlay = true
             }
@@ -232,22 +245,18 @@ export default {
             this.formMediaComment.url = urlComment;
         },
 
-        clearImage() {
+        clearImage(postId) {
             this.formMediaComment = {};
-            this.$refs.fieldMedia.value = null
+            this.$refs['fieldMedia' + postId].value = null
         },
         CreateComment(postId) {
-            const fieldMediaCMRef = this.$refs['fieldMedia']
+            const fieldMediaCMRef = this.$refs['fieldMedia' + postId]
+            console.log(fieldMediaCMRef);
             const formData = new FormData();
             formData.append('content', this.formComment.content);
             formData.append('file', fieldMediaCMRef.files[0]);
             formData.append('postId', postId);
-            console.log(formData)
-            axios.post('api/user/create_comment', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
+            this.$store.dispatch('post/createComment', formData)
                 .then(response => {
                     if (response.status === 200 && response.data.data.success === true) {
                         console.log(this.post)
@@ -259,9 +268,11 @@ export default {
                             showConfirmButton: false,
                             timer: this.$config.notificationTimer ?? 3000,
                         });
+                        this.formComment.content = ""
                         this.formMediaComment = {};
-                        this.formComment.content = null
-                        this.$refs['fieldMedia'].value = null
+                        if (fieldMediaCMRef) {
+                            fieldMediaCMRef.value = ''
+                        }
 
                     } else {
                         this.$swal.fire({
@@ -271,20 +282,27 @@ export default {
                             showConfirmButton: false,
                             timer: this.$config.notificationTimer ?? 3000,
                         });
+                        this.formComment.content = ""
                         this.formMediaComment = {};
-                        this.formComment.content = null
-                        this.$refs['fieldMedia'].value = null
+                        if (fieldMediaCMRef) {
+                            fieldMediaCMRef.value = ''
+                        }
                     }
                 })
                 .catch(error => {
                     this.$swal.fire({
                         position: "top-end",
                         icon: "error",
-                        title: error,
+                        title: "comment không thành công",
+                        text: `Lỗi: ${error.response.data.message}`,
                         showConfirmButton: false,
                         timer: this.$config.notificationTimer ?? 3000,
+                        with: '200px'
                     });
                 });
+        },
+        toggleComments() {
+            this.showAllComments = !this.showAllComments;  // Đảo trạng thái hiển thị khi click
         },
         trashPost(postId) {
             this.$store.dispatch('post/trashPost', postId)
@@ -297,51 +315,43 @@ export default {
         },
         togglePin(postId) {
             this.$store.dispatch('post/togglePin', postId);
+            this.showMorePost = false
         },
         isFileDisplayer(media) {
             this.isFileDisplay = media.url
             this.imageData = media.url
-
+            this.showMorePost = false
         },
         convertImageUrl(media) {
             let imageUrl = media.url;
             this.isLoading1 = true
+            this.showMorePost = false
             fetch(imageUrl)
                 .then(response => response.blob())
                 .then(blob => {
-                    // Create a new FormData object
                     const formData = new FormData();
-                    // Append the blob data to the FormData object
                     formData.append('image', blob, 'image.jpg');
-
-                    // Send the FormData object containing the image data to the server
                     fetch('http://127.0.0.1:5000/checkimage', {
                         method: 'POST',
                         body: formData
                     })
                         .then(response => {
                             if (response.ok) {
-                                // If the request is successful, process the response
                                 return response.blob();
                             } else {
-                                // If the request fails, throw an error
                                 throw new Error('Failed to send image to server');
                             }
                         })
                         .then(blob => {
                             this.isLoading1 = false
-                            // Process the response blob if needed
-                            // For example, you can create a URL for the blob and display it in the UI
                             const imageUrl = URL.createObjectURL(blob);
                             this.isFileDisplay = imageUrl;
                         })
                         .catch(error => {
-                            // Handle errors if any occur during the request process
                             console.error('Error sending image to server:', error);
                         });
                 })
                 .catch(error => {
-                    // Handle errors if any occur during the image loading process
                     console.error('Error loading image:', error);
                 });
         }
