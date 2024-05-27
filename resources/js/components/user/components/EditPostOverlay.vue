@@ -246,8 +246,6 @@ export default {
                     ...this.imageUrls,
                     ...newImages.map(im => ({ ...im, isProp: true, deleted: false }))
                 ];
-                console.log(newImages);
-                console.log(this.imageUrls);
             },
             { immediate: true, deep: true }
         );
