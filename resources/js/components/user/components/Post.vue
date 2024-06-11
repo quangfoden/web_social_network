@@ -17,12 +17,12 @@ import Pin from 'vue-material-design-icons/Pin.vue'
         <p class="pt-2 m-0" v-if="pinned === 1 || pinned === true"> Bài viết đã ghim</p>
         <hr>
         <div class="d-flex align-items-center px-0">
-            <router-link :to="{ name: 'Profile User', params: { id: user.id } }" class="mr-2">
+            <router-link :to="{ name: 'Profile User', params: { id: user.user_id } }" class="mr-2">
                 <img class="img-cus custom-cursor-pointer" :src="user.avatar" loading="lazy" alt="">
             </router-link>
             <div class="d-flex align-items-center justify-content-between p-2 rounded-full w-100">
                 <div>
-                    <router-link :to="{ name: 'Profile User', params: { id: user.id } }"
+                    <router-link :to="{ name: 'Profile User', params: { id: user.user_id } }"
                         class="text-pr custom-cursor-pointer">{{ user.user_name }}</router-link>
                     <Pin v-if="pinned === 1 || pinned === true"
                         class="bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer" :size="22"
@@ -62,11 +62,11 @@ import Pin from 'vue-material-design-icons/Pin.vue'
         </div>
         <div class="cus-post-media">
             <div class="list_item_media" v-for=" medias in media " :key="media.id">
-                <div v-if="medias.type === 'image/jpeg'">
+                <div v-if="medias.type.includes('image')">
                     <img @click="convertImageUrl(medias)" :src="medias.url" loading="lazy" alt="Image"
                         class="mx-auto custom-cursor-pointer w-100">
                 </div>
-                <div class="" v-else-if="medias.type === 'video/mp4'">
+                <div class="" v-else-if="medias.type.includes('video')">
                     <video @click="isFileDisplay = medias.url" :src="medias.url"
                         class="mx-auto custom-cursor-pointer w-100" autoplay controls muted>
                     </video>
@@ -94,8 +94,9 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                         <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" loading="lazy" alt="">
                     </a>
                     <div class="d-flex align-items-center bg-EFF2F5 rounded-full w-100  px-2">
-                        <textarea v-model="formComment.content" type="text" placeholder="Viết bình luận ..."
-                            class="custom-input w-100 focus-0 border-0 mx-1 border-none p-0 text-sm bg-EFF2F5 placeholder-[#64676B] ring-0 focus:ring-0">
+                        <textarea v-model="formComment.content" type="text"
+                            :placeholder="`Viết bình luận với vai trò ${authUser.user_name} ...`"
+                            class="custom-input w-100 focus-0 border-0 mx-1 border-none p-0 pt-2 text-sm bg-EFF2F5 placeholder-[#64676B] ring-0 focus:ring-0">
                         </textarea>
                         <label class="hover-200 rounded-full p-2 custom-cursor-pointer" :for="'fileComment' + post.id">
                             <Image :size="27" fillColor="#43BE62" />
@@ -127,12 +128,18 @@ import Pin from 'vue-material-design-icons/Pin.vue'
             </div>
             <div v-if="comments.length > 0" id="Comment" class="comment_array">
                 <div class="my-1 comment_list" v-if="!showAllComments">
-                    <Comment :comment="comments[0]" :repcomment_count="comments[0].repcomment_count"/>
+                    <Comment :comment="comments[0]" :repcomment_count="comments[0].repcomment_count"
+                        @comment-updated="handleCommentUpdated"
+                        @repcomment-created="handleRepCommentCreated(comments[0].id)"
+                        />
                     <button class="px-2" @click="toggleComments">Xem tất cả {{ comment_count }} bình luận</button>
                 </div>
                 <div v-if="showAllComments">
                     <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">
-                        <Comment :comment="comment" :repcomment_count="comment.repcomment_count"/>
+                        <Comment :comment="comment" :repcomment_count="comment.repcomment_count"
+                            @comment-updated="handleCommentUpdated"
+                               @repcomment-created="handleRepCommentCreated(comment.id)"
+                            />
                     </div>
                     <button class="px-2" @click="toggleComments">Ẩn bớt</button>
                 </div>
@@ -210,7 +217,6 @@ export default {
     },
 
     computed: {
-        ...mapState('post', ['comments']),
         authUser() {
             if (this.$store.getters.getAuthUser.id !== undefined) {
                 return this.$store.getters.getAuthUser;
@@ -251,7 +257,6 @@ export default {
         },
         CreateComment(postId) {
             const fieldMediaCMRef = this.$refs['fieldMedia' + postId]
-            console.log(fieldMediaCMRef);
             const formData = new FormData();
             formData.append('content', this.formComment.content);
             formData.append('file', fieldMediaCMRef.files[0]);
@@ -259,8 +264,8 @@ export default {
             this.$store.dispatch('post/createComment', formData)
                 .then(response => {
                     if (response.status === 200 && response.data.data.success === true) {
-                        console.log(this.post)
-                        this.post.comments.unshift(response.data.data.comment)
+                        this.comments.unshift(response.data.data.comment)
+                        this.$emit('comment-created');  
                         this.$swal.fire({
                             position: "top-end",
                             icon: "success",
@@ -294,12 +299,27 @@ export default {
                         position: "top-end",
                         icon: "error",
                         title: "comment không thành công",
-                        text: `Lỗi: ${error.response.data.message}`,
+                        text: `Lỗi: ${error.message}`,
                         showConfirmButton: false,
                         timer: this.$config.notificationTimer ?? 3000,
                         with: '200px'
                     });
                 });
+        },
+        handleCommentUpdated(updatedComment) {
+            const index = this.comments.findIndex(c => c.id === updatedComment.id);
+            if (index !== -1) {
+                this.comments[index].content = updatedComment.content;
+                this.comments[index].url = updatedComment.url;
+                this.comments[index].path = updatedComment.path;
+                this.comments[index].type = updatedComment.type;
+            }
+        },
+        handleRepCommentCreated(commentId){
+            const comment = this.comments.find(c => c.id === commentId);
+            if (comment) {
+                comment.repcomment_count += 1;
+            }
         },
         toggleComments() {
             this.showAllComments = !this.showAllComments;  // Đảo trạng thái hiển thị khi click
@@ -348,11 +368,29 @@ export default {
                             this.isFileDisplay = imageUrl;
                         })
                         .catch(error => {
+                            this.isLoading1 = false
                             console.error('Error sending image to server:', error);
+                            this.$swal.fire({
+                                position: "top-end",
+                                icon: "error",
+                                text: 'Có lỗi xảy ra khi gửi yêu càu',
+                                showConfirmButton: false,
+                                timer: this.$config.notificationTimer ?? 3000,
+                                with: '200px'
+                            });
                         });
                 })
                 .catch(error => {
                     console.error('Error loading image:', error);
+                    this.isLoading1 = false
+                    this.$swal.fire({
+                        position: "top-end",
+                        icon: "error",
+                        text: 'Có lỗi xảy ra khi gửi yêu càu',
+                        showConfirmButton: false,
+                        timer: this.$config.notificationTimer ?? 3000,
+                        with: '200px'
+                    });
                 });
         }
 

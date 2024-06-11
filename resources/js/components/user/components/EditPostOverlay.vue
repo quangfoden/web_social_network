@@ -36,7 +36,7 @@ const emit = defineEmits(['showModal'])
                             <textarea cols="30" v-model="form.contentPostEdit" class="w-100">
                             </textarea>
                             <div v-if="imageUrls" class="p-2 position-relative cus-img-dis">
-                                <div v-for="(image) in  imageUrls " :key="index">
+                                <div v-for="(image) in imageUrls " :key="index">
                                     <Undo v-show="image.deleted" @click="revertImage(image)"
                                         class="position-absolute bg-white p-1 m-2 z-1000 right-2 rounded-full border custom-cursor-pointer"
                                         :size="22" fillColor="#5E6771" />
@@ -44,11 +44,11 @@ const emit = defineEmits(['showModal'])
                                         <Close style="z-index: 999;" v-show="!image.deleted" @click="clearImage(image)"
                                             class="position-absolute bg-white p-1 m-2 right-2 rounded-full border custom-cursor-pointer"
                                             :size="22" fillColor="#5E6771" />
-                                        <div v-if="image.type === 'image' || image.type === 'image/jpeg'">
+                                        <div v-if="image.type.includes('image')">
                                             <img class=" rounded-lg mx-auto w-100" :src="image.url" alt="">
                                         </div>
-                                        <div v-else="image.type === 'video' || image.type==='video/mp4'"> <video
-                                                class="rounded-lg mx-auto w-100" autoplay controls>
+                                        <div v-else-if="image.type.includes('video')">
+                                            <video class="rounded-lg mx-auto w-100" autoplay controls>
                                                 <source :src="image.url" type="video/mp4">
                                                 Your browser does not support the video tag.
                                             </video>
@@ -69,7 +69,7 @@ const emit = defineEmits(['showModal'])
                                     <Image :size="27" fillColor="#43BE62" />
                                 </label>
                                 <input type="file" @change="onFileChange($event)" ref="EditPost" id="image"
-                                    accept="image/*,video/*" multiple class="">
+                                    accept="image/*,video/*" multiple class="hidden">
                                 <a class="hover-200 rounded-full p-2 custom-cursor-pointer">
                                     <EmoticonOutline :size="27" fillColor="#F8B927" />
                                 </a>
@@ -179,19 +179,15 @@ export default {
                 });
         },
         getFileType(file) {
-            // Lấy phần mở rộng của tệp
             const extension = file.name.split('.').pop().toLowerCase();
-            // Kiểm tra nếu phần mở rộng là của ảnh
             const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
             if (imageExtensions.includes(extension)) {
                 return 'image';
             }
-            // Kiểm tra nếu phần mở rộng là của video
             const videoExtensions = ['mp4', 'avi', 'mov', 'mkv'];
             if (videoExtensions.includes(extension)) {
                 return 'video';
             }
-            // Nếu không phải là ảnh hoặc video, trả về null
             return null;
         },
         onFileChange($event) {

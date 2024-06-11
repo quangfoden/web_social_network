@@ -15,7 +15,7 @@ import Restore from 'vue-material-design-icons/Restore.vue';
 <template>
     <div id="LeftSection" class="card mb-3 mt-3">
         <div class="leffsidebar_lists">
-            <router-link :to="{ name: 'Profile User', params: { id: authUser.id } }"
+            <router-link :to="{ name: 'Profile User', params: { id: authUser.user_id } }"
                 class="d-flex align-items-center justify-content-start w-100 left-item">
                 <img :src="authUser.avatar" alt="" class="img-cus">
                 <div class="text-profile">{{ authUser.user_name }}</div>

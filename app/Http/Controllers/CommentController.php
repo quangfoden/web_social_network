@@ -12,13 +12,14 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use App\Http\Requests\Comment\AddCommentRequest;
+use App\Http\Requests\Comment\UpdateCommentRequest;
 use App\Repositories\CommentRepository;
 
 class CommentController extends Controller
 {
     protected $postService;
     protected $comments;
-    public function __construct(PostService $postService,CommentRepository $comments)
+    public function __construct(PostService $postService, CommentRepository $comments)
     {
         $this->postService = $postService;
         $this->comments = $comments;
@@ -51,7 +52,7 @@ class CommentController extends Controller
         $comment = new Comment([
             'post_id' => $request->postId,
             'user_id' => $userId,
-            'content' =>$data['content']
+            'content' => $data['content']
         ]);
         $comment->save();
         if ($request->hasFile('file')) {
@@ -105,6 +106,39 @@ class CommentController extends Controller
         ];
         return response()->json(['data' => $res]);
     }
+
+    public function updateComment(UpdateCommentRequest $request, $id)
+    {
+        $comment = Comment::findOrFail($id);
+        $data = $request->validated();
+        $comment->update([
+            'content' => $data['content']
+        ]);
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $path = 'uploads/Upload_comments/' . Str::random();
+            if (!Storage::exists($path)) {
+                Storage::makeDirectory($path, 0755, true);
+            }
+            $name = Str::random() . '.' . $file->getClientOriginalExtension();
+            if (!Storage::putFileAs('public/' . $path, $file, $name)) {
+                throw new \Exception("Unable to save file \"{$file->getClientOriginalName()}\"");
+            }
+            $relativePath = $path . '/' . $name;
+            $comment->update([
+                'type' => $file->getClientMimeType(),
+                'path' => $relativePath,
+                'url' => URL::to(Storage::url($relativePath)),
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Bình luận đã được cập nhật thành công!',
+            'success' => true,
+            'comment' => $comment
+        ]);
+    }
+
     public function create_rep_comment(Request $request, $commentId)
     {
         $validator = Validator::make($request->all(), [

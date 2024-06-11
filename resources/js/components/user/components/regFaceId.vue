@@ -1,9 +1,12 @@
 <template>
     <div id="AddnewFaceID">
-        <router-link :to="{name:'Home Section'}" class="btn btn-sm btn-danger m-4">Trở về</router-link>
+        <router-link :to="{ name: 'Home Section' }" class="btn btn-sm btn-danger m-4">Trở về</router-link>
         <div class="text_item text-center text-white font-bold">
             <h3>Click để bắt đầu đăng ký khuôn mặt</h3>
-            <button @click="AddNewFaceID" class="btn btn-primary">bắt đầu</button>
+            <button v-if="!loading" @click="AddNewFaceID" class="btn btn-primary">bắt đầu</button>
+            <div v-if="loading" class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
         </div>
     </div>
 </template>
@@ -34,7 +37,8 @@ export default {
             userData: {
                 userId: null,
                 userName: null
-            }
+            },
+            loading: false
         }
     },
     computed: {
@@ -49,10 +53,11 @@ export default {
         AddNewFaceID() {
             this.userData.userId = this.authUser.id
             this.userData.userName = this.authUser.user_name
+            this.loading = true
             axios.get('/sanctum/csrf-cookie').then(() => {
                 axios.post('http://127.0.0.1:5000/add', this.userData)
                     .then(response => {
-                        console.log(response.data);
+                        this.loading = false
                         Swal.fire({
                             icon: 'success',
                             text: `Success ${response.data.message}`,
@@ -64,6 +69,7 @@ export default {
                     })
                     .catch(error => {
                         console.error('Lỗi khi gửi yêu cầu:', error);
+                        this.loading = false
                         let errorMessage = 'Có lỗi xảy ra khi gửi yêu cầu';
                         if (error.response && error.response.data && error.response.data.message) {
                             errorMessage = error.response.data.message;

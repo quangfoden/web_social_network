@@ -20,6 +20,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'user_id',
         'first_name',
         'last_name',
         'user_name',
@@ -59,6 +60,24 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public static function generateUniqueUserId()
+    {
+        do {
+            $user_id = rand(1000000000, 9999999999);
+        } while (self::where('user_id', $user_id)->exists());
+
+        return $user_id;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            $model->user_id = self::generateUniqueUserId();
+        });
+    }
+
     public function posts()
     {
         return $this->hasMany(Post::class);
@@ -68,7 +87,6 @@ class User extends Authenticatable
         return $this->hasMany(FaceId::class);
     }
 
-    // Định nghĩa mối quan hệ 1-n với bảng user_face_regs
     public function userFaceRegs()
     {
         return $this->hasMany(UserFaceReg::class);

@@ -37,7 +37,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
         return response()->json($responseData);
     });
     Route::get('allusers', [UserController::class, 'allusers']);
-    Route::get('getUserById/{id}', [UsersController::class, 'getUserById']);
+    Route::get('getUserById/{user_id}', [UsersController::class, 'getUserById']);
     Route::get('roles', [UserController::class, 'roles']);
     Route::post('create-new-user', [UserController::class, 'createNewUser']);
     Route::post('change-role-user/{id}', [UserController::class, 'changeRoleUser']);
@@ -54,5 +54,6 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('create_comment', [CommentController::class, 'create_comment']);
     Route::post('create_rep_comment/{commentId}', [CommentController::class, 'create_rep_comment']);
     // Route::post('get_all_comments/{postId}', [CommentController::class, 'get_all_comments']);
+    Route::post('/comments/{comment}', [CommentController::class, 'updateComment']);
     Route::get('getAllComments/{postId}', [CommentController::class, 'getAllComments']);
 });

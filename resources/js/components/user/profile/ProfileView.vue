@@ -10,8 +10,9 @@
                     <CreatePostBox v-if="isAuthUser" :image="authUser.avatar"
                         :placeholder="'Bạn đang nghĩ gì vậy ' + authUser.user_name" />
                     <div id="posts" v-for="post in postsByUser" :key="post.id">
-                        <Post v-if="isUser(post) && checkPrivacy(post)" :post="post" :pinned="post.pinned"
-                            :status="post.status" :user="post.user" :media="post.media" :comments="post.comments" :comment_count="post.comment_count"/>
+                        <Post v-if="checkPrivacy(post)" :post="post" :pinned="post.pinned" :status="post.status"
+                            :user="post.user" :media="post.media" :comments="post.comments"
+                            :comment_count="post.comment_count" @comment-created="handleCommentCreated(post.id)" />
                     </div>
                     <!-- <div v-if="loading">Đang tải ...</div> -->
                     <div v-if="loading" class="spinner-border text-primary z-1000"
@@ -35,7 +36,6 @@ import RightProfile from './RightProfile.vue';
 import { data } from 'jquery';
 export default {
     data() {
-
         return {
             loading: false,
             userId: null,
@@ -59,7 +59,7 @@ export default {
             return JSON.parse(localStorage.getItem('authUser'));
         },
         isAuthUser() {
-            return this.userId == this.authUser.id;
+            return this.userId == this.authUser.user_id;
         },
     },
 
@@ -67,9 +67,6 @@ export default {
         ...mapActions('post', ['fetchPostsByUser']),
         loadData() {
             this.$store.dispatch('post/fetchPostsByUser', this.userId)
-        },
-        isUser(post) {
-            return post.user_id === this.userId;
         },
         checkPrivacy(post) {
             if (post.privacy == 'only_me') {
@@ -116,6 +113,12 @@ export default {
         },
         resetData() {
             this.$store.commit('post/RESET_POSTS_BY_USER');
+        },
+        handleCommentCreated(postId) {
+            const post = this.postsByUser.find(p => p.id === postId);
+            if (post) {
+                post.comment_count += 1;
+            }
         }
     },
 
@@ -124,7 +127,6 @@ export default {
         this.resetData();
         this.loadData();
         this.loadUserbyId()
-        console.log(this.postsByUser);
     },
     mounted() {
         window.addEventListener('scroll', this.handleScroll);

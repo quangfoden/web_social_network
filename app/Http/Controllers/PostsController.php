@@ -75,9 +75,11 @@ class PostsController extends Controller
     }
     public function all_PostByUserId($userId)
     {
-        // $userId = Auth::id();
-        $posts = $this->postRepo->getAllByUserId($userId);
-        // dd($userId);
+        $user = User::where('user_id', $userId)->first();
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        $posts = $this->postRepo->getAllByUserId($user->id);
         return response()->json([
             'status' => 200,
             'success' => true,

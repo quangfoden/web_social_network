@@ -44,15 +44,12 @@ class PostRepository
     }
     public function getPostById($postId): array
     {
-        // Lấy bài viết từ cơ sở dữ liệu với ID tương ứng
         $post = $this->model->query()
             ->with('user', 'media', 'comments.user', 'comments.repcomments.user')
             ->where('id', $postId)
             ->first();
 
-        // Kiểm tra xem bài viết có tồn tại không
         if ($post) {
-            // Định dạng thời gian cho bài viết và các bình luận
             $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
             $post->comments->each(function ($comment) {
                 $comment->created_at_formatted = $this->postService->formatTimeAgo($comment->created_at);
@@ -62,25 +59,19 @@ class PostRepository
                     }
                 }
             });
-
-            // Trả về bài viết dưới dạng mảng
             return $post->toArray();
         }
-
-        // Trường hợp không tìm thấy bài viết, trả về null
         return null;
     }
     public function getAllByUserId(int $userId): LengthAwarePaginator
     {
         $query = $this->model->query()
             ->where('status', 1)
-            ->where('user_id', $userId) // Lọc bài viết theo ID của người dùng
+            ->where('user_id', $userId) 
             ->with('user', 'media', 'comments.user', 'comments.repcomments.user')
             ->orderByRaw('CASE WHEN pinned = 1 THEN 0 ELSE 1 END')
             ->orderBy('created_at', 'desc');
-
         $posts = $query->paginate(10);
-
         $posts->getCollection()->transform(function ($post) {
             $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
             $post->comment_count = $post->comments->count();

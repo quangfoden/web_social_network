@@ -65,7 +65,7 @@ import Logout from 'vue-material-design-icons/Logout.vue';
                     <img :src="authUser.avatar" alt="" class="custom">
                 </div>
                 <div v-if="showMenu" class="show_menu position-absolute">
-                    <router-link :to="{ name: 'Profile User', params: { id: authUser.id } }" @click="loadUserbyId">
+                    <router-link :to="{ name: 'Profile User', params: { id: authUser.user_id } }" @click="loadUserbyId">
                         <div class="d-flex menu_item align-items-center gap-3 ">
                             <img :src="authUser.avatar" alt="" class="custom">
                             <span>{{ authUser.user_name }}</span>
@@ -159,7 +159,7 @@ export default {
         },
         loadUserbyId() {
             this.showMenu = false
-            this.$store.dispatch('post/getUserbyId', this.authUser.id)
+            this.$store.dispatch('post/getUserbyId', this.authUser.user_id)
                 .then(response => {
                     this.myprofile = true
                 })

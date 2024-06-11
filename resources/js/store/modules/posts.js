@@ -313,6 +313,14 @@ const actions = {
             },
         })
     },
+    editComment({commit},payload){
+        const { commentId, formData } = payload;
+        return axios.post(`api/user/comments/${commentId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+    }
 };
 
 
