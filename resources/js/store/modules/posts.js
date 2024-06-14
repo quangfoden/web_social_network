@@ -320,7 +320,10 @@ const actions = {
                 'Content-Type': 'multipart/form-data',
             },
         })
-    }
+    },
+    delete_comment({commit},commentId){
+        return axios.post(`api/user/deleteComment/${commentId}`)
+    },
 };
 
 

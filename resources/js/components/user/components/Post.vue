@@ -131,15 +131,15 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                     <Comment :comment="comments[0]" :repcomment_count="comments[0].repcomment_count"
                         @comment-updated="handleCommentUpdated"
                         @repcomment-created="handleRepCommentCreated(comments[0].id)"
-                        />
+                        @comment-deleted="handleCommentDeleted" />
                     <button class="px-2" @click="toggleComments">Xem tất cả {{ comment_count }} bình luận</button>
                 </div>
                 <div v-if="showAllComments">
                     <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">
                         <Comment :comment="comment" :repcomment_count="comment.repcomment_count"
                             @comment-updated="handleCommentUpdated"
-                               @repcomment-created="handleRepCommentCreated(comment.id)"
-                            />
+                            @repcomment-created="handleRepCommentCreated(comment.id)"
+                            @comment-deleted="handleCommentDeleted" />
                     </div>
                     <button class="px-2" @click="toggleComments">Ẩn bớt</button>
                 </div>
@@ -265,7 +265,7 @@ export default {
                 .then(response => {
                     if (response.status === 200 && response.data.data.success === true) {
                         this.comments.unshift(response.data.data.comment)
-                        this.$emit('comment-created');  
+                        this.$emit('comment-created');
                         this.$swal.fire({
                             position: "top-end",
                             icon: "success",
@@ -299,10 +299,9 @@ export default {
                         position: "top-end",
                         icon: "error",
                         title: "comment không thành công",
-                        text: `Lỗi: ${error.message}`,
+                        text: `Lỗi: ${error.response.data.message}`,
                         showConfirmButton: false,
                         timer: this.$config.notificationTimer ?? 3000,
-                        with: '200px'
                     });
                 });
         },
@@ -313,12 +312,23 @@ export default {
                 this.comments[index].url = updatedComment.url;
                 this.comments[index].path = updatedComment.path;
                 this.comments[index].type = updatedComment.type;
+                this.comments[index].created_at = updatedComment.created_at;
+                this.comments[index].updated_at = updatedComment.updated_at;
             }
         },
-        handleRepCommentCreated(commentId){
+        handleRepCommentCreated(commentId) {
             const comment = this.comments.find(c => c.id === commentId);
             if (comment) {
                 comment.repcomment_count += 1;
+            }
+        },
+        handleCommentDeleted(deletedCommentId) {
+            // this.comments = this.comments.filter(comment => comment.id !== deletedCommentId);
+            // const comment = this.comments.find(c => c.id === deletedCommentId);
+            // console.log(comment);
+            const index = this.comments.findIndex(comment => comment.id === deletedCommentId);
+            if (index !== -1) {
+                this.comments.splice(index, 1);
             }
         },
         toggleComments() {

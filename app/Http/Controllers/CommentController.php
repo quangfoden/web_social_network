@@ -14,15 +14,16 @@ use Illuminate\Support\Facades\URL;
 use App\Http\Requests\Comment\AddCommentRequest;
 use App\Http\Requests\Comment\UpdateCommentRequest;
 use App\Repositories\CommentRepository;
+use Illuminate\Support\Facades\Log;
 
 class CommentController extends Controller
 {
     protected $postService;
-    protected $comments;
-    public function __construct(PostService $postService, CommentRepository $comments)
+    protected $commentRepo;
+    public function __construct(PostService $postService, CommentRepository $commentRepo)
     {
         $this->postService = $postService;
-        $this->comments = $comments;
+        $this->commentRepo = $commentRepo;
     }
     // public function getAllComments($postId)
     // {
@@ -40,7 +41,7 @@ class CommentController extends Controller
     //
     public function getAllCommentsByPostId($postId)
     {
-        $comments = $this->comments->allCommentsByPost($postId);
+        $comments = $this->commentRepo->allCommentsByPost($postId);
         return response()->json($comments);
     }
     //
@@ -107,38 +108,137 @@ class CommentController extends Controller
         return response()->json(['data' => $res]);
     }
 
-    public function updateComment(UpdateCommentRequest $request, $id)
+    // public function updateComment(UpdateCommentRequest $request, $commentId)
+    // {
+    //     $iscomment = Comment::findOrFail($commentId);
+    //     if (!$iscomment) {
+    //         return response()->json(['message' => 'Comment not fund'], 404);
+    //     }
+    //     $data = $request->all();
+    //     $this->commentRepo->update($commentId, $data);
+    //     $deletedFile = $data['deletedFile'] ?? [];
+    //     if (count($deletedFile) > 0) {
+    //         $commentMedias = Comment::query()
+    //             ->where('id', $commentId)
+    //             ->whereIn('id', $deletedFile)
+    //             ->get();
+    //         foreach ($commentMedias as $commentMedia) {
+    //             if ($commentMedia->path) {
+    //                 Storage::deleteDirectory('/public/' . dirname($commentMedia->path));
+    //             }
+    //             $commentMedia->update([
+    //                 'url' => null,
+    //                 'type' => null,
+    //                 'path' => null
+    //             ]);
+    //         }
+    //     }
+    //     if ($request->hasFile('files')) {
+    //         $requestData = $request->file('files');
+    //         foreach ($requestData as $id => $mediaData) {
+    //             $path = 'uploads/Upload_comments/' . Str::random();
+    //             if (!Storage::exists($path)) {
+    //                 Storage::makeDirectory($path, 0755, true);
+    //             }
+    //             $name = Str::random() . '.' . $mediaData->getClientOriginalExtension();
+    //             if (!Storage::putFileAS('public/' . $path, $mediaData, $name)) {
+    //                 throw new \Exception("Unable to save file \"{$mediaData->getClientOriginalName()}\"");
+    //             }
+    //             $relativePath = $path . '/' . $name;
+    //             $iscomment->update([
+    //                 'path' => $relativePath,
+    //                 'url' => URL::to(Storage::url($relativePath)),
+    //                 'type' => 'image',
+    //             ]);
+    //         }
+    //     } 
+    //     $updatedComment = Comment::findOrFail($commentId);
+    //     return response()->json([
+    //         'message' => 'Bình luận đã được cập nhật thành công!',
+    //         'success' => true,
+    //         'comment' => $updatedComment
+    //     ]);
+    // }
+    public function updateComment(UpdateCommentRequest $request, $commentId)
     {
-        $comment = Comment::findOrFail($id);
-        $data = $request->validated();
-        $comment->update([
-            'content' => $data['content']
-        ]);
+        $comment = Comment::findOrFail($commentId);
+
+        $data = $request->all();
+        $this->commentRepo->update($commentId, $data);
+
+        $deletedFile = $data['deletedFile'] ?? [];
+        if (count($deletedFile) > 0) {
+            Log::info($deletedFile);
+            $commentMedias = Comment::query()
+                ->where('id', $commentId)
+                ->whereIn('id', $deletedFile)
+                ->get();
+            Log::info($commentMedias);
+            foreach ($commentMedias as $commentMedia) {
+                if ($commentMedia->path) {
+                    Storage::deleteDirectory('/public/' . dirname($commentMedia->path));
+                }
+                $commentMedia->update([
+                    'url' => null,
+                    'type' => null,
+                    'path' => null
+                ]);
+            }
+        }
+
         if ($request->hasFile('file')) {
-            $file = $request->file('file');
+            $requestData = $request->file('file');
+            Log::info($requestData->getClientMimeType());
             $path = 'uploads/Upload_comments/' . Str::random();
             if (!Storage::exists($path)) {
                 Storage::makeDirectory($path, 0755, true);
             }
-            $name = Str::random() . '.' . $file->getClientOriginalExtension();
-            if (!Storage::putFileAs('public/' . $path, $file, $name)) {
-                throw new \Exception("Unable to save file \"{$file->getClientOriginalName()}\"");
+            $name = Str::random() . '.' . $requestData->getClientOriginalExtension();
+            if (!Storage::putFileAS('public/' . $path, $requestData, $name)) {
+                throw new \Exception("Unable to save file \"{$requestData->getClientOriginalName()}\"");
             }
             $relativePath = $path . '/' . $name;
             $comment->update([
-                'type' => $file->getClientMimeType(),
                 'path' => $relativePath,
                 'url' => URL::to(Storage::url($relativePath)),
+                'type' => $requestData->getClientMimeType(),
             ]);
         }
 
+        $updatedComment = Comment::findOrFail($commentId);
         return response()->json([
             'message' => 'Bình luận đã được cập nhật thành công!',
             'success' => true,
-            'comment' => $comment
+            'comment' => $updatedComment
         ]);
     }
-
+    public function delete_comment(Request $request, $id)
+    {
+        try {
+            // Tìm bình luận bằng ID
+            $comment = Comment::findOrFail($id);
+    
+            // Kiểm tra xem bình luận có thuộc về người dùng hiện tại không
+            $user = Auth::user();
+            if ($comment->user_id !== $user->id) {
+                return response()->json(['message' => 'Bạn không có quyền xóa bình luận này!', 'success' => false], 403);
+            }
+    
+            // Nếu bình luận có file đính kèm, xóa file đó
+            if ($comment->path) {
+                Storage::deleteDirectory('public/' . dirname($comment->path));
+            }
+    
+            // Xóa bình luận
+            $comment->delete();
+    
+            return response()->json(['message' => 'Xóa bình luận thành công!', 'success' => true]);
+    
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Đã xảy ra lỗi khi xóa bình luận!', 'success' => false], 500);
+        }
+    }
+    
     public function create_rep_comment(Request $request, $commentId)
     {
         $validator = Validator::make($request->all(), [
