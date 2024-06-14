@@ -50,12 +50,16 @@ class CommentController extends Controller
         $data = $request->validated();
         $user = Auth::user();
         $userId = $user->id;
-        $comment = new Comment([
+        // $comment = new Comment([
+        //     'post_id' => $request->postId,
+        //     'user_id' => $userId,
+        //     'content' => $data['content']
+        // ]);
+        $commentData = [
             'post_id' => $request->postId,
             'user_id' => $userId,
             'content' => $data['content']
-        ]);
-        $comment->save();
+        ];
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $path = 'uploads/Upload_comments/' . Str::random();
@@ -67,11 +71,14 @@ class CommentController extends Controller
                 throw new \Exception("Unable to save file \"{$file->getClientOriginalName()}\"");
             }
             $relativePath = $path . '/' . $name;
-            $comment->update([
-                'type' => $file->getClientMimeType(),
-                'path' => $relativePath,
-                'url' => URL::to(Storage::url($relativePath)),
-            ]);
+            // $comment->update([
+            //     'type' => $file->getClientMimeType(),
+            //     'path' => $relativePath,
+            //     'url' => URL::to(Storage::url($relativePath)),
+            // ]);
+            $commentData['type'] = $file->getClientMimeType();
+            $commentData['path'] =  $relativePath;
+            $commentData['url'] = URL::to(Storage::url($relativePath));
             $res = [
                 'message' => 'upload file thành công !',
                 'success' => true,
@@ -82,7 +89,8 @@ class CommentController extends Controller
                 'success' => true,
             ];
         }
-
+        $comment = new Comment($commentData);
+        $comment->save();
         $formattedComments = [
             'id' => $comment->id,
             'post_id' =>  $comment->post_id,
@@ -108,57 +116,6 @@ class CommentController extends Controller
         return response()->json(['data' => $res]);
     }
 
-    // public function updateComment(UpdateCommentRequest $request, $commentId)
-    // {
-    //     $iscomment = Comment::findOrFail($commentId);
-    //     if (!$iscomment) {
-    //         return response()->json(['message' => 'Comment not fund'], 404);
-    //     }
-    //     $data = $request->all();
-    //     $this->commentRepo->update($commentId, $data);
-    //     $deletedFile = $data['deletedFile'] ?? [];
-    //     if (count($deletedFile) > 0) {
-    //         $commentMedias = Comment::query()
-    //             ->where('id', $commentId)
-    //             ->whereIn('id', $deletedFile)
-    //             ->get();
-    //         foreach ($commentMedias as $commentMedia) {
-    //             if ($commentMedia->path) {
-    //                 Storage::deleteDirectory('/public/' . dirname($commentMedia->path));
-    //             }
-    //             $commentMedia->update([
-    //                 'url' => null,
-    //                 'type' => null,
-    //                 'path' => null
-    //             ]);
-    //         }
-    //     }
-    //     if ($request->hasFile('files')) {
-    //         $requestData = $request->file('files');
-    //         foreach ($requestData as $id => $mediaData) {
-    //             $path = 'uploads/Upload_comments/' . Str::random();
-    //             if (!Storage::exists($path)) {
-    //                 Storage::makeDirectory($path, 0755, true);
-    //             }
-    //             $name = Str::random() . '.' . $mediaData->getClientOriginalExtension();
-    //             if (!Storage::putFileAS('public/' . $path, $mediaData, $name)) {
-    //                 throw new \Exception("Unable to save file \"{$mediaData->getClientOriginalName()}\"");
-    //             }
-    //             $relativePath = $path . '/' . $name;
-    //             $iscomment->update([
-    //                 'path' => $relativePath,
-    //                 'url' => URL::to(Storage::url($relativePath)),
-    //                 'type' => 'image',
-    //             ]);
-    //         }
-    //     } 
-    //     $updatedComment = Comment::findOrFail($commentId);
-    //     return response()->json([
-    //         'message' => 'Bình luận đã được cập nhật thành công!',
-    //         'success' => true,
-    //         'comment' => $updatedComment
-    //     ]);
-    // }
     public function updateComment(UpdateCommentRequest $request, $commentId)
     {
         $comment = Comment::findOrFail($commentId);
@@ -217,28 +174,27 @@ class CommentController extends Controller
         try {
             // Tìm bình luận bằng ID
             $comment = Comment::findOrFail($id);
-    
+
             // Kiểm tra xem bình luận có thuộc về người dùng hiện tại không
             $user = Auth::user();
             if ($comment->user_id !== $user->id) {
                 return response()->json(['message' => 'Bạn không có quyền xóa bình luận này!', 'success' => false], 403);
             }
-    
+
             // Nếu bình luận có file đính kèm, xóa file đó
             if ($comment->path) {
                 Storage::deleteDirectory('public/' . dirname($comment->path));
             }
-    
+
             // Xóa bình luận
             $comment->delete();
-    
+
             return response()->json(['message' => 'Xóa bình luận thành công!', 'success' => true]);
-    
         } catch (\Exception $e) {
             return response()->json(['message' => 'Đã xảy ra lỗi khi xóa bình luận!', 'success' => false], 500);
         }
     }
-    
+
     public function create_rep_comment(Request $request, $commentId)
     {
         $validator = Validator::make($request->all(), [
@@ -253,12 +209,11 @@ class CommentController extends Controller
         }
         $user = Auth::user();
         $userId = $user->id;
-        $replycomment = new Replycomment([
+        $replyCommentData = [
             'comment_id' => $commentId,
             'user_id' => $userId,
-            'content' => $request->input('content')
-        ]);
-        $replycomment->save();
+            'content' => $request->input('content'),
+        ];
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $path = 'uploads/Upload_comments/rep_comment/' . Str::random();
@@ -270,11 +225,9 @@ class CommentController extends Controller
                 throw new \Exception("Unable to save file \"{$file->getClientOriginalName()}\"");
             }
             $relativePath = $path . '/' . $name;
-            $replycomment->update([
-                'type' => $file->getClientMimeType(),
-                'path' => $relativePath,
-                'url' => URL::to(Storage::url($relativePath)),
-            ]);
+            $replyCommentData['type'] = $file->getClientMimeType();
+            $replyCommentData['path'] = $relativePath;
+            $replyCommentData['url'] = URL::to(Storage::url($relativePath));
             $res = [
                 'message' => 'upload file thành công !',
                 'success' => true,
@@ -285,6 +238,8 @@ class CommentController extends Controller
                 'success' => true,
             ];
         }
+        $replycomment = new Replycomment($replyCommentData);
+        $replycomment->save();
         $formattedNewRepComments = [
             'id' => $replycomment->id,
             'comment_id' =>  $commentId,

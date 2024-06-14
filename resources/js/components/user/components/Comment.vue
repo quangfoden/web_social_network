@@ -124,7 +124,7 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                     </div>
                     <div v-if="showAllRepComments" class="mx-5 repcomment_list boxrepcomment-cus"
                         v-for="(repcomment, index) in comment.repcomments" :key="index">
-                        <div class="d-flex gap-2 align-items-start w-100 mb-1">
+                        <!-- <div class="d-flex gap-2 align-items-start w-100 mb-1">
                             <router-link :to="{ name: 'Profile User', params: { id: repcomment.user.user_id } }"
                                 class="mr-2">
                                 <img class="rounded-full ml-1 img-cus" :src="repcomment.user.avatar" alt="">
@@ -140,8 +140,8 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                                     <span @click.prevent="CusRedirect" v-html="repcomment.content"></span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="w-100 position-relative" style="margin-left: 50px;">
+                        </div> -->
+                        <!-- <div class="w-100 position-relative" style="margin-left: 50px;">
                             <img width="150" v-if="repcomment.type != null && repcomment.type.includes('image')"
                                 @click="isFileDisplay = repcomment.url" :src="repcomment.url" alt="Image">
                             <video width="150" v-else-if="repcomment.type != null && repcomment.type.includes('video')"
@@ -156,7 +156,9 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                                 Phản
                                 hồi
                             </p>
-                        </div>
+                        </div> -->
+                        <RepComment :repcomment="repcomment" :index=index :commentId=comment.id
+                            @reply-comment-clicked="handleReplyCommentClicked" @focus-input="focusInput" />
                     </div>
                     <div v-if="showAllRepComments" class="text-center mb-1">
                         <button @click="toggleRepComments">Ẩn bớt</button>
@@ -214,6 +216,7 @@ import Undo from 'vue-material-design-icons/Undo.vue'
 </template>
 <script>
 import { toRefs, reactive, ref } from 'vue';
+import RepComment from '../Components/Repcomment.vue'
 import { useGeneralStore } from '../../../store/general';
 import { storeToRefs } from 'pinia';
 import { param } from 'jquery';
@@ -221,6 +224,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { error } from 'jquery';
 
 export default {
+    components: {
+        RepComment
+    },
     props: {
         comment: {
             type: Object,
@@ -261,12 +267,6 @@ export default {
         },
     },
     methods: {
-        CusRedirect(event) {
-            const url = event.target.getAttribute('href');
-            if (url) {
-                this.$router.push(url);
-            }
-        },
         getUploadedImageRepComment(e) {
             const file = e.target.files[0];
             let mediaType;
@@ -427,6 +427,13 @@ export default {
                     });
                 })
         },
+        handleReplyCommentClicked(payload) {
+
+            this.selectedRepCommentIndex = payload.selectedRepCommentIndex
+            this.boxRepComment = payload.boxRepComment;
+            this.isRepComment = payload.isRepComment;
+            this.formRepComment.content = payload.datacontentRepComment;
+        },
         CreateRepComment(commentId) {
             const formData = new FormData();
             let content = this.formRepComment.content
@@ -521,13 +528,8 @@ export default {
             this.formRepComment.content = '@' + this.comment.user.user_name + ' ';
             this.$refs[refName].focus();
         },
-        clickRepComment2(index, refName) {
-            this.selectedRepCommentIndex = index
-            this.boxRepComment = true
-            this.isRepComment = false
-            console.log(this.isRepComment);
-            this.formRepComment.content = '@' + this.comment.repcomments[index].user.user_name + ' '
-            this.$refs[refName].focus();
+        focusInput(commentId) {
+            this.$refs['repcomment' + commentId].focus();
         },
         setupCommentWatcher() {
             this.commentWatcher = this.$watch(
@@ -548,12 +550,6 @@ export default {
                 },
                 { immediate: true, deep: true }
             );
-            console.log(this.fileUrls);
-            console.log(this.fileUrls.length);
-            setTimeout(() => {
-                console.log(this.fileUrls.length);
-                console.log(this.fileUrls);
-            }, 3000);
         },
         resetCommentWatcher() {
             if (this.commentWatcher) {
