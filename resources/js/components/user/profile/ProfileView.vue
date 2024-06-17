@@ -22,17 +22,19 @@
                 </div>
             </div>
             <RightProfile v-if="isAuthUser" id="RightProfile" />
+            <SidebarRight v-else class="col-12 col-lg-12 col-xl-3 order-3 order-lg-3 bg-item" />
         </div>
     </div>
 </template>
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 
-import CreatePostBox from '../Components/CreatePostBox.vue';
 import Post from '../Components/Post.vue';
+import CreatePostBox from '../Components/CreatePostBox.vue';
 import LeftProfile from './LeftProfile.vue'
-import { ref } from 'vue';
 import RightProfile from './RightProfile.vue';
+import SidebarRight from '../layouts/SidebarRight.vue';
+import { ref } from 'vue';
 import { data } from 'jquery';
 export default {
     data() {
@@ -47,7 +49,8 @@ export default {
         CreatePostBox,
         Post,
         LeftProfile,
-        RightProfile
+        RightProfile,
+        SidebarRight
     },
     computed: {
         ...mapState('post', ['postsByUser']),

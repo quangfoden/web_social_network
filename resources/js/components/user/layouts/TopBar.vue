@@ -14,13 +14,13 @@ import Logout from 'vue-material-design-icons/Logout.vue';
 </script>
 
 <template>
-    <div id="Mainnav">
+    <div id="Mainnav" class="border-bottom-cus">
         <div class="d-flex gap-2">
             <router-link :to="{ name: '' }" class="text_name">
                 <img width="40" src="/images/icons/FacebookLogoCircle.png" alt="">
             </router-link>
             <div id="Navleft">
-                <Magnify class="p-2" :size="22" fillColor="#64676B" />
+                <Magnify class="p-2" :size="27" fillColor="#B0B3B8" />
                 <input class="search" placeholder="Search..." type="text">
             </div>
         </div>
@@ -30,35 +30,35 @@ import Logout from 'vue-material-design-icons/Logout.vue';
                     class="list_items d-flex align-items-center justify-content-center w-100">
                     <div>
                         <Home v-if="$route.path == '/'" class="mx-auto" :size="27" fillColor="#1A73E3" />
-                        <HomeOutline v-else class="mx-auto" :size="32" fillColor="#64676B" />
+                        <HomeOutline v-else class="mx-auto" :size="32" fillColor="#B0B3B8" />
                     </div>
                 </div>
                 <div v-if="$route.path == '/'" class="border-b-4 border-b-blue-400 rounded-400 item-active"></div>
             </router-link>
             <div class="list_items d-flex align-items-center justify-content-center w-100">
-                <TelevisionPlay class="mx-auto" :size="27" fillColor="#64676B" />
+                <TelevisionPlay class="mx-auto" :size="27" fillColor="#B0B3B8" />
             </div>
             <div class="list_items d-flex align-items-center justify-content-center w-100">
-                <StorefrontOutline class="mx-auto" :size="27" fillColor="#64676B" />
+                <StorefrontOutline class="mx-auto" :size="27" fillColor="#B0B3B8" />
             </div>
             <div class="list_items d-flex align-items-center justify-content-center w-100">
-                <span class="rounded-full border-[2px] border-[#64676B] p-1">
-                    <AccountGroup class="mx-auto" :size="22" fillColor="#64676B" />
+                <span class="rounded-full border-[2px] border-[#B0B3B8] p-1">
+                    <AccountGroup class="mx-auto" :size="22" fillColor="#B0B3B8" />
                 </span>
             </div>
             <div class="list_items d-flex align-items-center justify-content-center w-100">
-                <ControllerClassicOutline class="mx-auto" :size="32" fillColor="#64676B" />
+                <ControllerClassicOutline class="mx-auto" :size="32" fillColor="#B0B3B8" />
             </div>
         </div>
         <div id="NavLeft" class="d-flex align-items-center justify-content-end">
             <div class="nav_left_items">
-                <DotsGrid :size="23" fillColor="#050505" />
+                <DotsGrid :size="23" fillColor="#fff" />
             </div>
             <div class="nav_left_items">
-                <FacebookMessenger :size="23" fillColor="#050505" />
+                <FacebookMessenger :size="23" fillColor="#fff" />
             </div>
             <div class="nav_left_items">
-                <Bell :size="23" fillColor="#050505" />
+                <Bell :size="23" fillColor="#fff" />
             </div>
             <div class="d-flex align-items-center justify-content-center position-relative">
                 <div @click="showMenu = !showMenu">

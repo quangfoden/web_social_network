@@ -13,26 +13,26 @@ const emit = defineEmits(['showModal'])
         <div class="wrapper_crpost">
             <div class="w-100 crpost">
                 <div class="d-flex align-items-center position-relative my-3 mx-1">
-                    <div class="w-100 text-center">Tạo bài viết</div>
+                    <div class="w-100 text-center primary-text">Tạo bài viết</div>
                     <div class="close position-absolute rounded-full custom-cursor-pointer"
                         @click="isPostOverlay = false">
                         <Close :size="20" fillColor="#5E6771" />
                     </div>
                 </div>
-                <div class="border-top">
+                <div class="border-top-cus">
                     <form @submit.prevent="submitPost" method="post" enctype="multipart/form-data" class="p-4">
                         <div class="d-flex align-items-center">
                             <img :src="authUser.avatar" class="rounded-full img-cus" alt="">
                             <div class="mx-2">
-                                <div class="font-extrabold">{{ authUser.user_name }}</div>
-                                <select v-model="form.privacy" id="privacy" required>
+                                <div class="font-extrabold primary-text">{{ authUser.user_name }}</div>
+                                <select class="bg-item primary-text border" v-model="form.privacy" id="privacy" required>
                                     <option v-for="option in privacyOptions" :value="option.value">{{ option.name }}
                                     </option>
                                 </select>
                             </div>
                         </div>
                         <div class="text-ar">
-                            <textarea cols="30" v-model="form.content" class="w-100"
+                            <textarea cols="30" v-model="form.content" class="w-100 bg-item secondary-text"
                                 :placeholder="'bạn đang nghĩ gì ' + authUser.user_name + '...'">
                             </textarea>
                             <div v-if="imageUrls" class="p-2 position-relative cus-img-dis">
@@ -59,7 +59,7 @@ const emit = defineEmits(['showModal'])
                         </div>
                         <div
                             class="border-2 rounded-xl mt-4 shadow-sm d-flex align-items-center justify-content-between">
-                            <div class="font-extrabold w-100 d-block">Tạo bài viết của bạn</div>
+                            <div class="font-extrabold w-100 d-block primary-text">Tạo bài viết của bạn</div>
                             <div class="d-flex align-items-center">
                                 <label class="hover-200 rounded-full p-2 custom-cursor-pointer" for="image">
                                     <Image :size="27" fillColor="#43BE62" />
@@ -73,12 +73,12 @@ const emit = defineEmits(['showModal'])
                                     <VideoImage :size="27" fillColor="#F12848" />
                                 </a>
                                 <a class="hover-200 rounded-full p-2 custom-cursor-pointer">
-                                    <DotsHorizontal :size="27" fillColor="#050505" />
+                                    <DotsHorizontal :size="27" fillColor="#fff" />
                                 </a>
                             </div>
                         </div>
                         <button type="submit"
-                            class="w-100 bg-blue-500 hover-bg-blue-600 text-white font-extrabold p-1 mt-3 rounded-lg">
+                            class="w-100 bg-blue-500 hover-bg-blue-600 text-white font-extrabold p-2 mt-3 rounded-lg">
                             Đăng
                         </button>
                     </form>

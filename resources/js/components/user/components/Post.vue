@@ -3,6 +3,7 @@ import Image from 'vue-material-design-icons/Image.vue'
 import AccountMultiple from 'vue-material-design-icons/AccountMultiple.vue';
 import ThumbUp from 'vue-material-design-icons/ThumbUp.vue';
 import Check from 'vue-material-design-icons/Check.vue';
+import Send from 'vue-material-design-icons/Send.vue';
 import Delete from 'vue-material-design-icons/Delete.vue';
 import Close from 'vue-material-design-icons/Close.vue'
 import Pin from 'vue-material-design-icons/Pin.vue'
@@ -81,7 +82,7 @@ import Pin from 'vue-material-design-icons/Pin.vue'
             </div>
         </div>
         <div id="Likes" class="">
-            <div class="d-flex align-items-center justify-content-between py-3 border-bottom">
+            <div class="d-flex align-items-center justify-content-between py-3 border-bottom-cus">
                 <ThumbUp :size="16" fillColor="#1D72E2" />
                 <div class="text-sm text-gray-600 font-semibold">5 bình luận</div>
             </div>
@@ -93,10 +94,11 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                     <a href="/" class="mx-2">
                         <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" loading="lazy" alt="">
                     </a>
-                    <div class="d-flex align-items-center bg-EFF2F5 rounded-full w-100  px-2">
-                        <textarea v-model="formComment.content" type="text"
+                    <div class="d-flex align-items-center bg-input rounded w-100  px-2">
+                        <textarea @input="__adjustHeight(post.id)" v-model="formComment.content" type="text"
                             :placeholder="`Viết bình luận với vai trò ${authUser.user_name} ...`"
-                            class="custom-input w-100 focus-0 border-0 mx-1 border-none p-0 pt-2 text-sm bg-EFF2F5 placeholder-[#64676B] ring-0 focus:ring-0">
+                            :ref="'textAreaComment' + post.id"
+                            class="primary-text custom-input w-100 focus-0 border-0 mx-1 border-none p-0 pt-2 text-sm bg-input placeholder-[#64676B] ring-0 focus:ring-0">
                         </textarea>
                         <label class="hover-200 rounded-full p-2 custom-cursor-pointer" :for="'fileComment' + post.id">
                             <Image :size="27" fillColor="#43BE62" />
@@ -104,8 +106,8 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                         <input :ref="'fieldMedia' + post.id" type="file" class="hidden" :id="'fileComment' + post.id"
                             accept="image/*,video/*" @input="getUploadedCommentImage($event)">
                         <button type="submit"
-                            class="d-flex border-0 align-items-center text-sm px-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">
-                            <Check />Gửi
+                            class="d-flex border-0 bg-transparent align-items-center text-sm px-3 rounded-full hover:bg-blue-600 text-white font-bold">
+                            <Send :size="27" fillColor="#4299e1" />
                         </button>
                     </div>
                 </form>
@@ -132,7 +134,10 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                         @comment-updated="handleCommentUpdated"
                         @repcomment-created="handleRepCommentCreated(comments[0].id)"
                         @comment-deleted="handleCommentDeleted" />
-                    <button class="px-2" @click="toggleComments">Xem tất cả {{ comment_count }} bình luận</button>
+                    <button v-if="comments.length > 1" class="px-2 bg-transparent primary-text text-underline"
+                        @click="toggleComments">Xem tất cả {{ comment_count
+                        }}
+                        bình luận</button>
                 </div>
                 <div v-if="showAllComments">
                     <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">
@@ -141,7 +146,8 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                             @repcomment-created="handleRepCommentCreated(comment.id)"
                             @comment-deleted="handleCommentDeleted" />
                     </div>
-                    <button class="px-2" @click="toggleComments">Ẩn bớt</button>
+                    <button v-if="comments.length > 1" class="px-2 bg-transparent primary-text text-underline"
+                        @click="toggleComments">Ẩn bớt</button>
                 </div>
             </div>
         </div>
@@ -323,9 +329,6 @@ export default {
             }
         },
         handleCommentDeleted(deletedCommentId) {
-            // this.comments = this.comments.filter(comment => comment.id !== deletedCommentId);
-            // const comment = this.comments.find(c => c.id === deletedCommentId);
-            // console.log(comment);
             const index = this.comments.findIndex(comment => comment.id === deletedCommentId);
             if (index !== -1) {
                 this.comments.splice(index, 1);
@@ -402,9 +405,12 @@ export default {
                         with: '200px'
                     });
                 });
+        },
+        __adjustHeight(id) {
+            const textAreaComment = this.$refs['textAreaComment' + id]
+            textAreaComment.style.height = 'auto';
+            textAreaComment.style.height = `${textAreaComment.scrollHeight}px`;
         }
-
-
     },
 }
 </script>

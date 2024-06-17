@@ -5,6 +5,7 @@ import ThumbUp from 'vue-material-design-icons/ThumbUp.vue';
 import Check from 'vue-material-design-icons/Check.vue';
 import Delete from 'vue-material-design-icons/Delete.vue';
 import Close from 'vue-material-design-icons/Close.vue'
+import Send from 'vue-material-design-icons/Send.vue';
 import Undo from 'vue-material-design-icons/Undo.vue'
 
 </script>
@@ -17,18 +18,18 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                         <router-link :to="{ name: 'Profile User', params: { id: comment.user.user_id } }" class="mr-2">
                             <img class="rounded-full ml-1 img-cus" :src="comment.user.avatar" alt="">
                         </router-link>
-                        <div class="bg-EFF2F5 p-2 rounded-lg w-50 position-relative">
+                        <div class="bg-input p-2 rounded-lg w-50 position-relative">
                             <div class="d-flex align-items-center">
                                 <router-link :to="{ name: 'Profile User', params: { id: comment.user.user_id } }"
-                                    class="m-0">{{
+                                    class="m-0 primary-text">{{
                                         comment.user.user_name }}</router-link>
-                                <span v-if="comment.created_at != comment.updated_at" class="mx-2"
-                                    style="font-size: 10px; color: gray;">đã chỉnh sửa</span>
+                                <span v-if="comment.created_at != comment.updated_at" class="mx-2 secondary-text"
+                                    style="font-size: 10px;">đã chỉnh sửa</span>
                                 <span @click="toggleEditComment(comment.id, comment.url)"
                                     v-if="comment.user.id === authUser.id" class="ellipsis position-absolute px-2 end-0"
                                     style="margin-top: -10px;"><i class="fa-solid fa-ellipsis fs-5"></i></span>
                             </div>
-                            <div class="d-flex align-items-center text-xs rounded-lg w-100">
+                            <div class="primary-text d-flex align-items-center text-xs rounded-lg w-100">
                                 {{ comment.content }}
                             </div>
                         </div>
@@ -42,46 +43,50 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                             controls autoplay muted></video>
                     </div>
                 </div>
-                <div class="" v-if="editerComment">
-                    <div id="CreateComment" class="">
+                <div class="mb-3" v-if="editerComment">
+                    <div id="EditComment" class="">
                         <form @submit.prevent="EditComment(comment.id)"
                             class="d-flex align-items-center pt-2 justify-content-between w-100">
                             <a href="/" class="mx-2">
                                 <img class="rounded-full ml-1 img-cus" :src="comment.user.avatar" loading="lazy" alt="">
                             </a>
-                            <div class="d-flex align-items-center bg-EFF2F5 rounded-full w-100  px-2">
-                                <textarea v-model="editContentComment" type="text" placeholder="Viết bình luận ..."
-                                    class="custom-input w-100 focus-0 border-0 mx-1 border-none p-0 text-sm bg-EFF2F5 placeholder-[#64676B] ring-0 focus:ring-0">
+                            <div class="position-relative d-flex align-items-center bg-input rounded w-100 px-2">
+                                <textarea :ref="'comment' + comment.id" @input="_adjustHeight(comment.id)"
+                                    style="min-height: 100px;" v-model="editContentComment" type="text"
+                                    placeholder="Viết bình luận ..."
+                                    class="primary-text custom-input w-100 focus-0 border-0 mx-1 border-none p-0 text-sm bg-input placeholder-[#64676B] ring-0 focus:ring-0">
                                 </textarea>
-                                <!--" -->
-                                <div v-if="comment.url != null">
-                                    <label :class="{ 'no-click opacity-50': !isFileDelete || fileUrls.length >= 2 }"
-                                        class="hover-200 rounded-full p-2 custom-cursor-pointer"
-                                        :for="'fileCommentEdit' + comment.id">
-                                        <Image :size="27" fillColor="#43BE62" />
-                                    </label>
-                                    <input :ref="'fieldMedia' + comment.id" type="file" class="hidden"
-                                        :id="'fileCommentEdit' + comment.id" accept="image/*,video/*"
-                                        @input="handleFileChange($event)">
+                                <div class="px-3" style="width: 100px;">
+                                    <div class="position-absolute" style="right: 50px; bottom: 0;"
+                                        v-if="comment.url != null">
+                                        <label :class="{ 'no-click opacity-50': !isFileDelete || fileUrls.length >= 2 }"
+                                            class="hover-200 rounded-full p-2 custom-cursor-pointer"
+                                            :for="'fileCommentEdit' + comment.id">
+                                            <Image :size="27" fillColor="#43BE62" />
+                                        </label>
+                                        <input :ref="'fieldMedia' + comment.id" type="file" class="hidden"
+                                            :id="'fileCommentEdit' + comment.id" accept="image/*,video/*"
+                                            @input="handleFileChange($event)">
+                                    </div>
+                                    <div v-else class="position-absolute" style="right:50px;bottom:0;">
+                                        <label :class="{ 'no-click opacity-50': !isFileDelete }"
+                                            class="hover-200 rounded-full p-2 custom-cursor-pointer"
+                                            :for="'fileCommentEdit' + comment.id">
+                                            <Image :size="27" fillColor="#43BE62" />
+                                        </label>
+                                        <input :ref="'fieldMedia' + comment.id" type="file" class="hidden"
+                                            :id="'fileCommentEdit' + comment.id" accept="image/*,video/*"
+                                            @input="handleFileChange($event)">
+                                    </div>
+                                    <button style="right:0;bottom: 0;" type="submit"
+                                        class="position-absolute bg-transparent  d-flex border-0 align-items-center text-sm p-2 rounded-full text-white font-bold">
+                                        <Send :size="27" fillColor="#4299e1" />
+                                    </button>
                                 </div>
-                                <div v-else>
-                                    <label :class="{ 'no-click opacity-50': !isFileDelete }"
-                                        class="hover-200 rounded-full p-2 custom-cursor-pointer"
-                                        :for="'fileCommentEdit' + comment.id">
-                                        <Image :size="27" fillColor="#43BE62" />
-                                    </label>
-                                    <input :ref="'fieldMedia' + comment.id" type="file" class="hidden"
-                                        :id="'fileCommentEdit' + comment.id" accept="image/*,video/*"
-                                        @input="handleFileChange($event)">
-                                </div>
-                                <button type="submit"
-                                    class="d-flex border-0 align-items-center text-sm px-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">
-                                    <Check />Gửi
-                                </button>
                             </div>
                         </form>
                     </div>
-                    <div v-if="fileUrls" class="p-2 position-relative cus-img-dis" style="margin-left: 55px;">
+                    <div v-if="fileUrls" class="pt-2 position-relative cus-img-dis" style="margin-left: 55px;">
                         <div v-for="fileUrl in fileUrls" :key=index>
                             <div v-if="fileUrl.url && fileUrl.url != null">
                                 <Undo :class="{ 'no-click': fileUrl.isnew }" v-show="fileUrl.deleted"
@@ -109,72 +114,40 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                         </div>
                     </div>
                     <p style="text-decoration: underline; display: inline; margin-left: 60px; color: blue; cursor: pointer;"
-                        v-if="editerComment" @click="editerComment = !editerComment">Huỷ</p>
+                        v-if="editerComment" @click="CancleEditComment()">Huỷ</p>
                 </div>
-                <div v-if="!editerComment" id="bottom-cus">
-                    <p class="custom-cursor-pointer">{{ comment.created_at_formatted }}</p>
-                    <p class="custom-cursor-pointer">like</p>
-                    <p @click="clickRepComment('repcomment' + comment.id)" class="custom-cursor-pointer">Phản hồi</p>
+                <div v-if="!editerComment" id="bottom-cus" class="secondary-text">
+                    <p class="custom-cursor-pointer secondary-text ">{{ comment.created_at_formatted }}</p>
+                    <p class="custom-cursor-pointer secondary-text ">like</p>
+                    <p @click="clickRepComment('repcomment' + comment.id)" class="custom-cursor-pointer secondary-text">
+                        Phản hồi</p>
                 </div>
-                <div v-if="comment.repcomments.length > 0" style="background: white;" class="repComment_array"
-                    id="repComment">
+                <div v-if="comment.repcomments.length > 0" class="repComment_array" id="repComment">
                     <div v-if="!showAllRepComments" class="text-center mb-1">
-                        <button class="px-2" @click="toggleRepComments">Xem tất cả {{ repcomment_count }} phản
+                        <button class="px-2 bg-transparent primary-text text-underline" @click="toggleRepComments">Xem
+                            tất cả {{ repcomment_count }} phản
                             hồi</button>
                     </div>
                     <div v-if="showAllRepComments" class="mx-5 repcomment_list boxrepcomment-cus"
                         v-for="(repcomment, index) in comment.repcomments" :key="index">
-                        <!-- <div class="d-flex gap-2 align-items-start w-100 mb-1">
-                            <router-link :to="{ name: 'Profile User', params: { id: repcomment.user.user_id } }"
-                                class="mr-2">
-                                <img class="rounded-full ml-1 img-cus" :src="repcomment.user.avatar" alt="">
-                            </router-link>
-                            <div class="bg-EFF2F5 p-2 w-50 rounded-lg">
-                                <div class="d-flex gap-2 justify-content-between">
-                                    <router-link :to="{ name: 'Profile User', params: { id: repcomment.user.user_id } }"
-                                        class="m-0">{{ repcomment.user.user_name }}</router-link>
-                                    <span v-if="repcomment.user.id === authUser.id" class="ellipsis"
-                                        style="margin-top: -10px;"><i class="fa-solid fa-ellipsis fs-5"></i></span>
-                                </div>
-                                <div class="d-flex align-items-center text-xs rounded-lg w-100">
-                                    <span @click.prevent="CusRedirect" v-html="repcomment.content"></span>
-                                </div>
-                            </div>
-                        </div> -->
-                        <!-- <div class="w-100 position-relative" style="margin-left: 50px;">
-                            <img width="150" v-if="repcomment.type != null && repcomment.type.includes('image')"
-                                @click="isFileDisplay = repcomment.url" :src="repcomment.url" alt="Image">
-                            <video width="150" v-else-if="repcomment.type != null && repcomment.type.includes('video')"
-                                @click="isFileDisplay = repcomment.url" :src="repcomment.url" controls autoplay
-                                muted></video>
-                        </div>
-                        <div id="bottom-cus">
-                            <p class="custom-cursor-pointer">{{ repcomment.created_at_formatted }}</p>
-                            <p class="custom-cursor-pointer">like</p>
-                            <p @click="clickRepComment2(index, 'repcomment' + comment.id)"
-                                class="custom-cursor-pointer">
-                                Phản
-                                hồi
-                            </p>
-                        </div> -->
                         <RepComment :repcomment="repcomment" :index=index :commentId=comment.id
                             @reply-comment-clicked="handleReplyCommentClicked" @focus-input="focusInput" />
                     </div>
                     <div v-if="showAllRepComments" class="text-center mb-1">
-                        <button @click="toggleRepComments">Ẩn bớt</button>
+                        <button class="bg-transparent primary-text text-underline" @click="toggleRepComments">Ẩn
+                            bớt</button>
                     </div>
                 </div>
-                <form v-if="!editerComment" style="background: white;margin-left:46px ;"
-                    @submit.prevent="CreateRepComment(comment.id)"
-                    class="d-flex align-items-center rounded-full justify-content-between w-100">
+                <form v-if="!editerComment" style="margin-left:46px ;" @submit.prevent="CreateRepComment(comment.id)"
+                    class="d-flex align-items-center gap-2 rounded-full justify-content-between w-100">
                     <a href="/" class="mr-2">
                         <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" alt="">
                     </a>
-                    <div class="d-flex align-items-center bg-EFF2F5 rounded-full px-2 w-100">
-                        <textarea v-model="formRepComment.content" :id="'repcomment' + comment.id"
-                            :ref="'repcomment' + comment.id" type="text"
+                    <div class="d-flex align-items-center bg-input rounded px-2 w-100">
+                        <textarea @input="_adjustHeight(comment.id)" v-model="formRepComment.content"
+                            :id="'repcomment' + comment.id" :ref="'repcomment' + comment.id" type="text"
                             :placeholder="`Viết phản hồi với vai trò ${authUser.user_name}...`"
-                            class="custom-input bg-EFF2F5 w-100 border-0 mx-1 border-none p-0 text-sm placeholder-[#64676B] focus-0">
+                            class="primary-text custom-input bg-input w-100 border-0 mx-1 border-none p-0 text-sm placeholder-[#64676B] focus-0">
                                         </textarea>
                         <label :for="`fieldMediaRepCM_${comment.id}`"
                             class="hover-200 rounded-full p-2 custom-cursor-pointer">
@@ -184,8 +157,8 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                             class="hidden" :id="`fieldMediaRepCM_${comment.id}`"
                             @change="getUploadedImageRepComment($event)">
                         <button type="submit"
-                            class="d-flex border-0 align-items-center text-sm px-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">
-                            <Check />Gửi
+                            class="d-flex bg-transparent border-0 align-items-center text-sm px-3 rounded-fulltext-white font-bold">
+                            <Send :size="27" fillColor="#4299e1" />
                         </button>
                     </div>
                 </form>
@@ -428,7 +401,6 @@ export default {
                 })
         },
         handleReplyCommentClicked(payload) {
-
             this.selectedRepCommentIndex = payload.selectedRepCommentIndex
             this.boxRepComment = payload.boxRepComment;
             this.isRepComment = payload.isRepComment;
@@ -509,7 +481,10 @@ export default {
             if (this.comment.id === commentid) {
                 this.showmodelEditComment = !this.showmodelEditComment
             }
-            console.log(this.fileUrls);
+        },
+        CancleEditComment() {
+            this.editerComment = !this.editerComment
+            this.editContentComment = this.comment.content
         },
         toggleRepComments() {
             this.showAllRepComments = !this.showAllRepComments;
@@ -570,6 +545,17 @@ export default {
                 },
                 { immediate: true, deep: true }
             );
+        },
+        _adjustHeight(CommentId) {
+            const textarea = this.$refs['comment' + CommentId];
+            if (textarea) {
+                textarea.style.height = 'auto';
+                textarea.style.height = `${textarea.scrollHeight}px`;
+                return
+            }
+            const textareaRep = this.$refs['repcomment' + CommentId];
+            textareaRep.style.height = 'auto';
+            textareaRep.style.height = `${textareaRep.scrollHeight}px`;
         },
     },
     watch: {

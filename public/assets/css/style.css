@@ -5,6 +5,10 @@
   box-sizing: border-box;
 }
 
+body {
+  background: var(--bg-main) !important;
+}
+
 body .btn-all-add-edit {
   background: #252b3b;
   color: #fff;
@@ -12,11 +16,18 @@ body .btn-all-add-edit {
 
 :root {
   --collor-gray: #EFF2F5;
+  --primary-text: #E4E6EB;
+  --bg-main: #18191a;
+  --bg-item: #242526;
+  --bg-nav: #242526;
+  --secondary-text: #B0B3B8;
+  --bg-input: #3a3b3c;
+  --border-collor: #3b3838;
 }
 
 .no-click {
+  cursor: not-allowed !important;
   pointer-events: none;
-  cursor: not-allowed;
 }
 
 .clickable {
@@ -45,6 +56,14 @@ body .btn-all-add-edit:hover {
   color: #fff;
 }
 
+.border-bottom-cus {
+  border-bottom: 1px solid var(--border-collor);
+}
+
+.border-top-cus {
+  border-top: 1px solid var(--border-collor);
+}
+
 textarea {
   resize: none !important;
   padding: 5px !important;
@@ -62,8 +81,28 @@ a {
   z-index: 1000;
 }
 
-.bg-EFF2F5 {
-  background: #EFF2F5;
+.text-underline {
+  text-decoration: underline;
+}
+
+.bg-input {
+  background: var(--bg-input);
+}
+
+.bg-item {
+  background: var(--bg-item);
+}
+
+.bg-transparent {
+  background: transparent;
+}
+
+.primary-text {
+  color: var(--primary-text);
+}
+
+.secondary-text {
+  color: var(--secondary-text);
 }
 
 .hidden {
@@ -91,7 +130,7 @@ a {
 }
 
 .hover-200:hover {
-  background-color: #edf2f7;
+  background-color: var(--bg-input);
 }
 
 .bg-red-100 {
@@ -115,11 +154,15 @@ a {
 }
 
 .text-gray-600 {
-  color: #4a5568;
+  color: var(--secondary-text);
 }
 
 .text-sm {
   font-size: 0.875rem;
+}
+
+.text-m {
+  color: var(--secondary-text);
 }
 
 .font-semibold {
@@ -140,7 +183,7 @@ a {
   padding-top: 10px;
   width: 100%;
   height: 100vh;
-  background-color: #F1F2F5;
+  background-color: var(--bg-main);
 }
 .wrapper_customs .wrapper_2 {
   display: grid;
@@ -175,9 +218,8 @@ a {
   display: flex;
   align-items: center;
   height: 56px;
-  background-color: white;
+  background-color: var(--bg-nav);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #e2e8f0;
 }
 #Mainnav a.text_name {
   padding-left: 0.75rem;
@@ -187,7 +229,7 @@ a {
 #Mainnav #Navleft {
   display: flex;
   align-items: center;
-  background-color: #EFF2F5;
+  background-color: var(--bg-input);
   border-radius: 9999px;
   justify-content: flex-start;
   width: 260px;
@@ -198,8 +240,9 @@ a {
 #Mainnav #Navleft input.search[type=text] {
   display: none;
   border: none;
+  color: var(--primary-text);
   padding: 0;
-  background-color: #EFF2F5;
+  background-color: transparent;
 }
 #Mainnav #Navleft input.search[type=text]:focus {
   outline: none;
@@ -210,10 +253,10 @@ a {
   }
 }
 #Mainnav #Navleft input.search[type=text]::-moz-placeholder {
-  color: #64676B;
+  color: var(--secondary-text);
 }
 #Mainnav #Navleft input.search[type=text]::placeholder {
-  color: #64676B;
+  color: var(--secondary-text);
 }
 #Mainnav #Navleft input.search[type=text]:focus {
   box-shadow: none;
@@ -244,7 +287,7 @@ a {
   border-radius: 10px;
 }
 #Mainnav #NavCenter .list_items:hover {
-  background-color: #d1d5db;
+  background-color: var(--bg-input);
 }
 #Mainnav #NavLeft {
   width: 16.66667%;
@@ -259,17 +302,16 @@ a {
   border-radius: 10px;
 }
 #Mainnav #NavLeft .nav_left_items:hover {
-  background-color: #d1d5db;
+  background-color: var(--bg-input);
 }
 #Mainnav #NavLeft .show_menu {
-  background-color: white;
+  background-color: var(--bg-item);
   box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
   top: 55px;
   right: 0;
   width: 300px;
   border-radius: 0.5rem;
   padding: 0.25rem;
-  border: 1px solid #e2e8f0;
   margin-top: 0.25rem;
 }
 #Mainnav #NavLeft .show_menu .menu_item {
@@ -277,10 +319,10 @@ a {
   border-radius: 0.5rem;
 }
 #Mainnav #NavLeft .show_menu .menu_item:hover {
-  background-color: #e2e8f0;
+  background-color: var(--bg-input);
 }
 #Mainnav #NavLeft .show_menu a {
-  color: #64676B;
+  color: var(--primary-text);
   cursor: pointer;
 }
 #Mainnav img.custom {
@@ -293,6 +335,8 @@ a {
 
 #LeftSection {
   display: none;
+  background: var(--bg-item);
+  color: var(--primary-text);
 }
 @media (min-width: 1280px) {
   #LeftSection {
@@ -315,7 +359,7 @@ a {
   border-radius: 0.375rem;
 }
 #LeftSection .leffsidebar_lists .left-item:hover {
-  background-color: #E5E6E9;
+  background-color: var(--bg-input);
 }
 #LeftSection .leffsidebar_lists img.img-cus {
   border-radius: 9999px;
@@ -325,20 +369,21 @@ a {
 }
 #LeftSection .leffsidebar_lists .text-profile {
   font-size: 15px;
-  color: #1f2933;
   font-weight: 800;
   padding-left: 0.75rem;
+  color: var(--primary-text);
 }
 #LeftSection .leffsidebar_lists .text-items {
   font-size: 15px;
-  color: #2d3748;
   font-weight: 800;
   padding-left: 0.75rem;
+  color: var(--primary-text);
 }
 
 #RightSection {
   padding-left: 1rem;
   display: none;
+  background: var(--bg-item);
 }
 @media (min-width: 768px) {
   #RightSection {
@@ -358,8 +403,7 @@ a {
   cursor: pointer;
 }
 #RightSection .rightsection_cus .icon-right:hover {
-  background-color: #d1d5db;
-  /* Giả sử bạn muốn sử dụng màu xám khi hover */
+  background-color: var(--bg-input);
 }
 #RightSection .rightsection_cus .list_friends {
   height: calc(100vh - 115px);
@@ -373,7 +417,7 @@ a {
   border-radius: 10px;
 }
 #RightSection .rightsection_cus .list_friends .friend_pr:hover {
-  background-color: #e5e6e9;
+  background-color: var(--bg-input);
 }
 #RightSection .rightsection_cus .list_friends .friend_pr img {
   border-radius: 9999px;
@@ -383,7 +427,6 @@ a {
 }
 #RightSection .rightsection_cus .list_friends .friend_pr .text-pr {
   font-size: 15px;
-  color: #2d3748;
   font-weight: 800;
   padding-left: 0.75rem;
 }
@@ -413,11 +456,10 @@ a {
 
 #CreatePostBox {
   width: 100%;
-  background-color: #ffffff;
+  background-color: var(--bg-item);
   border-radius: 0.375rem;
   padding-left: 0.75rem;
   padding-right: 0.75rem;
-  margin-top: 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 #CreatePostBox img.img-pr {
@@ -430,10 +472,12 @@ a {
   border-radius: 0.375rem;
   margin-left: 0.25rem;
   margin-right: 0.25rem;
+  background: transparent;
   cursor: pointer;
+  color: var(--secondary-text);
 }
 #CreatePostBox .icon-cus:hover {
-  background-color: #f2f2f2;
+  background-color: var(--bg-input);
 }
 #CreatePostBox .icon-cus .text-cus {
   color: #6f7275;
@@ -443,7 +487,7 @@ a {
 
 #post {
   width: 100%;
-  background-color: #ffffff;
+  background-color: var(--bg-item);
   border-radius: 0.375rem;
   padding-left: 0.75rem;
   padding-right: 0.75rem;
@@ -461,19 +505,18 @@ a {
 #post .ellipsis {
   font-size: 1.5rem;
   cursor: pointer;
-  color: #6f7275;
+  color: var(--secondary-text);
 }
 #post .edit-post {
   position: absolute;
-  right: 0;
+  right: 10px;
   z-index: 9999;
-  color: #222;
+  color: var(--primary-text);
   min-width: 300px;
   padding: 10px;
-  background-color: white;
+  background-color: var(--bg-item);
   font-weight: 800;
   border-radius: 10px 0 10px 10px;
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 #post .edit-post ul {
   list-style: none;
@@ -482,12 +525,11 @@ a {
 #post .edit-post ul li {
   padding: 10px;
   border-bottom: 1px solid #64676B;
-  border-radius: 10px;
   transition: 0.1s;
   cursor: pointer;
 }
 #post .edit-post ul li:hover {
-  background-color: #64676B;
+  background-color: var(--bg-input);
 }
 #post img.img-cus {
   border-radius: 9999px;
@@ -498,10 +540,19 @@ a {
 #post .text-pr {
   font-weight: 800;
   font-size: 15px;
+  color: var(--primary-text);
 }
 #post .text-cus-pos {
   font-size: 17px;
   font-weight: 600;
+}
+#post a.custom-span {
+  font-size: 17px;
+  color: var(--primary-text);
+  font-weight: 600;
+}
+#post a.custom-span:hover {
+  text-decoration: underline !important;
 }
 #post #Comments {
   max-height: 120px;
@@ -537,23 +588,26 @@ a {
 #post #Comment .box-comment-cus .box-comment-cus_3 {
   position: relative;
 }
-#post #Comment .box-comment-cus .box-comment-cus_3 .edit_comment {
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_comment,
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment {
   position: absolute;
   top: 0;
   right: 40px;
   padding: 10px 0;
   width: 30%;
   text-align: center;
-  background: #eff2f5;
+  background: var(--bg-input);
   border-radius: 10px;
 }
-#post #Comment .box-comment-cus .box-comment-cus_3 .edit_comment ul {
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_comment ul,
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment ul {
   margin: 0;
   padding: 0;
   list-style: none;
   position: relative;
 }
-#post #Comment .box-comment-cus .box-comment-cus_3 .edit_comment ul::after {
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_comment ul::after,
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment ul::after {
   content: "";
   position: absolute;
   left: -10px;
@@ -561,60 +615,57 @@ a {
   transform: translateY(-50%);
   border-style: solid;
   border-width: 10px 10px 10px 0;
-  border-color: transparent #eff2f5 transparent transparent;
+  border-color: transparent var(--bg-input) transparent transparent;
   width: 0;
   height: 0;
 }
-#post #Comment .box-comment-cus .box-comment-cus_3 .edit_comment ul li {
-  padding: 0 10px;
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_comment ul li,
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment ul li {
   transition: 0.1s;
   margin-bottom: 10px;
+  color: var(--primary-text);
 }
-#post #Comment .box-comment-cus .box-comment-cus_3 .edit_comment ul li:last-child {
-  margin: 0;
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_comment ul li:last-child,
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment ul li:last-child {
+  margin-bottom: 0;
 }
-#post #Comment .box-comment-cus .box-comment-cus_3 .edit_comment ul li:hover {
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_comment ul li:hover,
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment ul li:hover {
   cursor: pointer;
-  color: #fff;
-  background-color: #4a5568;
+  color: var(--secondary-text);
 }
-#post #Comment .box-comment-cus .edit_repcomment {
-  position: absolute;
-  top: 0;
-  right: 50px;
-  background: #eff2f5;
-  border-radius: 10px;
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment {
+  right: 20px;
 }
-#post #Comment .box-comment-cus .edit_repcomment ul {
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment ul {
   margin: 0;
   padding: 0;
   list-style: none;
   position: relative;
 }
-#post #Comment .box-comment-cus .edit_repcomment ul::after {
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment ul::after {
   content: "";
   position: absolute;
   left: -10px;
-  top: 50%;
+  top: 20%;
   transform: translateY(-50%);
   border-style: solid;
   border-width: 10px 10px 10px 0;
-  border-color: transparent #eff2f5 transparent transparent;
+  border-color: transparent var(--bg-input) transparent transparent;
   width: 0;
   height: 0;
 }
-#post #Comment .box-comment-cus .edit_repcomment ul li {
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment ul li {
   padding: 0 10px;
   transition: 0.1s;
   margin-bottom: 10px;
 }
-#post #Comment .box-comment-cus .edit_repcomment ul li:last-child {
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment ul li:last-child {
   margin: 0;
 }
-#post #Comment .box-comment-cus .edit_repcomment ul li:hover {
+#post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment ul li:hover {
   cursor: pointer;
-  color: #fff;
-  background-color: #4a5568;
+  color: var(--secondary-text);
 }
 #post .cus-post-media {
   display: grid;
@@ -680,15 +731,15 @@ a {
   margin-right: auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
   border-radius: 0.75rem;
-  background-color: #fff;
+  background-color: var(--bg-item);
 }
 #CreatePostOverlay .wrapper_crpost .crpost .close {
   padding: 0.375rem;
-  background-color: #edf2f7;
+  background-color: var(--bg-item);
   right: 0.75rem;
 }
 #CreatePostOverlay .wrapper_crpost .crpost .close:hover {
-  background-color: #a0aec0;
+  background-color: var(--bg-input);
 }
 #CreatePostOverlay .wrapper_crpost .crpost .img-cus {
   margin-left: 0.25rem;
@@ -706,7 +757,7 @@ a {
   font-size: 13px;
 }
 #CreatePostOverlay .wrapper_crpost .crpost .text-ar {
-  max-height: 350px;
+  max-height: 250px;
   overflow-y: auto;
 }
 #CreatePostOverlay .wrapper_crpost .crpost .text-ar textarea {
@@ -714,6 +765,7 @@ a {
   font-size: 22px;
   margin-top: 1rem;
   min-height: 30px;
+  color: var(--primary-text);
 }
 #CreatePostOverlay .wrapper_crpost .crpost .text-ar textarea:focus {
   outline: none;
@@ -724,17 +776,50 @@ a {
   gap: 10px;
 }
 
-body {
-  margin-top: 20px;
-  background: #eee;
-}
-
 #ProfileUser {
   padding-top: 56px;
 }
+#ProfileUser .card {
+  border: none;
+  background: transparent;
+}
+#ProfileUser .card .card-title {
+  color: var(--primary-text);
+}
+#ProfileUser .card .card-header {
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  align-items: center;
+}
+#ProfileUser .card .card-header .card-actions a {
+  color: var(--secondary-text);
+}
+#ProfileUser .card .card-header .card-actions .dropdown-menu {
+  right: 0;
+  left: inherit;
+  background: var(--bg-item);
+}
+#ProfileUser .card .card-header .card-actions .dropdown-menu a:hover {
+  background: var(--bg-input);
+}
+#ProfileUser .card .card-body ul.list-unstyled li {
+  color: var(--primary-text);
+}
+#ProfileUser .card .card-body .media-body {
+  color: var(--primary-text);
+}
+#ProfileUser .card .card-body .media-body small {
+  color: var(--secondary-text);
+}
+#ProfileUser .card .card-body .media-body strong {
+  color: var(--primary-text);
+}
 #ProfileUser #LeftProfile {
   max-height: 100vh;
-  overflow: auto;
+  overflow-y: auto;
+  background: var(--bg-item);
 }
 #ProfileUser #LeftProfile #CoverImage {
   max-height: 100px;
@@ -755,6 +840,11 @@ body {
 #ProfileUser #RightProfile {
   max-height: 100vh;
   overflow: auto;
+  background: var(--bg-item);
+}
+#ProfileUser #RightProfile .card {
+  background: transparent;
+  border: none;
 }
 #ProfileUser #LeftProfile::-webkit-scrollbar {
   display: none;
@@ -832,8 +922,6 @@ body {
   padding: 0.75rem 1.25rem;
   margin-bottom: 0;
   color: inherit;
-  background-color: #fff;
-  border-bottom: 1px solid #e5e9f2;
 }
 
 .card-header:first-child {

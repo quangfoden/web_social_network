@@ -4,24 +4,20 @@
             <div id="CoverImage">
                 <img src="../../../../assets/images/bgaccount2.jpg" alt="">
             </div>
-            <div class="card-body text-center" style="margin-top: -100px;">
+            <div class="card-body border-bottom-cus text-center" style="margin-top: -100px;">
                 <img :src="authUser.avatar" alt="Jassa Jas" class="img-fluid rounded-circle mb-2" width="128"
                     height="128">
                 <h4 class="card-title mb-2">{{ inUser.user_name }}</h4>
                 <!-- <div class="text-muted mb-2">Front-end Developer</div> -->
                 <div v-if="!isAuthUser">
-                    <a class="btn btn-primary btn-sm" href="#">Follow</a>
-                    <a class="btn btn-primary btn-sm" href="#">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="feather feather-message-square">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg> Message</a>
+                    <a class="btn btn-primary btn-sm" href="#">Thêm bạn bè</a>
+                    <a class="btn btn-secondary btn-sm" href="#">
+                        <i class="fa-solid fa-message mx-1"></i>Nhắn tin</a>
                 </div>
             </div>
         </div>
         <div class="card mb-3">
-            <div class="card-header">
+            <div class="card-header border-bottom-cus">
                 <div class="card-actions float-right">
                     <div class="dropdown show">
                         <a href="#" data-bs-toggle="dropdown" data-bs-display="static">
@@ -43,7 +39,7 @@
                 </div>
                 <h5 class="card-title mb-0">Giới thiệu</h5>
             </div>
-            <div class="card-body">
+            <div class="card-body border-bottom-cus">
                 <ul class="list-unstyled mb-0">
                     <li class="mb-1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -74,7 +70,7 @@
         </div>
 
         <div class="card mb-3">
-            <div class="card-header">
+            <div class="card-header border-bottom-cus">
                 <div class="card-actions float-right">
                     <div class="dropdown show">
                         <a href="#" data-bs-toggle="dropdown" data-display="static">
