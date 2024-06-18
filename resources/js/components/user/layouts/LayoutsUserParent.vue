@@ -12,11 +12,11 @@
 import SidebarLeft from './SidebarLeft.vue';
 import SidebarRight from './SidebarRight.vue';
 import TopBar from './TopBar.vue';
-export default{
-    components:{
+export default {
+    components: {
         SidebarLeft,
         SidebarRight,
         TopBar
-    }
+    },
 }
 </script>

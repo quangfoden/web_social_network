@@ -37,6 +37,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
         return response()->json($responseData);
     });
     Route::get('allusers', [UserController::class, 'allusers']);
+    Route::get('allaccount', [UserController::class, 'allaccount']);
     Route::get('getUserById/{user_id}', [UsersController::class, 'getUserById']);
     Route::get('roles', [UserController::class, 'roles']);
     Route::post('create-new-user', [UserController::class, 'createNewUser']);

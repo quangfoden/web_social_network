@@ -412,12 +412,12 @@ export default {
             if (this.isRepComment) {
                 content = content.replace('@' + this.comment.user.user_name,
                     "<a href='/profile/"
-                    + this.comment.user.user_id + "' class='custom-span'>" + this.comment.user.user_name + "</a>")
+                    + this.comment.user.user_id + "' class='custom-span'>" + this.comment.user.user_id + "</a>")
             }
             else {
                 content = content.replace('@' + this.comment.repcomments[this.selectedRepCommentIndex].user.user_name,
                     "<a href='/profile/"
-                    + this.comment.repcomments[this.selectedRepCommentIndex].user.user_id + "' class='custom-span'>" + this.comment.repcomments[this.selectedRepCommentIndex].user.user_name + "</a>")
+                    + this.comment.repcomments[this.selectedRepCommentIndex].user.user_id + "' class='custom-span'>" + this.comment.repcomments[this.selectedRepCommentIndex].user.user_id + "</a>")
             }
             formData.append('content', content);
             formData.append('file', this.formMediarepComment.file);

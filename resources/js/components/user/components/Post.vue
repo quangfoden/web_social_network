@@ -15,8 +15,7 @@ import Pin from 'vue-material-design-icons/Pin.vue'
             ole="status">
             <span class="sr-only">Loading...</span>
         </div>
-        <p class="pt-2 m-0" v-if="pinned === 1 || pinned === true"> Bài viết đã ghim</p>
-        <hr>
+        <p class="p-3 pb-2 border-bottom m-0 secondary-text " v-if="pinned === 1 || pinned === true"> Bài viết đã ghim</p>
         <div class="d-flex align-items-center px-0">
             <router-link :to="{ name: 'Profile User', params: { id: user.user_id } }" class="mr-2">
                 <img class="img-cus custom-cursor-pointer" :src="user.avatar" loading="lazy" alt="">
@@ -83,8 +82,8 @@ import Pin from 'vue-material-design-icons/Pin.vue'
         </div>
         <div id="Likes" class="">
             <div class="d-flex align-items-center justify-content-between py-3 border-bottom-cus">
-                <ThumbUp :size="16" fillColor="#1D72E2" />
-                <div class="text-sm text-gray-600 font-semibold">5 bình luận</div>
+                <!-- <ThumbUp :size="16" fillColor="#1D72E2" />
+                <div class="text-sm text-gray-600 font-semibold">5 bình luận</div> -->
             </div>
         </div>
         <div id="comments" class="">

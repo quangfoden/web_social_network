@@ -21,7 +21,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                             class="secondary-text fa-solid fa-ellipsis fs-5"></i></span>
                 </div>
                 <div class="primary-text d-flex align-items-center text-xs rounded-lg w-100">
-                    <span class="content_repcomment" @click.prevent="CusRedirect" v-html="repcomment.content"></span>
+                    <span class="content_repcomment" @click.prevent="CusRedirect" v-html="contentComment"></span>
                 </div>
             </div>
         </div>
@@ -123,7 +123,7 @@ import Close from 'vue-material-design-icons/Close.vue'
 <script>
 import { ref } from "vue";
 import { v4 as uuidv4 } from 'uuid';
-
+import { mapState } from 'vuex';
 export default {
     props: {
         repcomment: {
@@ -141,6 +141,7 @@ export default {
     },
     data() {
         return {
+            contentComment: "",
             showmodelEditRepComment: false,
             editerRepComment: false,
             isFileRepDelete: false,
@@ -159,10 +160,22 @@ export default {
                 return this.$store.getters.getAuthUser;
             }
             return JSON.parse(localStorage.getItem('authUser'));
-        }
+        },
+        ...mapState({
+            accounts: state => state.users.accounts
+        })
     },
 
     methods: {
+        convertIdsToUsernames(content) {
+            return content.replace(/<a href='\/profile\/(\d+)' class='custom-span'>(\d+)<\/a>/g, (match, accountId) => {
+                const account = this.getUserById(accountId);
+                return `<a href='/profile/${account.user_id}' class='custom-span'>${account.user_name}</a>`;
+            });
+        },
+        getUserById(accountId) {
+            return this.accounts.find(account => account.user_id == accountId);
+        },
         clickRepComment2() {
             this.$emit('focus-input', this.commentId);
             this.$emit('reply-comment-clicked', {
@@ -264,7 +277,9 @@ export default {
             const links = tempDiv.getElementsByTagName('a');
 
             Array.from(links).forEach(link => {
-                const username = link.textContent;
+                const account_id = link.textContent;
+                const account = this.getUserById(account_id);
+                const username = account.user_name
                 const textNode = document.createTextNode(`@${username}`);
                 link.parentNode.replaceChild(textNode, link);
             });
@@ -324,6 +339,8 @@ export default {
     },
     mounted() {
         this.editContentRepComment = this.convertLinksToMentions(this.rawContent)
+        this.contentComment = this.convertIdsToUsernames(this.rawContent)
+        console.log('Danh sách accounts từ Vuex:', this.accounts);
     },
     watch: {
         'repcomment.content'(newValue) {

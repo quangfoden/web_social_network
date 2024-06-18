@@ -9,12 +9,15 @@
                 <div>
                     <CreatePostBox v-if="isAuthUser" :image="authUser.avatar"
                         :placeholder="'Bạn đang nghĩ gì vậy ' + authUser.user_name" />
-                    <div id="posts" v-for="post in postsByUser" :key="post.id">
-                        <Post v-if="checkPrivacy(post)" :post="post" :pinned="post.pinned" :status="post.status"
-                            :user="post.user" :media="post.media" :comments="post.comments"
-                            :comment_count="post.comment_count" @comment-created="handleCommentCreated(post.id)" />
+                    <div v-show="postsByUser.length === 0">
+                        <p class="primary-text fs-4">Không có bài viết nào</p>
                     </div>
-                    <!-- <div v-if="loading">Đang tải ...</div> -->
+                    <div id="posts" v-for="post in postsByUser" :key="post.id">
+                        <Post v-if="checkPrivacy(post) && isProfile(post.user.user_id)" :post="post"
+                            :pinned="post.pinned" :status="post.status" :user="post.user" :media="post.media"
+                            :comments="post.comments" :comment_count="post.comment_count"
+                            @comment-created="handleCommentCreated(post.id)" />
+                    </div>
                     <div v-if="loading" class="spinner-border text-primary z-1000"
                         style="position: absolute;bottom:0;left: 50%;" role="status">
                         <span class="visually-hidden">Loading...</span>
@@ -43,6 +46,7 @@ export default {
             userId: null,
             InUser: ref({}),
             myProfile: ref(false),
+            isFirstLoad: true
         }
     },
     components: {
@@ -69,7 +73,14 @@ export default {
     methods: {
         ...mapActions('post', ['fetchPostsByUser']),
         loadData() {
+            this.myProfile = false
             this.$store.dispatch('post/fetchPostsByUser', this.userId)
+                .then(() => {
+                    this.myProfile = false
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         },
         checkPrivacy(post) {
             if (post.privacy == 'only_me') {
@@ -79,6 +90,12 @@ export default {
                 return false
             }
             return true
+        },
+        isProfile(user_id) {
+            if (user_id === this.userId) {
+                return true
+            }
+            return false
         },
         handleScroll() {
             const scrollPosition = window.innerHeight + window.scrollY;
@@ -106,6 +123,7 @@ export default {
             }
         },
         loadUserbyId() {
+            this.myProfile = false
             this.$store.dispatch('post/getUserbyId', this.userId)
                 .then(response => {
                     this.myProfile = true
@@ -122,14 +140,24 @@ export default {
             if (post) {
                 post.comment_count += 1;
             }
+        },
+        loadUserProfile() {
+            this.resetData();
+            this.loadData();
+            this.loadUserbyId();
         }
     },
-
-    created() {
-        this.userId = parseInt(this.$route.params.id);
-        this.resetData();
-        this.loadData();
-        this.loadUserbyId()
+    watch: {
+        '$route.params.id': {
+            immediate: true,
+            handler(newId, oldId) {
+                this.userId = parseInt(newId)
+                if (this.isFirstLoad || newId !== oldId) {
+                    this.isFirstLoad = false;
+                    this.loadUserProfile();
+                }
+            }
+        }
     },
     mounted() {
         window.addEventListener('scroll', this.handleScroll);

@@ -1,5 +1,5 @@
 <template>
-    <div class="col-12 col-lg-12 col-xl-3 order-3 order-lg-3 mt-3">
+    <div class="col-12 col-lg-12 col-xl-3 order-3 order-lg-3">
         <div class="card">
             <div class="card-header">
                 <div class="card-actions float-right">

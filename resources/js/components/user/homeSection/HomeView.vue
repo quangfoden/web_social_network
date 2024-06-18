@@ -1,10 +1,12 @@
 <template>
     <div id="PostsSection" class="">
         <CreatePostBox :image="authUser.avatar" :placeholder="'Bạn đang nghĩ gì vậy ' + authUser.user_name" />
-        <div id="posts" v-for="post in posts " :key="post.id">
+        <div v-if="!posts || posts.lenght < 1">
+            <p>Không có bài viết nào</p>
+        </div>
+        <div v-else id="posts" v-for="post in posts " :key="post.id">
             <Post v-if="post.privacy === 'public' || post.privacy === 'friends'" :status="post.status" :post="post"
-                :user="post.user" :media="post.media" :comments="post.comments"
-                 :comment_count="post.comment_count"
+                :user="post.user" :media="post.media" :comments="post.comments" :comment_count="post.comment_count"
                 @comment-created="handleCommentCreated(post.id)" />
         </div>
         <div v-if="isLoading" class="spinner-border custom-loading text-primary z-1000" role="status">

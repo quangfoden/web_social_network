@@ -158,15 +158,15 @@ export const routes = [
                 path: 'repository',
                 name: 'Repository User',
                 component: RepositoryParent,
-                children:[
+                children: [
                     {
-                        path:'Trash',
-                        name:'Trash User',
-                        component:Trash
+                        path: 'Trash',
+                        name: 'Trash User',
+                        component: Trash
                     }
                 ]
             },
-            
+
         ]
     }
 ]
@@ -178,6 +178,12 @@ const router = createRouter({
 import { store } from '../store/store';
 
 router.beforeEach((to, from, next) => {
+    store.dispatch('fetchAccounts').then(() => {
+        next(); 
+    }).catch(error => {
+        console.error('Error fetching accounts:', error);
+        next(error); 
+    });
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
     const requiresAuthUser = to.matched.some(record => record.meta.requiresAuthUser)
     const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
