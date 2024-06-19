@@ -276,25 +276,33 @@ export default {
             this.$refs['fieldMedia' + postId].value = null
         },
         formatComment(text) {
-            return text.replace(/@(\w+)/g, (match, username) => {
+            return text.replace(/@([\wÀ-ỹ]+)/g, (match, username) => {
+                username = username.trim();
                 if (this.selectedFriend) {
-                    const friend = this.friends.find(friend => friend.user_id === this.selectedFriend.user_id);
+                    const friend = this.friends.find(friend => friend.user_id === this.selectedFriend.user_id && friend.user_name === username);
                     if (friend) {
                         return `<a href='/profile/${friend.user_id}' class='custom-span'>${friend.user_id}</a>`;
                     }
                 }
+                return match;
             });
         },
         CreateComment(postId) {
             const fieldMediaCMRef = this.$refs['fieldMedia' + postId]
-            const formattedComment = this.formatComment(this.formComment.content);
+            // const formattedComment = this.formatComment(this.formComment.content);
+            let content = this.formComment.content
+            content = content.replace('@' + this.selectedFriend.user_name,
+                "<a href='/profile/"
+                + this.selectedFriend.user_id + "' class='custom-span'>" + this.selectedFriend.user_id + "</a>"
+            )
             const formData = new FormData();
-            formData.append('content', formattedComment);
+            formData.append('content', content);
             formData.append('file', fieldMediaCMRef.files[0]);
             formData.append('postId', postId);
             this.$store.dispatch('post/createComment', formData)
                 .then(response => {
                     if (response.status === 200 && response.data.data.success === true) {
+                        this.selectedFriend = null
                         this.comments.unshift(response.data.data.comment)
                         this.showAllComments = true
                         this.$swal.fire({
@@ -311,6 +319,7 @@ export default {
                         }
 
                     } else {
+                        this.selectedFriend = null
                         this.$swal.fire({
                             position: "top-end",
                             icon: "error",
@@ -326,6 +335,7 @@ export default {
                     }
                 })
                 .catch(error => {
+                    this.selectedFriend = null
                     this.$swal.fire({
                         position: "top-end",
                         icon: "error",
@@ -445,7 +455,6 @@ export default {
                         diacritics.remove(friend.user_name.toLowerCase()).includes(query)
                 );
                 this.showSuggestions = true;
-                console.log(this.filteredFriends);
             } else {
                 this.showSuggestions = false;
                 console.log('lỗi nè');
@@ -453,6 +462,7 @@ export default {
         },
         selectFriend(friend, id) {
             this.selectedFriend = friend;
+            console.log(this.selectedFriend.user_name);
             console.log(this.selectedFriend);
             const textArea = this.$refs['textAreaComment' + id];
             const position = textArea.selectionStart;
