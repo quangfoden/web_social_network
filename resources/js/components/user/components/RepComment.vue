@@ -21,7 +21,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                             class="secondary-text fa-solid fa-ellipsis fs-5"></i></span>
                 </div>
                 <div class="primary-text d-flex align-items-center text-xs rounded-lg w-100">
-                    <span class="content_repcomment" @click.prevent="CusRedirect" v-html="contentComment"></span>
+                    <span class="content_repcomment" @click.prevent="CusRedirect" v-html="contentRepComment"></span>
                 </div>
             </div>
         </div>
@@ -141,7 +141,7 @@ export default {
     },
     data() {
         return {
-            contentComment: "",
+            contentRepComment: "",
             showmodelEditRepComment: false,
             editerRepComment: false,
             isFileRepDelete: false,
@@ -339,15 +339,12 @@ export default {
     },
     mounted() {
         this.editContentRepComment = this.convertLinksToMentions(this.rawContent)
-        this.contentComment = this.convertIdsToUsernames(this.rawContent)
+        this.contentRepComment = this.convertIdsToUsernames(this.rawContent)
         console.log('Danh sách accounts từ Vuex:', this.accounts);
     },
     watch: {
         'repcomment.content'(newValue) {
             this.editContentRepComment = this.convertLinksToMentions(newValue);
-            setTimeout(() => {
-                console.log(this.editContentRepComment);
-            }, 5000);
         }
     },
     created() {

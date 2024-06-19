@@ -30,7 +30,9 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                                     style="margin-top: -10px;"><i class="fa-solid fa-ellipsis fs-5"></i></span>
                             </div>
                             <div class="primary-text d-flex align-items-center text-xs rounded-lg w-100">
-                                {{ comment.content }}
+                                <span class="content_comment" @click.prevent="CusRedirect" v-html="contentComment">
+                                </span>
+                                <!-- {{ contentComment }} -->
                             </div>
                         </div>
                     </div>
@@ -189,6 +191,7 @@ import Undo from 'vue-material-design-icons/Undo.vue'
 </template>
 <script>
 import { toRefs, reactive, ref } from 'vue';
+import { mapState } from 'vuex';
 import RepComment from '../Components/Repcomment.vue'
 import { useGeneralStore } from '../../../store/general';
 import { storeToRefs } from 'pinia';
@@ -214,6 +217,8 @@ export default {
         const useGeneral = useGeneralStore()
         const { isFileDisplay } = storeToRefs(useGeneral)
         return {
+            contentComment: "",
+            rawContent: this.comment.content,
             isFileDisplay,
             formRepComment: { content: '' },
             formMediarepComment: {},
@@ -238,6 +243,9 @@ export default {
             }
             return JSON.parse(localStorage.getItem('authUser'));
         },
+        ...mapState({
+            accounts: state => state.users.accounts
+        })
     },
     methods: {
         getUploadedImageRepComment(e) {
@@ -557,11 +565,33 @@ export default {
             textareaRep.style.height = 'auto';
             textareaRep.style.height = `${textareaRep.scrollHeight}px`;
         },
+        CusRedirect(event) {
+            const url = event.target.getAttribute('href');
+            if (url) {
+                this.$router.push(url);
+            }
+        },
+        convertIdsToUsernames(content) {
+            return content.replace(/<a href='\/profile\/(\d+)' class='custom-span'>(\d+)<\/a>/g, (match, accountId) => {
+                const account = this.getUserById(accountId);
+                if (account) {
+                    return `<a href='/profile/${account.user_id}' class='custom-span'>${account.user_name}</a>`;
+                }
+                return match;
+            });
+        },
+        getUserById(accountId) {
+            return this.accounts.find(account => account.user_id == accountId);
+        },
+    },
+    mounted() {
+        this.contentComment = this.convertIdsToUsernames(this.rawContent)
+        console.log(this.convertIdsToUsernames(this.rawContent));
     },
     watch: {
         'comment.content'(newValue) {
             this.editContentComment = newValue;
-        }
+        },
     },
     created() {
         this.setupCommentWatcher();

@@ -673,6 +673,26 @@ a {
   cursor: pointer;
   color: var(--secondary-text);
 }
+#post .suggestions {
+  width: 100%;
+  padding: 10px;
+  margin: 0;
+  list-style: none;
+  background: var(--bg-input);
+  top: 55px;
+  left: -40px;
+  z-index: 2;
+}
+#post .suggestions li {
+  padding: 10px;
+}
+#post .suggestions li:hover {
+  background: rgba(255, 255, 255, 0.1647058824);
+  cursor: pointer;
+}
+#post .suggestions li a {
+  display: block;
+}
 #post .cus-post-media {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

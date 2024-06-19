@@ -765,6 +765,30 @@ a {
         }
     }
 
+    .suggestions {
+        width: 100%;
+        padding: 10px;
+        margin: 0;
+        list-style: none;
+        background: var(--bg-input);
+        top: 55px;
+        left: -40px;
+        z-index: 2;
+
+        li {
+            padding: 10px;
+
+            &:hover {
+                background: #ffffff2a;
+                cursor: pointer;
+            }
+
+            a {
+                display: block;
+            }
+        }
+    }
+
     .cus-post-media {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

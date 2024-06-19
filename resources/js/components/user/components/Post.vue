@@ -15,7 +15,8 @@ import Pin from 'vue-material-design-icons/Pin.vue'
             ole="status">
             <span class="sr-only">Loading...</span>
         </div>
-        <p class="p-3 pb-2 border-bottom m-0 secondary-text " v-if="pinned === 1 || pinned === true"> Bài viết đã ghim</p>
+        <p class="p-3 pb-2 border-bottom m-0 secondary-text " v-if="pinned === 1 || pinned === true"> Bài viết đã ghim
+        </p>
         <div class="d-flex align-items-center px-0">
             <router-link :to="{ name: 'Profile User', params: { id: user.user_id } }" class="mr-2">
                 <img class="img-cus custom-cursor-pointer" :src="user.avatar" loading="lazy" alt="">
@@ -93,12 +94,22 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                     <a href="/" class="mx-2">
                         <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" loading="lazy" alt="">
                     </a>
-                    <div class="d-flex align-items-center bg-input rounded w-100  px-2">
-                        <textarea @input="__adjustHeight(post.id)" v-model="formComment.content" type="text"
+                    <div class="position-relative d-flex align-items-center bg-input rounded w-100  px-2">
+                        <textarea @input="onInput(post.id, $event)" v-model="formComment.content" type="text"
                             :placeholder="`Viết bình luận với vai trò ${authUser.user_name} ...`"
                             :ref="'textAreaComment' + post.id"
                             class="primary-text custom-input w-100 focus-0 border-0 mx-1 border-none p-0 pt-2 text-sm bg-input placeholder-[#64676B] ring-0 focus:ring-0">
                         </textarea>
+                        <ul v-show="showSuggestions && filteredFriends.length >= 1"
+                            class="suggestions rounded  position-absolute">
+                            <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
+                                @click="selectFriend(friend, post.id)">
+                                <div class="d-flex gap-2 align-items-center">
+                                    <img class="rounded-full ml-1 img-cus" :src="friend.avatar" alt="">
+                                    <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
+                                </div>
+                            </li>
+                        </ul>
                         <label class="hover-200 rounded-full p-2 custom-cursor-pointer" :for="'fileComment' + post.id">
                             <Image :size="27" fillColor="#43BE62" />
                         </label>
@@ -157,6 +168,7 @@ import Pin from 'vue-material-design-icons/Pin.vue'
     </div>
 </template>
 <script>
+import diacritics from 'diacritics';
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { toRefs, reactive, ref } from 'vue';
 
@@ -213,11 +225,13 @@ export default {
             formComment: ref({
                 content: ''
             }),
-
             formMediaComment: ref({
-
             }),
             showAllComments: false,
+            showSuggestions: false,
+            filteredFriends: [],
+            friends: [],
+            selectedFriend: null,
         }
     },
 
@@ -228,8 +242,9 @@ export default {
             }
             return JSON.parse(localStorage.getItem('authUser'));
         },
-    },
-    mounted() {
+        ...mapState({
+            accounts: state => state.users.accounts
+        })
     },
     methods: {
         ...mapActions('post', ['fetchPosts']),
@@ -260,17 +275,28 @@ export default {
             this.formMediaComment = {};
             this.$refs['fieldMedia' + postId].value = null
         },
+        formatComment(text) {
+            return text.replace(/@(\w+)/g, (match, username) => {
+                if (this.selectedFriend) {
+                    const friend = this.friends.find(friend => friend.user_id === this.selectedFriend.user_id);
+                    if (friend) {
+                        return `<a href='/profile/${friend.user_id}' class='custom-span'>${friend.user_id}</a>`;
+                    }
+                }
+            });
+        },
         CreateComment(postId) {
             const fieldMediaCMRef = this.$refs['fieldMedia' + postId]
+            const formattedComment = this.formatComment(this.formComment.content);
             const formData = new FormData();
-            formData.append('content', this.formComment.content);
+            formData.append('content', formattedComment);
             formData.append('file', fieldMediaCMRef.files[0]);
             formData.append('postId', postId);
             this.$store.dispatch('post/createComment', formData)
                 .then(response => {
                     if (response.status === 200 && response.data.data.success === true) {
                         this.comments.unshift(response.data.data.comment)
-                        this.$emit('comment-created');
+                        this.showAllComments = true
                         this.$swal.fire({
                             position: "top-end",
                             icon: "success",
@@ -304,10 +330,10 @@ export default {
                         position: "top-end",
                         icon: "error",
                         title: "comment không thành công",
-                        text: `Lỗi: ${error.response.data.message}`,
                         showConfirmButton: false,
                         timer: this.$config.notificationTimer ?? 3000,
                     });
+                    console.log(error.message);
                 });
         },
         handleCommentUpdated(updatedComment) {
@@ -405,11 +431,45 @@ export default {
                     });
                 });
         },
-        __adjustHeight(id) {
+        onInput(id, event) {
             const textAreaComment = this.$refs['textAreaComment' + id]
             textAreaComment.style.height = 'auto';
             textAreaComment.style.height = `${textAreaComment.scrollHeight}px`;
-        }
+            const text = event.target.value;
+            const position = event.target.selectionStart;
+            const match = text.substring(0, position).match(/@(\S*)$/);
+            if (match) {
+                const query = diacritics.remove(match[1].toLowerCase());
+                this.filteredFriends = this.friends.filter(
+                    friend =>
+                        diacritics.remove(friend.user_name.toLowerCase()).includes(query)
+                );
+                this.showSuggestions = true;
+                console.log(this.filteredFriends);
+            } else {
+                this.showSuggestions = false;
+                console.log('lỗi nè');
+            }
+        },
+        selectFriend(friend, id) {
+            this.selectedFriend = friend;
+            console.log(this.selectedFriend);
+            const textArea = this.$refs['textAreaComment' + id];
+            const position = textArea.selectionStart;
+
+            const text = textArea.value.substring(0, position);
+            const mentionStart = text.lastIndexOf('@');
+            const textBefore = textArea.value.substring(0, mentionStart);
+            const textAfter = textArea.value.substring(position);
+
+            this.formComment.content = `@${friend.user_name} `;
+            this.showSuggestions = false;
+
+            textArea.focus();
+        },
     },
+    created() {
+        this.friends = this.accounts
+    }
 }
 </script>
