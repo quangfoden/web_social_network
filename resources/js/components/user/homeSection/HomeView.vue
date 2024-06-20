@@ -7,8 +7,11 @@
         <div v-else id="posts" v-for="post in posts " :key="post.id">
             <Post v-if="post.privacy === 'public' || post.privacy === 'friends'" :status="post.status" :post="post"
                 :user="post.user" :media="post.media" :comments="post.comments" :comment_count="post.comment_count"
-                @comment-created="handleCommentCreated(post.id)" />
-        </div>
+                @comment-created="handleCommentCreated(post.id)"
+                @comment-deleted="handleCommentdeleted(post.id)"
+                />
+        
+            </div>
         <div v-if="isLoading" class="spinner-border custom-loading text-primary z-1000" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
@@ -60,6 +63,12 @@ export default {
             const post = this.posts.find(p => p.id === postId);
             if (post) {
                 post.comment_count += 1;
+            }
+        },
+        handleCommentdeleted(postId) {
+            const post = this.posts.find(p => p.id === postId);
+            if (post) {
+                post.comment_count -= 1;
             }
         }
 

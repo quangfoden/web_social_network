@@ -11,13 +11,15 @@ import Close from 'vue-material-design-icons/Close.vue'
             <router-link :to="{ name: 'Profile User', params: { id: repcomment.user.user_id } }" class="mr-2">
                 <img class="rounded-full ml-1 img-cus" :src="repcomment.user.avatar" alt="">
             </router-link>
-            <div class="bg-input p-2 w-50 rounded-lg">
-                <div class="d-flex gap-2 justify-content-between">
+            <div class="bg-input p-2 rounded-lg position-relative">
+                <div class="d-flex gap-2 justify-content-between align-items-center">
                     <router-link :to="{ name: 'Profile User', params: { id: repcomment.user.user_id } }"
                         class="m-0 primary-text">{{
                             repcomment.user.user_name }}</router-link>
+                    <span v-if="repcomment.created_at != repcomment.updated_at" class="mx-2 secondary-text"
+                        style="font-size: 10px;">đã chỉnh sửa</span>
                     <span @click="toggleEditRepComment(repcomment.id, repcomment.url)"
-                        v-if="repcomment.user.id === authUser.id" class="ellipsis" style="margin-top: -10px;"><i
+                        v-if="repcomment.user.id === authUser.id" class="ellipsis position-absolute px-2" style="margin-top: -10px;right: -40px;"><i
                             class="secondary-text fa-solid fa-ellipsis fs-5"></i></span>
                 </div>
                 <div class="primary-text d-flex align-items-center text-xs rounded-lg w-100">
@@ -43,23 +45,33 @@ import Close from 'vue-material-design-icons/Close.vue'
             style="position: absolute;top: 0;">
             <ul @click="toggleEditRepComment(repcomment.id, repcomment.url)">
                 <li @click="editerRepComment = !editerRepComment">chỉnh sửa</li>
-                <li @click="confirmDeleteComment(comment.id)">xoá</li>
+                <li @click="confirmDeleteRepComment(repcomment.id)">xoá</li>
             </ul>
         </div>
     </div>
     <div v-if="editerRepComment" class="mb-4">
         <div id="EditRepComment" class="">
-            <form @submit.prevent="EditComment(comment.id)"
+            <form @submit.prevent="EditRepComment(repcomment.id)"
                 class="d-flex align-items-center pt-2 justify-content-between w-100">
                 <a href="/" class="mr-2">
                     <img class="rounded-full ml-1 img-cus" :src="repcomment.user.avatar" loading="lazy" alt="">
                 </a>
                 <div class="position-relative d-flex align-items-center bg-input w-100 rounded px-2">
-                    <textarea style="min-height: 100px;" @input="adjustHeight(repcomment.id)"
+                    <textarea style="min-height: 100px;" @input="onInput(repcomment.id, $event)"
                         :ref="'textarea' + repcomment.id" v-model="editContentRepComment" type="text"
                         placeholder="Viết bình luận ..."
                         class="primary-text custom-input w-100 focus-0 border-0 mx-1 border-none p-0 text-sm bg-input placeholder-[#64676B] ring-0 focus:ring-0">
                                 </textarea>
+                    <ul v-show="showSuggestions && filteredFriends.length >= 1"
+                        class="suggestions rounded  position-absolute">
+                        <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
+                            @click="selectFriend(friend, repcomment.id)">
+                            <div class="d-flex gap-2 align-items-center">
+                                <img class="rounded-full ml-1 img-cus" :src="friend.avatar" alt="">
+                                <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
+                            </div>
+                        </li>
+                    </ul>
                     <div classs="px-3" style="width: 100px;">
                         <div class="position-absolute" style="right:50px ;bottom: 0;" v-if="repcomment.url != null">
                             <label :class="{ 'no-click opacity-50': !isFileRepDelete || FileRepUrl.length >= 2 }"
@@ -122,6 +134,7 @@ import Close from 'vue-material-design-icons/Close.vue'
 </template>
 <script>
 import { ref } from "vue";
+import diacritics from 'diacritics';
 import { v4 as uuidv4 } from 'uuid';
 import { mapState } from 'vuex';
 export default {
@@ -151,6 +164,10 @@ export default {
             FileRepUrl: ref([]),
             deleteFileRep: ref([]),
             fileRep: null,
+            friend: [],
+            selectedFrientEidtRepComment: null,
+            filteredFriends: [],
+            showSuggestions: false
             // isFileRepDelete:false
         }
     },
@@ -172,9 +189,6 @@ export default {
                 const account = this.getUserById(accountId);
                 return `<a href='/profile/${account.user_id}' class='custom-span'>${account.user_name}</a>`;
             });
-        },
-        getUserById(accountId) {
-            return this.accounts.find(account => account.user_id == accountId);
         },
         clickRepComment2() {
             this.$emit('focus-input', this.commentId);
@@ -271,25 +285,144 @@ export default {
             this.editerRepComment = !this.editerRepComment
             this.editContentRepComment = this.convertLinksToMentions(this.rawContent)
         },
-        convertLinksToMentions(html) {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = html;
-            const links = tempDiv.getElementsByTagName('a');
-
-            Array.from(links).forEach(link => {
-                const account_id = link.textContent;
-                const account = this.getUserById(account_id);
-                const username = account.user_name
-                const textNode = document.createTextNode(`@${username}`);
-                link.parentNode.replaceChild(textNode, link);
-            });
-
-            return tempDiv.textContent || tempDiv.innerText;
+        EditRepComment(repCommentId) {
+            let contentRepEdit = this.editContentRepComment
+            if (this.selectedFrientEidtRepComment) {
+                contentRepEdit = contentRepEdit.replace('@' + this.selectedFrientEidtRepComment.user_name,
+                    "<a href='/profile/"
+                    + this.selectedFrientEidtRepComment.user_id + "' class='custom-span'>" + this.selectedFrientEidtRepComment.user_id + "</a>"
+                )
+            }
+            const formData = new FormData();
+            formData.append('content', contentRepEdit);
+            for (let _deletedFile of this.deleteFileRep) {
+                formData.append('deletedFile[]', _deletedFile);
+            }
+            if (this.fileRep) {
+                formData.append('file', this.fileRep);
+            }
+            this.$store.dispatch('post/editRepComment', { repCommentId: repCommentId, formData: formData })
+                .then(response => {
+                    console.log(response.data.repcomment);
+                    this.editerRepComment = false
+                    this.selectedFrientEidtRepComment = null
+                    this.$emit('repcomment-updated', response.data.repcomment);
+                    formData.values = ''
+                    this.fileRep = null
+                    this.deleteFileRep = []
+                    this.$swal.fire({
+                        position: "top-end",
+                        icon: "success",
+                        title: `${response.data.message}`,
+                        showConfirmButton: false,
+                        timer: this.$config.notificationTimer ?? 3000,
+                    });
+                    this.resetRepCommentWatcher();
+                })
+                .catch(error => {
+                    this.selectedFrientEidtComment = null
+                    this.editerRepComment = false
+                    this.editContentRepComment = this.repcomment.content,
+                        this.$swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: `cập nhật không thành công !`,
+                            showConfirmButton: false,
+                            timer: this.$config.notificationTimer ?? 3000,
+                        });
+                    console.error('Có lỗi xảy ra:', error);
+                });
         },
-        adjustHeight(repCommentId) {
-            const textarea = this.$refs['textarea' + repCommentId];
-            textarea.style.height = 'auto';
-            textarea.style.height = `${textarea.scrollHeight}px`;
+        confirmDeleteRepComment(repcommentId) {
+            this.$swal.fire({
+                title: 'Bạn chắc chắn muốn xoá?',
+                text: 'Hành động này sẽ không thể hoàn tác!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Xoá',
+                cancelButtonText: 'Hủy',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.DeleteRepComment(repcommentId);
+                }
+            });
+        },
+        DeleteRepComment(repcommentId){
+            this.$store.dispatch('post/delete_repcomment', repcommentId)
+                .then(response => {
+                    console.log(response);
+                    this.$swal.fire({
+                        position: "top-end",
+                        icon: "success",
+                        title: `${response.data.message}`,
+                        showConfirmButton: false,
+                        timer: this.$config.notificationTimer ?? 3000,
+                    });
+                    // this.$emit('repcomment-deleted', repcommentId);
+                })
+                .catch(error => {
+                    console.log(error);
+                    this.$swal.fire({
+                        position: "top-end",
+                        icon: "error",
+                        title: `Lỗi`,
+                        showConfirmButton: false,
+                        timer: this.$config.notificationTimer ?? 3000,
+                    });
+                })
+        },
+        convertLinksToMentions(html) {
+            const regex = /<a href='\/profile\/(\d+)' class='custom-span'>(\d+)<\/a>/;
+            const match = html.match(regex);
+            if (match) {
+                const userId = match[1];
+                const account = this.getUserById(userId)
+                this.selectedFrientEidtRepComment = account
+                const username = account.user_name
+                return html.replace(regex, `@${username}`);
+            }
+            return html;
+        },
+        getUserById(accountId) {
+            return this.accounts.find(account => account.user_id == accountId);
+        },
+        onInput(id, event) {
+            const textAreaComment = this.$refs['textarea' + id]
+            textAreaComment.style.height = 'auto';
+            textAreaComment.style.height = `${textAreaComment.scrollHeight}px`;
+            const text = event.target.value;
+            const position = event.target.selectionStart;
+            const match = text.substring(0, position).match(/@(\S*)$/);
+            if (match) {
+                const query = diacritics.remove(match[1].toLowerCase());
+                this.filteredFriends = this.friends.filter(
+                    friend =>
+                        diacritics.remove(friend.user_name.toLowerCase()).includes(query)
+                );
+                this.showSuggestions = true;
+            } else {
+                this.showSuggestions = false;
+                console.log('lỗi nè');
+            }
+        },
+        selectFriend(friend, id) {
+            this.selectedFrientEidtRepComment = friend;
+            console.log(this.selectedFrientEidtRepComment.user_name);
+            console.log(this.selectedFrientEidtRepComment);
+            const textArea = this.$refs['textarea' + id];
+            const position = textArea.selectionStart;
+
+            const text = textArea.value.substring(0, position);
+            const mentionStart = text.lastIndexOf('@');
+            const textBefore = textArea.value.substring(0, mentionStart);
+            const textAfter = textArea.value.substring(position);
+
+            this.editContentRepComment = `@${friend.user_name} `;
+            this.showSuggestions = false;
+
+            textArea.focus();
         },
         CusRedirect(event) {
             const url = event.target.getAttribute('href');
@@ -317,9 +450,9 @@ export default {
                 { immediate: true, deep: true }
             )
         },
-        resetCommentWatcher() {
+        resetRepCommentWatcher() {
             if (this.repCommentWatcher) {
-                this.commentWatcher();
+                this.repCommentWatcher();
             }
             this.repCommentWatcher = this.$watch(
                 () => this.repcomment,
@@ -340,15 +473,16 @@ export default {
     mounted() {
         this.editContentRepComment = this.convertLinksToMentions(this.rawContent)
         this.contentRepComment = this.convertIdsToUsernames(this.rawContent)
-        console.log('Danh sách accounts từ Vuex:', this.accounts);
     },
     watch: {
         'repcomment.content'(newValue) {
+            this.contentRepComment = this.convertIdsToUsernames(newValue)
             this.editContentRepComment = this.convertLinksToMentions(newValue);
         }
     },
     created() {
         this.setupRepCommentWatcher();
+        this.friends = this.accounts
     },
 }
 </script>

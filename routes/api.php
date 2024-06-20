@@ -58,4 +58,6 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('/comments/{commentId}', [CommentController::class, 'updateComment']);
     Route::get('getAllComments/{postId}', [CommentController::class, 'getAllComments']);
     Route::post('deleteComment/{commentId}', [CommentController::class, 'delete_comment']);
+    Route::post('/comments/repcomment/{repCommentId}', [CommentController::class, 'updateRepComment']);
+    Route::post('/deleteRepComment/repcomment/{repCommentId}', [CommentController::class, 'delete_repcomment']);
 });

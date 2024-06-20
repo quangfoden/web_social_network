@@ -598,7 +598,7 @@ a {
 #post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment {
   position: absolute;
   top: 0;
-  right: 40px;
+  right: 70px;
   padding: 10px 0;
   width: 30%;
   text-align: center;
@@ -641,7 +641,7 @@ a {
   color: var(--secondary-text);
 }
 #post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment {
-  right: 20px;
+  right: 0;
 }
 #post #Comment .box-comment-cus .box-comment-cus_3 .edit_repcomment ul {
   margin: 0;

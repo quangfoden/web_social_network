@@ -305,6 +305,17 @@ const actions = {
             },
         })
     },
+    editComment({ commit }, payload) {
+        const { commentId, formData } = payload;
+        return axios.post(`api/user/comments/${commentId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+    },
+    delete_comment({ commit }, commentId) {
+        return axios.post(`api/user/deleteComment/${commentId}`)
+    },
     createRepComment({ commit }, payload) {
         const { commentId, formData } = payload;
         return axios.post(`api/user/create_rep_comment/${commentId}`, formData, {
@@ -313,16 +324,16 @@ const actions = {
             },
         })
     },
-    editComment({commit},payload){
-        const { commentId, formData } = payload;
-        return axios.post(`api/user/comments/${commentId}`, formData, {
+    editRepComment({ commit }, payload) {
+        const { repCommentId, formData } = payload;
+        return axios.post(`api/user/comments/repcomment/${repCommentId}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         })
     },
-    delete_comment({commit},commentId){
-        return axios.post(`api/user/deleteComment/${commentId}`)
+    delete_repcomment({ commit }, repcommentId) {
+        return axios.post(`api/user/deleteComment/${repcommentId}`)
     },
 };
 

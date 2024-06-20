@@ -122,14 +122,14 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                     </div>
                 </form>
             </div>
-            <div v-if="formMediaComment.url" class="p-2 position-relative cus-img-dis">
+            <div v-if="formMediaComment.url" style="margin-left:50px ;" class="p-2 position-relative cus-img-dis">
                 <Close @click="clearImage(post.id)"
                     class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
                     :size="22" fillColor="#5E6771" />
-                <div v-if="formMediaComment.type === 'image'"><img class="rounded-lg mx-auto w-50"
+                <div v-if="formMediaComment.type === 'image'"><img width="200" class="rounded-lg mx-auto"
                         :src="formMediaComment.url" loading="lazy" alt=""></div>
                 <div v-else-if="formMediaComment.type === 'video'">
-                    <video class="rounded-lg mx-auto w-50" controls>
+                    <video width="200" class="rounded-lg mx-auto" controls>
                         <source :src="formMediaComment.url" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
@@ -275,26 +275,15 @@ export default {
             this.formMediaComment = {};
             this.$refs['fieldMedia' + postId].value = null
         },
-        formatComment(text) {
-            return text.replace(/@([\wÀ-ỹ]+)/g, (match, username) => {
-                username = username.trim();
-                if (this.selectedFriend) {
-                    const friend = this.friends.find(friend => friend.user_id === this.selectedFriend.user_id && friend.user_name === username);
-                    if (friend) {
-                        return `<a href='/profile/${friend.user_id}' class='custom-span'>${friend.user_id}</a>`;
-                    }
-                }
-                return match;
-            });
-        },
         CreateComment(postId) {
             const fieldMediaCMRef = this.$refs['fieldMedia' + postId]
-            // const formattedComment = this.formatComment(this.formComment.content);
             let content = this.formComment.content
-            content = content.replace('@' + this.selectedFriend.user_name,
-                "<a href='/profile/"
-                + this.selectedFriend.user_id + "' class='custom-span'>" + this.selectedFriend.user_id + "</a>"
-            )
+            if (this.selectedFriend) {
+                content = content.replace('@' + this.selectedFriend.user_name,
+                    "<a href='/profile/"
+                    + this.selectedFriend.user_id + "' class='custom-span'>" + this.selectedFriend.user_id + "</a>"
+                )
+            }
             const formData = new FormData();
             formData.append('content', content);
             formData.append('file', fieldMediaCMRef.files[0]);
@@ -304,7 +293,7 @@ export default {
                     if (response.status === 200 && response.data.data.success === true) {
                         this.selectedFriend = null
                         this.comments.unshift(response.data.data.comment)
-                        this.showAllComments = true
+                        this.$emit('comment-created')
                         this.$swal.fire({
                             position: "top-end",
                             icon: "success",
@@ -367,6 +356,7 @@ export default {
             const index = this.comments.findIndex(comment => comment.id === deletedCommentId);
             if (index !== -1) {
                 this.comments.splice(index, 1);
+                this.$emit('comment-deleted');
             }
         },
         toggleComments() {

@@ -53,6 +53,7 @@ class PostRepository
             $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
             $post->comment_count =  $post->comments->count();
             $post->comments->each(function ($comment) {
+                $comment->repcomment_count = $comment->repcomments->count();
                 $comment->created_at_formatted = $this->postService->formatTimeAgo($comment->created_at);
                 if ($comment->repcomments) {
                     foreach ($comment->repcomments as $repcomment) {
