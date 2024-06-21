@@ -32,28 +32,20 @@ class UpdateCommentRequest extends FormRequest
         return [
             //
             'content' => 'required_without:files',
-            'files' => [
-                'max:50',
-                function ($attribute, $value, $fail) {
-                    $totalSize = collect($value)->sum(fn (UploadedFile $file) => $file->getSize());
-                    if ($totalSize > 1 * 1024 * 1024 * 1024) {
-                        $fail('Tổng kích thước của tất cả các tệp không được vượt quá 1GB.');
-                    }
-                }
-            ],
-            'files.*'=>[
+            'file' => [
+                'nullable',
                 'file',
                 File::types(self::$extensions)
-            ]
+            ],
         ];
     }
 
     public function messages()
     {
         return [
-            'content.required_without' => 'Vui lòng nhập nội dung hoặc chọn tệp tin.',
-            'files.max' => 'Số lượng tệp tin tối đa là 50 tệp.',
-            'files.*.mimes' => 'Định dạng tệp tin không hợp lệ.',
+            'content.required_without_all' => 'Vui lòng nhập nội dung hoặc chọn tệp tin hoặc xóa tệp tin.',
+            'file.file' => 'Tệp tin không hợp lệ.',
+            'file.mimes' => 'Định dạng tệp tin không hợp lệ.',
         ];
     }
 }

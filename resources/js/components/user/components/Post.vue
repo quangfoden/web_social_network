@@ -143,7 +143,9 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                     <Comment :comment="comments[0]" :repcomment_count="comments[0].repcomment_count"
                         @comment-updated="handleCommentUpdated"
                         @repcomment-created="handleRepCommentCreated(comments[0].id)"
-                        @comment-deleted="handleCommentDeleted" />
+                        @comment-deleted="handleCommentDeleted"
+                        @repcomment-deleted="handleRepCommentDeleted(comments[0].id)"
+                        />
                     <button v-if="comments.length > 1" class="px-2 bg-transparent primary-text text-underline"
                         @click="toggleComments">Xem tất cả {{ comment_count
                         }}
@@ -154,7 +156,9 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                         <Comment :comment="comment" :repcomment_count="comment.repcomment_count"
                             @comment-updated="handleCommentUpdated"
                             @repcomment-created="handleRepCommentCreated(comment.id)"
-                            @comment-deleted="handleCommentDeleted" />
+                            @comment-deleted="handleCommentDeleted" 
+                             @repcomment-deleted="handleRepCommentDeleted(comment.id)"
+                            />
                     </div>
                     <button v-if="comments.length > 1" class="px-2 bg-transparent primary-text text-underline"
                         @click="toggleComments">Ẩn bớt</button>
@@ -357,6 +361,12 @@ export default {
             if (index !== -1) {
                 this.comments.splice(index, 1);
                 this.$emit('comment-deleted');
+            }
+        },
+        handleRepCommentDeleted(deletedCommentId) {
+            const comment = this.comments.find(c => c.id === deletedCommentId);
+            if (comment) {
+                comment.repcomment_count -= 1;
             }
         },
         toggleComments() {

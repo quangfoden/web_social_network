@@ -19,7 +19,8 @@ import Close from 'vue-material-design-icons/Close.vue'
                     <span v-if="repcomment.created_at != repcomment.updated_at" class="mx-2 secondary-text"
                         style="font-size: 10px;">đã chỉnh sửa</span>
                     <span @click="toggleEditRepComment(repcomment.id, repcomment.url)"
-                        v-if="repcomment.user.id === authUser.id" class="ellipsis position-absolute px-2" style="margin-top: -10px;right: -40px;"><i
+                        v-if="repcomment.user.id === authUser.id" class="ellipsis position-absolute px-2"
+                        style="margin-top: -10px;right: -40px;"><i
                             class="secondary-text fa-solid fa-ellipsis fs-5"></i></span>
                 </div>
                 <div class="primary-text d-flex align-items-center text-xs rounded-lg w-100">
@@ -196,6 +197,7 @@ export default {
                 selectedRepCommentIndex: this.index,
                 boxRepComment: true,
                 isRepComment: false,
+                istag: false,
                 datacontentRepComment: '@' + this.repcomment.user.user_name + ' '
             });
         },
@@ -303,13 +305,13 @@ export default {
             }
             this.$store.dispatch('post/editRepComment', { repCommentId: repCommentId, formData: formData })
                 .then(response => {
-                    console.log(response.data.repcomment);
                     this.editerRepComment = false
                     this.selectedFrientEidtRepComment = null
                     this.$emit('repcomment-updated', response.data.repcomment);
                     formData.values = ''
                     this.fileRep = null
                     this.deleteFileRep = []
+                    console.log(this.FileRepUrl);
                     this.$swal.fire({
                         position: "top-end",
                         icon: "success",
@@ -349,7 +351,7 @@ export default {
                 }
             });
         },
-        DeleteRepComment(repcommentId){
+        DeleteRepComment(repcommentId) {
             this.$store.dispatch('post/delete_repcomment', repcommentId)
                 .then(response => {
                     console.log(response);
@@ -360,7 +362,7 @@ export default {
                         showConfirmButton: false,
                         timer: this.$config.notificationTimer ?? 3000,
                     });
-                    // this.$emit('repcomment-deleted', repcommentId);
+                    this.$emit('repcomment-deleted', repcommentId);
                 })
                 .catch(error => {
                     console.log(error);
@@ -419,7 +421,7 @@ export default {
             const textBefore = textArea.value.substring(0, mentionStart);
             const textAfter = textArea.value.substring(position);
 
-            this.editContentRepComment = `@${friend.user_name} `;
+            this.editContentRepComment = `@${textBefore}${friend.user_name}${textAfter} `;
             this.showSuggestions = false;
 
             textArea.focus();
@@ -466,7 +468,8 @@ export default {
                         isProp: true,
                         deleted: false
                     }))
-                }
+                },
+                { immediate: true, deep: true }
             )
         }
     },

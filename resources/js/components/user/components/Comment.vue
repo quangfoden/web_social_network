@@ -27,7 +27,8 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                                     style="font-size: 10px;">đã chỉnh sửa</span>
                                 <span @click="toggleEditComment(comment.id, comment.url)"
                                     v-if="comment.user.id === authUser.id" class="ellipsis position-absolute px-2"
-                                    style="margin-top: -10px; right: -40px;"><i class="fa-solid fa-ellipsis fs-5"></i></span>
+                                    style="margin-top: -10px; right: -40px;"><i
+                                        class="fa-solid fa-ellipsis fs-5"></i></span>
                             </div>
                             <div class="primary-text d-flex align-items-center text-xs rounded-lg w-100">
                                 <span class="content_comment" @click.prevent="CusRedirect" v-html="contentComment">
@@ -143,7 +144,7 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                     <div v-if="showAllRepComments" class="mx-5 repcomment_list boxrepcomment-cus"
                         v-for="(repcomment, index) in comment.repcomments" :key="index">
                         <RepComment :repcomment="repcomment" :index=index :commentId=comment.id
-                            @repcomment-updated="handleRepCommentUpdated"
+                            @repcomment-updated="handleRepCommentUpdated" @repcomment-deleted="handleRepCommentDeleted"
                             @reply-comment-clicked="handleReplyCommentClicked" @focus-input="focusInput" />
                     </div>
                     <div v-if="showAllRepComments" class="text-center mb-1">
@@ -156,12 +157,23 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                     <a href="/" class="mr-2">
                         <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" alt="">
                     </a>
-                    <div class="d-flex align-items-center bg-input rounded px-2 w-100">
-                        <textarea @input="_adjustHeight(comment.id)" v-model="formRepComment.content"
+                    <div class="d-flex align-items-center position-relative bg-input rounded px-2 w-100">
+                        <textarea @input="_onInput(comment.id, $event)" v-model="formRepComment.content"
                             :id="'repcomment' + comment.id" :ref="'repcomment' + comment.id" type="text"
                             :placeholder="`Viết phản hồi với vai trò ${authUser.user_name}...`"
                             class="primary-text custom-input bg-input w-100 border-0 mx-1 border-none p-0 text-sm placeholder-[#64676B] focus-0">
                                         </textarea>
+                        <ul v-show="showSuggestions && filteredFriends.length >= 1"
+                            style="top: -135px;left: 0px;min-height: 130px;"
+                            class="suggestions rounded  position-absolute">
+                            <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
+                                @click="_selectFriend(friend, comment.id)">
+                                <div class="d-flex gap-2 align-items-center">
+                                    <img class="rounded-full ml-1 img-cus" :src="friend.avatar" alt="">
+                                    <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
+                                </div>
+                            </li>
+                        </ul>
                         <label :for="`fieldMediaRepCM_${comment.id}`"
                             class="hover-200 rounded-full p-2 custom-cursor-pointer">
                             <Image :size="27" fillColor="#43BE62" />
@@ -238,8 +250,10 @@ export default {
             boxRepComment: reactive(false),
             filteredFriends: [],
             friends: [],
+            selectedFrientCreatedComment: null,
             selectedFrientEidtComment: null,
-            isRepComment: true,
+            isRepComment: false,
+            istag: false,
             selectedRepCommentIndex: null,
             showAllRepComments: false,
             showmodelEditComment: false,
@@ -249,7 +263,8 @@ export default {
             file: null,
             fileUrls: ref([]),
             deleteFile: ref([]),
-            isFileDelete: false
+            isFileDelete: false,
+            showSuggestions: false
         }
     },
     computed: {
@@ -437,25 +452,35 @@ export default {
             this.selectedRepCommentIndex = payload.selectedRepCommentIndex
             this.boxRepComment = payload.boxRepComment;
             this.isRepComment = payload.isRepComment;
+            this.istag = payload.istag;
             this.formRepComment.content = payload.datacontentRepComment;
         },
         CreateRepComment(commentId) {
             const formData = new FormData();
             let content = this.formRepComment.content
-            if (this.isRepComment) {
+            if (this.isRepComment && !this.istag) {
                 content = content.replace('@' + this.comment.user.user_name,
                     "<a href='/profile/"
                     + this.comment.user.user_id + "' class='custom-span'>" + this.comment.user.user_id + "</a>")
             }
             else {
-                content = content.replace('@' + this.comment.repcomments[this.selectedRepCommentIndex].user.user_name,
+                if (this.selectedRepCommentIndex && !this.istag) {
+                    content = content.replace('@' + this.comment.repcomments[this.selectedRepCommentIndex].user.user_name,
+                        "<a href='/profile/"
+                        + this.comment.repcomments[this.selectedRepCommentIndex].user.user_id + "' class='custom-span'>" + this.comment.repcomments[this.selectedRepCommentIndex].user.user_id + "</a>")
+                }
+            }
+            if (this.istag && this.selectedFrientCreatedComment) {
+                content = content.replace('@' + this.selectedFrientCreatedComment.user_name,
                     "<a href='/profile/"
-                    + this.comment.repcomments[this.selectedRepCommentIndex].user.user_id + "' class='custom-span'>" + this.comment.repcomments[this.selectedRepCommentIndex].user.user_id + "</a>")
+                    + this.selectedFrientCreatedComment.user_id + "' class='custom-span'>" + this.selectedFrientCreatedComment.user_id + "</a>")
             }
             formData.append('content', content);
             formData.append('file', this.formMediarepComment.file);
             this.$store.dispatch('post/createRepComment', { commentId: commentId, formData: formData })
                 .then(response => {
+                    console.log(this.istag);
+                    console.log(this.selectedFrientCreatedComment);
                     if (response.status === 200 && response.data.data.success === true) {
                         const input = document.getElementById(`fieldMediaRepCM_${commentId}`);
                         if (input) {
@@ -533,6 +558,7 @@ export default {
         clickRepComment(refName) {
             this.boxRepComment = true
             this.isRepComment = true
+            this.istag = false
             console.log(this.isRepComment);
             this.formRepComment.content = '@' + this.comment.user.user_name + ' ';
             this.$refs[refName].focus();
@@ -549,6 +575,13 @@ export default {
                 this.comment.repcomments[index].type = updatedRepComment.type;
                 this.comment.repcomments[index].created_at = updatedRepComment.created_at;
                 this.comment.repcomments[index].updated_at = updatedRepComment.updated_at;
+            }
+        },
+        handleRepCommentDeleted(repcommentId) {
+            const index = this.comment.repcomments.findIndex(repcomment => repcomment.id === repcommentId);
+            if (index !== -1) {
+                this.comment.repcomments.splice(index, 1);
+                this.$emit('repcomment-deleted');
             }
         },
         setupCommentWatcher() {
@@ -641,6 +674,48 @@ export default {
                 console.log('lỗi nè');
             }
         },
+        _onInput(id, event) {
+            const textAreaRepComment = this.$refs['repcomment' + id]
+            textAreaRepComment.style.height = 'auto';
+            textAreaRepComment.style.height = `${textAreaRepComment.scrollHeight}px`;
+            const text = event.target.value;
+            const position = event.target.selectionStart;
+            const match = text.substring(0, position).match(/@(\S*)$/);
+            if (match) {
+                const query = diacritics.remove(match[1].toLowerCase());
+                this.filteredFriends = this.friends.filter(
+                    friend =>
+                        diacritics.remove(friend.user_name.toLowerCase()).includes(query)
+                );
+                this.showSuggestions = true;
+            } else {
+                this.showSuggestions = false;
+            }
+        },
+        _selectFriend(friend, id) {
+            this.isRepComment = false
+            this.istag = true
+            console.log(this.istag);
+            console.log(this.isRepComment);
+            this.selectedFrientCreatedComment = friend;
+            console.log(this.selectedFrientCreatedComment.user_name);
+            console.log(this.selectedFrientCreatedComment);
+            const textArea = this.$refs['repcomment' + id];
+            const position = textArea.selectionStart;
+
+            const text = textArea.value.substring(0, position);
+            const mentionStart = text.lastIndexOf('@');
+            const textBefore = textArea.value.substring(0, mentionStart + 1);
+            const textAfter = textArea.value.substring(position);
+            if (mentionStart === -1) {
+                this.formRepComment.content = `${textBefore}@${friend.user_name} ${textAfter}`;
+            } else {
+                this.formRepComment.content = `${textBefore}${friend.user_name} ${textAfter}`;
+            }
+            this.showSuggestions = false;
+
+            textArea.focus();
+        },
         selectFriend(friend, id) {
             this.selectedFrientEidtComment = friend;
             console.log(this.selectedFrientEidtComment.user_name);
@@ -653,7 +728,7 @@ export default {
             const textBefore = textArea.value.substring(0, mentionStart);
             const textAfter = textArea.value.substring(position);
 
-            this.editContentComment = `@${friend.user_name} `;
+            this.editContentComment = `@${textBefore}${friend.user_name}${textAfter} `;
             this.showSuggestions = false;
 
             textArea.focus();

@@ -333,7 +333,7 @@ const actions = {
         })
     },
     delete_repcomment({ commit }, repcommentId) {
-        return axios.post(`api/user/deleteComment/${repcommentId}`)
+        return axios.post(`api/user/deleterepcomment/repcomment/${repcommentId}`)
     },
 };
 

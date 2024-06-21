@@ -34,7 +34,7 @@ class CommentController extends Controller
         $comments = $this->commentRepo->allCommentsByPost($postId);
         return response()->json($comments);
     }
-   
+
     public function create_comment(AddCommentRequest $request)
     {
         $data = $request->validated();
@@ -106,17 +106,9 @@ class CommentController extends Controller
 
         $deletedFile = $data['deletedFile'] ?? [];
         if (count($deletedFile) > 0) {
-            Log::info($deletedFile);
-            $commentMedias = Comment::query()
-                ->where('id', $commentId)
-                ->whereIn('id', $deletedFile)
-                ->get();
-            Log::info($commentMedias);
-            foreach ($commentMedias as $commentMedia) {
-                if ($commentMedia->path) {
-                    Storage::deleteDirectory('/public/' . dirname($commentMedia->path));
-                }
-                $commentMedia->update([
+            if ($comment->path && in_array($commentId, $deletedFile)) {
+                Storage::deleteDirectory('/public/' . dirname($comment->path));
+                $comment->update([
                     'url' => null,
                     'type' => null,
                     'path' => null
@@ -126,7 +118,6 @@ class CommentController extends Controller
 
         if ($request->hasFile('file')) {
             $requestData = $request->file('file');
-            Log::info($requestData->getClientMimeType());
             $path = 'uploads/Upload_comments/' . Str::random();
             if (!Storage::exists($path)) {
                 Storage::makeDirectory($path, 0755, true);
@@ -139,7 +130,7 @@ class CommentController extends Controller
             $comment->update([
                 'path' => $relativePath,
                 'url' => URL::to(Storage::url($relativePath)),
-                'type' => $requestData->getClientMimeType(),
+                'type' => $request->file('file')->getClientMimeType()
             ]);
         }
 
@@ -252,17 +243,9 @@ class CommentController extends Controller
 
         $deletedFile = $data['deletedFile'] ?? [];
         if (count($deletedFile) > 0) {
-            Log::info($deletedFile);
-            $repcommentMedias = Replycomment::query()
-                ->where('id', $repCommentId)
-                ->whereIn('id', $deletedFile)
-                ->get();
-            Log::info($repcommentMedias);
-            foreach ($repcommentMedias as $repcommentMedia) {
-                if ($repcommentMedia->path) {
-                    Storage::deleteDirectory('/public/' . dirname($repcommentMedia->path));
-                }
-                $repcommentMedia->update([
+            if ($repcomment->path && in_array($repCommentId, $deletedFile)) {
+                Storage::deleteDirectory('/public/' . dirname($repcomment->path));
+                $repcomment->update([
                     'url' => null,
                     'type' => null,
                     'path' => null
@@ -299,21 +282,17 @@ class CommentController extends Controller
     public function delete_repcomment(Request $request, $id)
     {
         try {
-            // Tìm bình luận bằng ID
             $repcomment = Replycomment::findOrFail($id);
 
-            // Kiểm tra xem bình luận có thuộc về người dùng hiện tại không
             $user = Auth::user();
             if ($repcomment->user_id !== $user->id) {
                 return response()->json(['message' => 'Bạn không có quyền xóa bình luận này!', 'success' => false], 403);
             }
 
-            // Nếu bình luận có file đính kèm, xóa file đó
             if ($repcomment->path) {
                 Storage::deleteDirectory('public/' . dirname($repcomment->path));
             }
 
-            // Xóa bình luận
             $repcomment->delete();
 
             return response()->json(['message' => 'Xóa bình luận thành công!', 'success' => true]);
