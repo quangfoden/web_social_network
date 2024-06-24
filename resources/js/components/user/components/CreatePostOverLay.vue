@@ -25,14 +25,15 @@ const emit = defineEmits(['showModal'])
                             <img :src="authUser.avatar" class="rounded-full img-cus" alt="">
                             <div class="mx-2">
                                 <div class="font-extrabold primary-text">{{ authUser.user_name }}</div>
-                                <select class="bg-item primary-text border" v-model="form.privacy" id="privacy" required>
+                                <select class="bg-item primary-text border" v-model="form.privacy" id="privacy"
+                                    required>
                                     <option v-for="option in privacyOptions" :value="option.value">{{ option.name }}
                                     </option>
                                 </select>
                             </div>
                         </div>
                         <div class="text-ar">
-                            <textarea cols="30" v-model="form.content" class="w-100 bg-item secondary-text"
+                            <textarea cols="30" v-model="form.content" class="w-100 bg-item secondary-text" id="content"
                                 :placeholder="'bạn đang nghĩ gì ' + authUser.user_name + '...'">
                             </textarea>
                             <div v-if="imageUrls" class="p-2 position-relative cus-img-dis">
@@ -77,10 +78,18 @@ const emit = defineEmits(['showModal'])
                                 </a>
                             </div>
                         </div>
-                        <button type="submit"
+                        <button v-if="!isLoading" type="submit" :disabled="isSubmitDisabled"
+                            :class="{ 'no-click': isSubmitDisabled }"
                             class="w-100 bg-blue-500 hover-bg-blue-600 text-white font-extrabold p-2 mt-3 rounded-lg">
                             Đăng
                         </button>
+                        <div v-if="isLoading" :disabled="isSubmitDisabled" :class="{ 'no-click': isSubmitDisabled }"
+                            class="w-100 bg-transparent font-extrabold p-2 mt-3 rounded-lg">
+                            <button class="w-100 btn btn-secondary" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span role="status">Loading...</span>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -114,7 +123,8 @@ export default {
             files: ref([]),
             imageUrls: ref([]),
             deletedImages: ref([]),
-            imagePositions: ref([])
+            imagePositions: ref([]),
+            isLoading: false
         }
     },
     computed: {
@@ -125,10 +135,14 @@ export default {
             }
             return JSON.parse(localStorage.getItem('authUser'));
         },
+        isSubmitDisabled() {
+            return this.form.content === '' && this.files.length === 0;
+        },
     },
     methods: {
         ...mapActions('post', ['addNewPost']),
         submitPost() {
+            this.isLoading = true
             const formData = new FormData();
             formData.append('content', this.form.content);
             formData.append('privacy', this.form.privacy);
@@ -138,12 +152,14 @@ export default {
             }
             this.$store.dispatch('post/addNewPost', formData)
                 .then(() => {
+                    this.isLoading = false
                     this.form.content = '';
                     this.form.media = [];
                     formData.values = ''
                     this.isPostOverlay = false
                 })
                 .catch(error => {
+                    this.isLoading = false
                     this.form.content = '';
                     this.form.media = [];
                     formData.values = ''
@@ -151,19 +167,15 @@ export default {
                 });
         },
         getFileType(file) {
-            // Lấy phần mở rộng của tệp
             const extension = file.name.split('.').pop().toLowerCase();
-            // Kiểm tra nếu phần mở rộng là của ảnh
             const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
             if (imageExtensions.includes(extension)) {
                 return 'image';
             }
-            // Kiểm tra nếu phần mở rộng là của video
             const videoExtensions = ['mp4', 'avi', 'mov', 'mkv'];
             if (videoExtensions.includes(extension)) {
                 return 'video';
             }
-            // Nếu không phải là ảnh hoặc video, trả về null
             return null;
         },
         onFileChange($event) {
@@ -185,7 +197,6 @@ export default {
                         })
                     })
             }
-            console.log(this.imageUrls);
         },
         readFile(file) {
             return new Promise((resolve, reject) => {

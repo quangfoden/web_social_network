@@ -31,7 +31,7 @@ class UpdateCommentRequest extends FormRequest
     {
         return [
             //
-            'content' => 'required_without:files',
+            'content' => 'required_without:file',
             'file' => [
                 'nullable',
                 'file',
@@ -43,7 +43,7 @@ class UpdateCommentRequest extends FormRequest
     public function messages()
     {
         return [
-            'content.required_without_all' => 'Vui lòng nhập nội dung hoặc chọn tệp tin hoặc xóa tệp tin.',
+            'content.required_without_all' => 'Vui lòng nhập nội dung hoặc chọn tệp tin.',
             'file.file' => 'Tệp tin không hợp lệ.',
             'file.mimes' => 'Định dạng tệp tin không hợp lệ.',
         ];

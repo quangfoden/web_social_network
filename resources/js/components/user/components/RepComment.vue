@@ -9,23 +9,28 @@ import Close from 'vue-material-design-icons/Close.vue'
     <div v-if="!editerRepComment" class="position-relative">
         <div class="d-flex gap-2 align-items-start w-100 mb-1">
             <router-link :to="{ name: 'Profile User', params: { id: repcomment.user.user_id } }" class="mr-2">
-                <img class="rounded-full ml-1 img-cus" :src="repcomment.user.avatar" alt="">
+                <img class="rounded-full ml-1 custom" :src="repcomment.user.avatar" alt="">
             </router-link>
-            <div class="bg-input p-2 rounded-lg position-relative">
+            <div class="bg-input p-2 rounded-lg position-relative" style="max-width: 50%;">
                 <div class="d-flex gap-2 justify-content-between align-items-center">
                     <router-link :to="{ name: 'Profile User', params: { id: repcomment.user.user_id } }"
-                        class="m-0 primary-text">{{
+                        class="m-0 primary-text" style="word-break: break-all;">{{
                             repcomment.user.user_name }}</router-link>
-                    <span v-if="repcomment.created_at != repcomment.updated_at" class="mx-2 secondary-text"
-                        style="font-size: 10px;">đã chỉnh sửa</span>
-                    <span @click="toggleEditRepComment(repcomment.id, repcomment.url)"
-                        v-if="repcomment.user.id === authUser.id" class="ellipsis position-absolute px-2"
-                        style="margin-top: -10px;right: -40px;"><i
-                            class="secondary-text fa-solid fa-ellipsis fs-5"></i></span>
+
                 </div>
                 <div class="primary-text d-flex align-items-center text-xs rounded-lg w-100">
-                    <span class="content_repcomment" @click.prevent="CusRedirect" v-html="contentRepComment"></span>
+                    <span style="word-break: break-all;" class="content_repcomment" @click.prevent="CusRedirect"
+                        v-html="contentRepComment"></span>
                 </div>
+            </div>
+            <span @click="toggleEditRepComment(repcomment.id, repcomment.url)" v-if="repcomment.user.id === authUser.id"
+                class="ellipsis px-2" style="font-size: 1.5rem;"><i
+                    class="secondary-text fa-solid fa-ellipsis fs-5"></i></span>
+            <div v-if="repcomment.user.id === authUser.id && showmodelEditRepComment" class="edit_repcomment">
+                <ul @click="toggleEditRepComment(repcomment.id, repcomment.url)">
+                    <li @click="editerRepComment = !editerRepComment">chỉnh sửa</li>
+                    <li @click="confirmDeleteRepComment(repcomment.id)">xoá</li>
+                </ul>
             </div>
         </div>
         <div class="w-100 position-relative" style="margin-left: 50px;">
@@ -41,21 +46,18 @@ import Close from 'vue-material-design-icons/Close.vue'
                 Phản
                 hồi
             </p>
+            <p v-if="repcomment.created_at != repcomment.updated_at" class="mx-2 secondary-text"
+                style="font-size: 10px;">đã chỉnh sửa</p>
+
         </div>
-        <div v-if="repcomment.user.id === authUser.id && showmodelEditRepComment" class="edit_repcomment"
-            style="position: absolute;top: 0;">
-            <ul @click="toggleEditRepComment(repcomment.id, repcomment.url)">
-                <li @click="editerRepComment = !editerRepComment">chỉnh sửa</li>
-                <li @click="confirmDeleteRepComment(repcomment.id)">xoá</li>
-            </ul>
-        </div>
+
     </div>
     <div v-if="editerRepComment" class="mb-4">
         <div id="EditRepComment" class="">
             <form @submit.prevent="EditRepComment(repcomment.id)"
-                class="d-flex align-items-center pt-2 justify-content-between w-100">
+                class="d-flex gap-2 align-items-center pt-2 justify-content-between w-100">
                 <a href="/" class="mr-2">
-                    <img class="rounded-full ml-1 img-cus" :src="repcomment.user.avatar" loading="lazy" alt="">
+                    <img class="rounded-full ml-1 custom" :src="repcomment.user.avatar" loading="lazy" alt="">
                 </a>
                 <div class="position-relative d-flex align-items-center bg-input w-100 rounded px-2">
                     <textarea style="min-height: 100px;" @input="onInput(repcomment.id, $event)"
@@ -64,18 +66,19 @@ import Close from 'vue-material-design-icons/Close.vue'
                         class="primary-text custom-input w-100 focus-0 border-0 mx-1 border-none p-0 text-sm bg-input placeholder-[#64676B] ring-0 focus:ring-0">
                                 </textarea>
                     <ul v-show="showSuggestions && filteredFriends.length >= 1"
-                        class="suggestions rounded  position-absolute">
+                        class="suggestions rounded  position-absolute" style="top: 105px;left: 0;">
                         <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
                             @click="selectFriend(friend, repcomment.id)">
                             <div class="d-flex gap-2 align-items-center">
-                                <img class="rounded-full ml-1 img-cus" :src="friend.avatar" alt="">
+                                <img class="rounded-full ml-1 custom" :src="friend.avatar" alt="">
                                 <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
                             </div>
                         </li>
                     </ul>
                     <div classs="px-3" style="width: 100px;">
                         <div class="position-absolute" style="right:50px ;bottom: 0;" v-if="repcomment.url != null">
-                            <label :class="{ 'no-click opacity-50': !isFileRepDelete || FileRepUrl.length >= 2 }"
+                            <label v-if="!isSendLoading"
+                                :class="{ 'no-click opacity-50': !isFileRepDelete || FileRepUrl.length >= 2 }"
                                 class="hover-200 rounded-full p-2 custom-cursor-pointer"
                                 :for="'fileRepCommentEdit' + repcomment.id">
                                 <Image :size="27" fillColor="#43BE62" />
@@ -85,7 +88,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                                 @input="handleFileRepChange($event)">
                         </div>
                         <div style="right: 50px; bottom: 0;" class="position-absolute" v-else>
-                            <label :class="{ 'no-click opacity-50': !isFileRepDelete }"
+                            <label v-if="!isSendLoading" :class="{ 'no-click opacity-50': !isFileRepDelete }"
                                 class="hover-200 rounded-full p-2 custom-cursor-pointer"
                                 :for="'fileRepCommentEdit' + repcomment.id">
                                 <Image :size="27" fillColor="#43BE62" />
@@ -94,9 +97,14 @@ import Close from 'vue-material-design-icons/Close.vue'
                                 :id="'fileRepCommentEdit' + repcomment.id" accept="image/*,video/*"
                                 @input="handleFileRepChange($event)">
                         </div>
-                        <button style="right: 0; bottom: 0;" type="submit"
+                        <button v-if="!isSendLoading" style="right: 0; bottom: 0;" type="submit"
                             class="position-absolute d-flex border-0 align-items-center bg-transparent text-sm p-2 rounded-full text-white font-bold">
                             <Send :size="27" fillColor="#4299e1" />
+                        </button>
+                        <button v-if="isSendLoading" style="right: 0; bottom: 0;" class="position-absolute btn btn-sm btn-secondary"
+                            type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                            <span class="visually-hidden" role="status">Loading...</span>
                         </button>
                     </div>
                 </div>
@@ -168,8 +176,8 @@ export default {
             friend: [],
             selectedFrientEidtRepComment: null,
             filteredFriends: [],
-            showSuggestions: false
-            // isFileRepDelete:false
+            showSuggestions: false,
+            isSendLoading: false
         }
     },
     computed: {
@@ -186,10 +194,12 @@ export default {
 
     methods: {
         convertIdsToUsernames(content) {
-            return content.replace(/<a href='\/profile\/(\d+)' class='custom-span'>(\d+)<\/a>/g, (match, accountId) => {
-                const account = this.getUserById(accountId);
-                return `<a href='/profile/${account.user_id}' class='custom-span'>${account.user_name}</a>`;
-            });
+            if (content) {
+                return content.replace(/<a href='\/profile\/(\d+)' class='custom-span'>(\d+)<\/a>/g, (match, accountId) => {
+                    const account = this.getUserById(accountId);
+                    return `<a href='/profile/${account.user_id}' class='custom-span'>${account.user_name}</a>`;
+                });
+            }
         },
         clickRepComment2() {
             this.$emit('focus-input', this.commentId);
@@ -288,6 +298,7 @@ export default {
             this.editContentRepComment = this.convertLinksToMentions(this.rawContent)
         },
         EditRepComment(repCommentId) {
+            this.isSendLoading = true
             let contentRepEdit = this.editContentRepComment
             if (this.selectedFrientEidtRepComment) {
                 contentRepEdit = contentRepEdit.replace('@' + this.selectedFrientEidtRepComment.user_name,
@@ -305,6 +316,7 @@ export default {
             }
             this.$store.dispatch('post/editRepComment', { repCommentId: repCommentId, formData: formData })
                 .then(response => {
+                    this.isSendLoading = false
                     this.editerRepComment = false
                     this.selectedFrientEidtRepComment = null
                     this.$emit('repcomment-updated', response.data.repcomment);
@@ -322,6 +334,7 @@ export default {
                     this.resetRepCommentWatcher();
                 })
                 .catch(error => {
+                    this.isSendLoading = false
                     this.selectedFrientEidtComment = null
                     this.editerRepComment = false
                     this.editContentRepComment = this.repcomment.content,
@@ -421,7 +434,7 @@ export default {
             const textBefore = textArea.value.substring(0, mentionStart);
             const textAfter = textArea.value.substring(position);
 
-            this.editContentRepComment = `@${textBefore}${friend.user_name}${textAfter} `;
+            this.editContentRepComment = `@${friend.user_name} `;
             this.showSuggestions = false;
 
             textArea.focus();

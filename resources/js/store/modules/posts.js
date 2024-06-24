@@ -108,17 +108,29 @@ const mutations = {
     TOGGLE_PIN(state, postId) {
         const index = state.postsByUser.findIndex(post => post.id === postId);
         if (index !== -1) {
-            state.postsByUser[index].pinned = !state.postsByUser[index].pinned;
-            if (state.postsByUser[index].pinned) {
+            const post = state.postsByUser[index];
+            post.pinned = !post.pinned;
+            if (post.pinned) {
+                // Lưu trữ vị trí ban đầu nếu chưa lưu
+                if (post.originalIndex === undefined) {
+                    post.originalIndex = index;
+                }
+                // Di chuyển bài viết được ghim lên đầu
                 const pinnedPost = state.postsByUser.splice(index, 1)[0];
                 state.postsByUser.unshift(pinnedPost);
             } else {
-                const unpinnedPost = state.postsByUser.splice(index, 1)[0];
-                state.postsByUser.push(unpinnedPost);
+                // Lấy vị trí ban đầu của bài viết
+                const originalIndex = post.originalIndex;
+                if (originalIndex !== undefined) {
+                    // Xóa bài viết từ vị trí hiện tại
+                    const unpinnedPost = state.postsByUser.splice(index, 1)[0];
+                    // Chèn lại bài viết vào vị trí ban đầu
+                    state.postsByUser.splice(originalIndex, 0, unpinnedPost);
+                }
             }
         }
-
     }
+
 
 };
 const actions = {
@@ -220,7 +232,7 @@ const actions = {
     },
     editPost({ commit }, payload) {
         const { postId, formData } = payload;
-        axios.post(`/api/user/post/${postId}/editPost`, formData, {
+        return axios.post(`/api/user/post/${postId}/editPost`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -252,7 +264,6 @@ const actions = {
                 Swal.fire({
                     icon: 'error',
                     title: ' bài viết cập nhật thành công',
-                    text: `Error ${error}`,
                     showConfirmButton: false,
                     timer: 3000
                 })
@@ -281,7 +292,6 @@ const actions = {
         });
     },
     togglePin({ commit }, postId) {
-        console.log(state.postsByUser);
         axios.put(`/api/user/post/${postId}/pin`)
             .then(response => {
                 commit('TOGGLE_PIN', postId);

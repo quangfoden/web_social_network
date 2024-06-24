@@ -16,28 +16,31 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                 <div class="" v-if="!editerComment">
                     <div class="d-flex gap-2 align-items-start w-100 mb-1">
                         <router-link :to="{ name: 'Profile User', params: { id: comment.user.user_id } }" class="mr-2">
-                            <img class="rounded-full ml-1 img-cus" :src="comment.user.avatar" alt="">
+                            <img class="rounded-full ml-1 custom" :src="comment.user.avatar" alt="">
                         </router-link>
-                        <div class="bg-input p-2 rounded-lg position-relative">
+                        <div class="bg-input p-2 rounded-lg position-relative" style="max-width:50%">
                             <div class="d-flex align-items-center">
                                 <router-link :to="{ name: 'Profile User', params: { id: comment.user.user_id } }"
                                     class="m-0 primary-text">{{
                                         comment.user.user_name }}</router-link>
-                                <span v-if="comment.created_at != comment.updated_at" class="mx-2 secondary-text"
-                                    style="font-size: 10px;">đã chỉnh sửa</span>
-                                <span @click="toggleEditComment(comment.id, comment.url)"
-                                    v-if="comment.user.id === authUser.id" class="ellipsis position-absolute px-2"
-                                    style="margin-top: -10px; right: -40px;"><i
-                                        class="fa-solid fa-ellipsis fs-5"></i></span>
                             </div>
                             <div class="primary-text d-flex align-items-center text-xs rounded-lg w-100">
-                                <span class="content_comment" @click.prevent="CusRedirect" v-html="contentComment">
+                                <span style="word-break: break-all;" class="content_comment"
+                                    @click.prevent="CusRedirect" v-html="contentComment">
                                 </span>
-                                <!-- {{ comment.content }} -->
                             </div>
                         </div>
+                        <span @click="toggleEditComment(comment.id, comment.url)" v-if="comment.user.id === authUser.id"
+                            class="ellipsis px-2 secondary-text" style="font-size: 1.5rem;"><i
+                                class="fa-solid fa-ellipsis fs-5"></i></span>
+                        <div v-if="comment.user.id === authUser.id && showmodelEditComment" class="edit_comment">
+                            <ul @click="toggleEditComment(comment.id, comment.url)">
+                                <li @click="editerComment = !editerComment">chỉnh sửa</li>
+                                <li @click="confirmDeleteComment(comment.id)">xoá</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="w-100 position-relative" style="margin-left: 50px;">
+                    <div class="w-100 position-relative" style="padding-left: 50px;">
                         <img width="150" @click="isFileDisplay = comment.url"
                             v-if="comment.type != null && comment.type.includes('image')" :src="comment.url"
                             alt="Image">
@@ -51,7 +54,7 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                         <form @submit.prevent="EditComment(comment.id)"
                             class="d-flex align-items-center pt-2 justify-content-between w-100">
                             <a href="/" class="mx-2">
-                                <img class="rounded-full ml-1 img-cus" :src="comment.user.avatar" loading="lazy" alt="">
+                                <img class="rounded-full ml-1 custom" :src="comment.user.avatar" loading="lazy" alt="">
                             </a>
                             <div class="position-relative d-flex align-items-center bg-input rounded w-100 px-2">
                                 <textarea :ref="'comment' + comment.id" @input="onInput(comment.id, $event)"
@@ -60,11 +63,11 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                                     class="primary-text custom-input w-100 focus-0 border-0 mx-1 border-none p-0 text-sm bg-input placeholder-[#64676B] ring-0 focus:ring-0">
                                 </textarea>
                                 <ul v-show="showSuggestions && filteredFriends.length >= 1"
-                                    class="suggestions rounded  position-absolute">
+                                    class="suggestions rounded position-absolute" style="top: 105px;left: 0;">
                                     <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
                                         @click="selectFriend(friend, comment.id)">
                                         <div class="d-flex gap-2 align-items-center">
-                                            <img class="rounded-full ml-1 img-cus" :src="friend.avatar" alt="">
+                                            <img class="rounded-full ml-1 custom" :src="friend.avatar" alt="">
                                             <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
                                         </div>
                                     </li>
@@ -72,38 +75,46 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                                 <div class="px-3" style="width: 100px;">
                                     <div class="position-absolute" style="right: 50px; bottom: 0;"
                                         v-if="comment.url != null">
-                                        <label :class="{ 'no-click opacity-50': !isFileDelete || fileUrls.length >= 2 }"
+                                        <label  v-if="!isSendLoading" :class="{ 'no-click': !isFileDelete || fileUrls.length >= 2 }"
+                                            :disabled="!isFileDelete || fileUrls.length >= 2"
                                             class="hover-200 rounded-full p-2 custom-cursor-pointer"
                                             :for="'fileCommentEdit' + comment.id">
                                             <Image :size="27" fillColor="#43BE62" />
                                         </label>
-                                        <input :ref="'fieldMedia' + comment.id" type="file" class="hidden"
+                                        <input :disabled="!isFileDelete || fileUrls.length >= 2"
+                                            :ref="'fieldMedia' + comment.id" type="file" class="hidden"
                                             :id="'fileCommentEdit' + comment.id" accept="image/*,video/*"
                                             @input="handleFileChange($event)">
                                     </div>
                                     <div v-else class="position-absolute" style="right:50px;bottom:0;">
-                                        <label :class="{ 'no-click opacity-50': !isFileDelete }"
+                                        <label v-if="!isSendLoading" :class="{ 'no-click': !isFileDelete }"
+                                            :disabled="!isFileDelete"
                                             class="hover-200 rounded-full p-2 custom-cursor-pointer"
                                             :for="'fileCommentEdit' + comment.id">
                                             <Image :size="27" fillColor="#43BE62" />
                                         </label>
-                                        <input :ref="'fieldMedia' + comment.id" type="file" class="hidden"
-                                            :id="'fileCommentEdit' + comment.id" accept="image/*,video/*"
+                                        <input :disabled="!isFileDelete" :ref="'fieldMedia' + comment.id" type="file"
+                                            class="hidden" :id="'fileCommentEdit' + comment.id" accept="image/*,video/*"
                                             @input="handleFileChange($event)">
                                     </div>
-                                    <button style="right:0;bottom: 0;" type="submit"
+                                    <button v-if="!isSendLoading" style="right:0;bottom: 0;" type="submit"
                                         class="position-absolute bg-transparent  d-flex border-0 align-items-center text-sm p-2 rounded-full text-white font-bold">
                                         <Send :size="27" fillColor="#4299e1" />
+                                    </button>
+                                    <button v-if="isSendLoading" style="right: 0; bottom: 0;"  class="btn position-absolute btn-sm btn-secondary" type="button"
+                                        disabled>
+                                        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                        <span class="visually-hidden" role="status">Loading...</span>
                                     </button>
                                 </div>
                             </div>
                         </form>
                     </div>
-                    <div v-if="fileUrls" class="pt-2 position-relative cus-img-dis" style="margin-left: 55px;">
+                    <div v-if="fileUrls" class="pt-2 position-relative cus-img-dis" style="margin-left: 60px;">
                         <div v-for="fileUrl in fileUrls" :key=index>
                             <div v-if="fileUrl.url && fileUrl.url != null">
-                                <Undo :class="{ 'no-click': fileUrl.isnew }" v-show="fileUrl.deleted"
-                                    @click="revertFile(fileUrl)"
+                                <Undo :class="{ 'no-click-event': fileUrls.length >= 2 && fileUrl.deleted }"
+                                    v-show="fileUrl.deleted" @click="revertFile(fileUrl)"
                                     class="position-absolute bg-white p-1 m-2 z-1000 right-2 rounded-full border custom-cursor-pointer"
                                     :size="22" fillColor="#5E6771" />
                                 <div :class="{ 'opacity-50': fileUrl.deleted }">
@@ -134,6 +145,8 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                     <p class="custom-cursor-pointer secondary-text ">like</p>
                     <p @click="clickRepComment('repcomment' + comment.id)" class="custom-cursor-pointer secondary-text">
                         Phản hồi</p>
+                    <p v-if="comment.created_at != comment.updated_at" class="mx-2 secondary-text"
+                        style="font-size: 10px;">đã chỉnh sửa</p>
                 </div>
                 <div v-if="comment.repcomments.length > 0" class="repComment_array" id="repComment">
                     <div v-if="!showAllRepComments" class="text-center mb-1">
@@ -152,10 +165,10 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                             bớt</button>
                     </div>
                 </div>
-                <form v-if="!editerComment" style="margin-left:46px ;" @submit.prevent="CreateRepComment(comment.id)"
+                <form v-if="!editerComment" style="padding-left:46px ;" @submit.prevent="CreateRepComment(comment.id)"
                     class="d-flex align-items-center gap-2 rounded-full justify-content-between w-100">
                     <a href="/" class="mr-2">
-                        <img class="rounded-full ml-1 img-cus" :src="authUser.avatar" alt="">
+                        <img class="rounded-full ml-1 custom" :src="authUser.avatar" alt="">
                     </a>
                     <div class="d-flex align-items-center position-relative bg-input rounded px-2 w-100">
                         <textarea @input="_onInput(comment.id, $event)" v-model="formRepComment.content"
@@ -164,30 +177,35 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                             class="primary-text custom-input bg-input w-100 border-0 mx-1 border-none p-0 text-sm placeholder-[#64676B] focus-0">
                                         </textarea>
                         <ul v-show="showSuggestions && filteredFriends.length >= 1"
-                            style="top: -135px;left: 0px;min-height: 130px;"
+                            style="top: -145px;left: 0px;min-height: 130px;"
                             class="suggestions rounded  position-absolute">
                             <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
                                 @click="_selectFriend(friend, comment.id)">
                                 <div class="d-flex gap-2 align-items-center">
-                                    <img class="rounded-full ml-1 img-cus" :src="friend.avatar" alt="">
+                                    <img class="rounded-full ml-1 custom" :src="friend.avatar" alt="">
                                     <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
                                 </div>
                             </li>
                         </ul>
-                        <label :for="`fieldMediaRepCM_${comment.id}`"
+                        <label v-if="!isSendLoading" :for="`fieldMediaRepCM_${comment.id}`"
                             class="hover-200 rounded-full p-2 custom-cursor-pointer">
                             <Image :size="27" fillColor="#43BE62" />
                         </label>
                         <input :ref="`fieldMediaRepCM_${comment.id}`" type="file" accept="image/*,video/*"
                             class="hidden" :id="`fieldMediaRepCM_${comment.id}`"
-                            @change="getUploadedImageRepComment($event)">
-                        <button type="submit"
+                            @input="getUploadedImageRepComment($event)">
+                        <button v-if="!isSendLoading" :disabled="isSubmitDisabled"
+                            :class="{ 'no-click': isSubmitDisabled }" type="submit"
                             class="d-flex bg-transparent border-0 align-items-center text-sm px-3 rounded-fulltext-white font-bold">
                             <Send :size="27" fillColor="#4299e1" />
                         </button>
+                        <button v-if="isSendLoading" class="btn btn-sm btn-secondary" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                            <span class="visually-hidden" role="status">Loading...</span>
+                        </button>
                     </div>
                 </form>
-                <div style="margin-left: 60px;" v-if="formMediarepComment.url"
+                <div style="margin-left: 90px;" v-if="formMediarepComment.url"
                     class="p-2 position-relative cus-img-dis">
                     <Close @click="clearImageRepComment(index)"
                         class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
@@ -201,13 +219,7 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                         </video>
                     </div>
                 </div>
-                <div v-if="comment.user.id === authUser.id && showmodelEditComment" class="edit_comment"
-                    style="position: absolute;top: 0;">
-                    <ul @click="toggleEditComment(comment.id, comment.url)">
-                        <li @click="editerComment = !editerComment">chỉnh sửa</li>
-                        <li @click="confirmDeleteComment(comment.id)">xoá</li>
-                    </ul>
-                </div>
+
             </div>
         </div>
     </div>
@@ -264,7 +276,8 @@ export default {
             fileUrls: ref([]),
             deleteFile: ref([]),
             isFileDelete: false,
-            showSuggestions: false
+            showSuggestions: false,
+            isSendLoading: false
         }
     },
     computed: {
@@ -276,7 +289,10 @@ export default {
         },
         ...mapState({
             accounts: state => state.users.accounts
-        })
+        }),
+        isSubmitDisabled() {
+            return this.formRepComment.content === '' && Object.keys(this.formMediarepComment).length === 0;
+        }
     },
     methods: {
         getUploadedImageRepComment(e) {
@@ -325,6 +341,7 @@ export default {
                     this.fileUrls = this.fileUrls.filter(file => file.id !== newFile.id);
                     this.fileUrls.push(newFile);
                     this.isFileDelete = false
+                    console.log(this.fileUrls);
                 });
             }
             else {
@@ -347,11 +364,9 @@ export default {
                 this.deleteFile.push(file.id)
                 this.isFileDelete = true
                 file.deleted = true;
-                console.log(this.deleteFile);
             } else {
                 this.file = null
                 this.fileUrls = this.fileUrls.filter(f => f.id !== file.id)
-                console.log(this.deleteFile);
                 this.isFileDelete = true
             }
         },
@@ -362,7 +377,11 @@ export default {
             console.log(this.deleteFile);
         },
         EditComment(commentId) {
-            let contentEdit = this.editContentComment
+            this.isSendLoading = true
+            let contentEdit = ""
+            if (this.editContentComment) {
+                contentEdit = this.editContentComment
+            }
             if (this.selectedFrientEidtComment) {
                 contentEdit = contentEdit.replace('@' + this.selectedFrientEidtComment.user_name,
                     "<a href='/profile/"
@@ -379,6 +398,7 @@ export default {
             }
             this.$store.dispatch('post/editComment', { commentId: commentId, formData: formData })
                 .then(response => {
+                    this.isSendLoading = false
                     this.editerComment = false
                     this.selectedFrientEidtComment = null
                     this.$emit('comment-updated', response.data.comment);
@@ -395,6 +415,7 @@ export default {
                     this.resetCommentWatcher();
                 })
                 .catch(error => {
+                    this.isSendLoading = false
                     this.selectedFrientEidtComment = null
                     this.editerComment = false
                     this.editContentComment = this.comment.content,
@@ -456,6 +477,7 @@ export default {
             this.formRepComment.content = payload.datacontentRepComment;
         },
         CreateRepComment(commentId) {
+            this.isSendLoading = true
             const formData = new FormData();
             let content = this.formRepComment.content
             if (this.isRepComment && !this.istag) {
@@ -479,6 +501,7 @@ export default {
             formData.append('file', this.formMediarepComment.file);
             this.$store.dispatch('post/createRepComment', { commentId: commentId, formData: formData })
                 .then(response => {
+                    this.isSendLoading = false
                     console.log(this.istag);
                     console.log(this.selectedFrientCreatedComment);
                     if (response.status === 200 && response.data.data.success === true) {
@@ -519,6 +542,7 @@ export default {
                     }
                 })
                 .catch(error => {
+                    this.isSendLoading = false
                     this.$swal.fire({
                         position: "top-end",
                         icon: "error",
@@ -631,29 +655,33 @@ export default {
             }
         },
         convertIdsToUsernames(content) {
-            return content.replace(/<a href='\/profile\/(\d+)' class='custom-span'>(\d+)<\/a>/g, (match, accountId) => {
-                const account = this.getUserById(accountId);
-                if (account) {
-                    return `<a href='/profile/${account.user_id}' class='custom-span'>${account.user_name}</a>`;
-                }
-                return match;
-            });
+            if (content) {
+                return content.replace(/<a href='\/profile\/(\d+)' class='custom-span'>(\d+)<\/a>/g, (match, accountId) => {
+                    const account = this.getUserById(accountId);
+                    if (account) {
+                        return `<a href='/profile/${account.user_id}' class='custom-span'>${account.user_name}</a>`;
+                    }
+                    return match;
+                });
+            }
         },
         getUserById(accountId) {
             return this.accounts.find(account => account.user_id == accountId);
         },
         convertHtmlToUsername(html) {
-            const regex = /<a href='\/profile\/(\d+)' class='custom-span'>(\d+)<\/a>/;
-            const match = html.match(regex);
-            if (match) {
-                const userId = match[1];
-                const account = this.getUserById(userId)
-                this.selectedFrientEidtComment = account
-                const username = account.user_name
-                return html.replace(regex, `@${username}`);
-            }
+            if (html) {
+                const regex = /<a href='\/profile\/(\d+)' class='custom-span'>(\d+)<\/a>/;
+                const match = html.match(regex);
+                if (match) {
+                    const userId = match[1];
+                    const account = this.getUserById(userId)
+                    this.selectedFrientEidtComment = account
+                    const username = account.user_name
+                    return html.replace(regex, `@${username}`);
+                }
 
-            return html;
+                return html;
+            }
         },
         onInput(id, event) {
             const textAreaComment = this.$refs['comment' + id]
@@ -707,13 +735,8 @@ export default {
             const mentionStart = text.lastIndexOf('@');
             const textBefore = textArea.value.substring(0, mentionStart + 1);
             const textAfter = textArea.value.substring(position);
-            if (mentionStart === -1) {
-                this.formRepComment.content = `${textBefore}@${friend.user_name} ${textAfter}`;
-            } else {
-                this.formRepComment.content = `${textBefore}${friend.user_name} ${textAfter}`;
-            }
+            this.formRepComment.content = `@${friend.user_name} `;
             this.showSuggestions = false;
-
             textArea.focus();
         },
         selectFriend(friend, id) {
@@ -728,7 +751,7 @@ export default {
             const textBefore = textArea.value.substring(0, mentionStart);
             const textAfter = textArea.value.substring(position);
 
-            this.editContentComment = `@${textBefore}${friend.user_name}${textAfter} `;
+            this.editContentComment = `@${friend.user_name} `;
             this.showSuggestions = false;
 
             textArea.focus();
@@ -744,6 +767,7 @@ export default {
             this.editContentComment = this.convertHtmlToUsername(newValue);
         },
     },
+
     created() {
         this.setupCommentWatcher();
         this.friends = this.accounts

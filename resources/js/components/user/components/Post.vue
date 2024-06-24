@@ -45,7 +45,7 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                         <li v-if="pinned === 1 || pinned === true" @click="togglePin(post.id)">Bỏ ghim</li>
                         <li>Lưu bài viết</li>
                         <li @click="showBoxPostEdit(post.id)">Chỉnh sửa bài viết</li>
-                        <li v-if="status" @click="trashPost(post.id)">Chuyển vào thùng rác</li>
+                        <li v-if="status" @click="confirmTashPost(post.id)">Chuyển vào thùng rác</li>
                         <li v-if="!status" @click="trashPost(post.id)">Khôi phục</li>
                     </ul>
                 </div>
@@ -59,7 +59,7 @@ import Pin from 'vue-material-design-icons/Pin.vue'
             </div>
         </div>
         <div class="px-1 pb-2 text-cus-pos">
-            {{ post.content }}
+            {{ post.content ? post.content : '' }}
         </div>
         <div class="cus-post-media">
             <div class="list_item_media" v-for=" medias in media " :key="media.id">
@@ -81,10 +81,21 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                 </div>
             </div>
         </div>
-        <div id="Likes" class="">
-            <div class="d-flex align-items-center justify-content-between py-3 border-bottom-cus">
-                <!-- <ThumbUp :size="16" fillColor="#1D72E2" />
-                <div class="text-sm text-gray-600 font-semibold">5 bình luận</div> -->
+        <div class="like_share_comment-tx secondary-text">
+            <div class="d-flex align-items-center justify-content-around border-bottom-cus p-1">
+                <div class="like-tx rounded d-flex gap-1 align-item-center custom-cursor-pointer p-2">
+                    <span><i class="fas fa-thumbs-up secondary-text"></i></span>
+                    <span class="secondary-text">Thích</span>
+                </div>
+                <div @click="showModalpost(post.id)"
+                    class="comment-tx rounded d-flex gap-1 align-item-center custom-cursor-pointer p-2">
+                    <span><i class="fas fa-comment secondary-text"></i></span>
+                    <span class="secondary-text">Bình luận</span>
+                </div>
+                <div class="share-tx rounded d-flex gap-1 align-item-center custom-cursor-pointer p-2">
+                    <span><i class="fas fa-share secondary-text"></i></span>
+                    <span class="secondary-text">Chia sẽ</span>
+                </div>
             </div>
         </div>
         <div id="comments" class="">
@@ -110,20 +121,26 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                                 </div>
                             </li>
                         </ul>
-                        <label class="hover-200 rounded-full p-2 custom-cursor-pointer" :for="'fileComment' + post.id">
+                        <label v-if="!isSendLoading" class="hover-200 rounded-full p-2 custom-cursor-pointer"
+                            :for="'fileComment' + post.id">
                             <Image :size="27" fillColor="#43BE62" />
                         </label>
                         <input :ref="'fieldMedia' + post.id" type="file" class="hidden" :id="'fileComment' + post.id"
-                            accept="image/*,video/*" @input="getUploadedCommentImage($event)">
-                        <button type="submit"
+                            accept="image/*,video/*" @input="getUploadedCommentFile($event)">
+                        <button v-if="!isSendLoading" type="submit" :disabled="isSubmitDisabled"
+                            :class="{ 'no-click': isSubmitDisabled }"
                             class="d-flex border-0 bg-transparent align-items-center text-sm px-3 rounded-full hover:bg-blue-600 text-white font-bold">
                             <Send :size="27" fillColor="#4299e1" />
+                        </button>
+                        <button v-if="isSendLoading" class="btn btn-sm btn-secondary" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                            <span class="visually-hidden" role="status">Loading...</span>
                         </button>
                     </div>
                 </form>
             </div>
-            <div v-if="formMediaComment.url" style="margin-left:50px ;" class="p-2 position-relative cus-img-dis">
-                <Close @click="clearImage(post.id)"
+            <div v-if="formMediaComment.url" style="margin-left:60px ;" class="p-2 position-relative cus-img-dis">
+                <Close @click="clearFile(post.id)"
                     class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
                     :size="22" fillColor="#5E6771" />
                 <div v-if="formMediaComment.type === 'image'"><img width="200" class="rounded-lg mx-auto"
@@ -138,37 +155,38 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                     <a href="formMediaComment.url">{{ formMediaComment.url }}</a>
                 </div>
             </div>
-            <div v-if="comments.length > 0" id="Comment" class="comment_array">
-                <div class="my-1 comment_list" v-if="!showAllComments">
+            <div v-if="comments.length > 0 && !isPostOverLay" id="Comment" class="comment_array">
+                <div class="my-1 comment_list" v-if="!isPostOverLay">
                     <Comment :comment="comments[0]" :repcomment_count="comments[0].repcomment_count"
                         @comment-updated="handleCommentUpdated"
                         @repcomment-created="handleRepCommentCreated(comments[0].id)"
                         @comment-deleted="handleCommentDeleted"
-                        @repcomment-deleted="handleRepCommentDeleted(comments[0].id)"
-                        />
+                        @repcomment-deleted="handleRepCommentDeleted(comments[0].id)" />
                     <button v-if="comments.length > 1" class="px-2 bg-transparent primary-text text-underline"
-                        @click="toggleComments">Xem tất cả {{ comment_count
+                        @click="showModalpost(post.id)">Xem tất cả {{ comment_count
                         }}
                         bình luận</button>
                 </div>
-                <div v-if="showAllComments">
+                <div v-if="isPostOverLay">
                     <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">
                         <Comment :comment="comment" :repcomment_count="comment.repcomment_count"
                             @comment-updated="handleCommentUpdated"
                             @repcomment-created="handleRepCommentCreated(comment.id)"
-                            @comment-deleted="handleCommentDeleted" 
-                             @repcomment-deleted="handleRepCommentDeleted(comment.id)"
-                            />
+                            @comment-deleted="handleCommentDeleted"
+                            @repcomment-deleted="handleRepCommentDeleted(comment.id)" />
                     </div>
-                    <button v-if="comments.length > 1" class="px-2 bg-transparent primary-text text-underline"
-                        @click="toggleComments">Ẩn bớt</button>
                 </div>
             </div>
         </div>
+
     </div>
     <div>
         <EditPostOverlay :postEdit="post" :medias="post.media" v-if="isEditPostOverlay"
             @close-modalEditPost="closeEditModalEditPost" />
+        <ModalPostOverLay :isPost="post" :medias="post.media" :comments="post.comments" v-if="isPostOverLay"
+            @close-modal-post="closeModalPost" @comment_overlay-created="handleCommentOverLayCreated"
+            @repcomment-created="handleRepCommentCreated(comment.id)"
+            @comment_overlay-deleted="handleCommentoVerLayDeleted" />
     </div>
 </template>
 <script>
@@ -180,12 +198,13 @@ import { useGeneralStore } from '../../../store/general';
 import { storeToRefs } from 'pinia';
 import Comment from '../Components/Comment.vue'
 import EditPostOverlay from '../Components/EditPostOverlay.vue'
+import ModalPostOverLay from './ModalPostOverLay.vue';
 
 export default {
     components: {
         Comment,
         EditPostOverlay,
-
+        ModalPostOverLay
     },
     props: {
         comments: {
@@ -225,6 +244,7 @@ export default {
             showMorePost: false,
             isFileDisplay,
             isLoading1: false,
+            isPostOverLay: false,
             isEditPostOverlay: false,
             formComment: ref({
                 content: ''
@@ -236,6 +256,7 @@ export default {
             filteredFriends: [],
             friends: [],
             selectedFriend: null,
+            isSendLoading: false
         }
     },
 
@@ -248,21 +269,36 @@ export default {
         },
         ...mapState({
             accounts: state => state.users.accounts
-        })
+        }),
+        isSubmitDisabled() {
+            return this.formComment.content === '' && Object.keys(this.formMediaComment).length === 0;
+        }
+    },
+    mounted() {
+        console.log(this.formComment.content === '');
+        console.log(Object.keys(this.formMediaComment).length === 0);
     },
     methods: {
         ...mapActions('post', ['fetchPosts']),
         ...mapActions('post', ['addNewComment']),
+        showModalpost(postId) {
+            if (postId === this.post.id) {
+                this.isPostOverLay = true
+            }
+        },
         showBoxPostEdit(postId) {
             this.showMorePost = false
             if (postId === this.post.id) {
                 this.isEditPostOverlay = true
             }
         },
+        closeModalPost() {
+            this.isPostOverLay = false;
+        },
         closeEditModalEditPost() {
             this.isEditPostOverlay = false;
         },
-        getUploadedCommentImage(e) {
+        getUploadedCommentFile(e) {
             const file = e.target.files[0];
             let mediaType;
             if (file.type.startsWith('image/')) {
@@ -275,11 +311,12 @@ export default {
             this.formMediaComment.url = urlComment;
         },
 
-        clearImage(postId) {
+        clearFile(postId) {
             this.formMediaComment = {};
             this.$refs['fieldMedia' + postId].value = null
         },
         CreateComment(postId) {
+            this.isSendLoading = true
             const fieldMediaCMRef = this.$refs['fieldMedia' + postId]
             let content = this.formComment.content
             if (this.selectedFriend) {
@@ -290,10 +327,13 @@ export default {
             }
             const formData = new FormData();
             formData.append('content', content);
-            formData.append('file', fieldMediaCMRef.files[0]);
+            if (fieldMediaCMRef.value) {
+                formData.append('file', fieldMediaCMRef.files[0]);
+            }
             formData.append('postId', postId);
             this.$store.dispatch('post/createComment', formData)
                 .then(response => {
+                    this.isSendLoading = false
                     if (response.status === 200 && response.data.data.success === true) {
                         this.selectedFriend = null
                         this.comments.unshift(response.data.data.comment)
@@ -307,12 +347,13 @@ export default {
                         });
                         this.formComment.content = ""
                         this.formMediaComment = {};
-                        if (fieldMediaCMRef) {
+                        if (fieldMediaCMRef.value) {
                             fieldMediaCMRef.value = ''
                         }
-
+                        this.isPostOverLay = true
                     } else {
                         this.selectedFriend = null
+                        this.isPostOverLay = true
                         this.$swal.fire({
                             position: "top-end",
                             icon: "error",
@@ -322,12 +363,14 @@ export default {
                         });
                         this.formComment.content = ""
                         this.formMediaComment = {};
-                        if (fieldMediaCMRef) {
+                        if (fieldMediaCMRef.value) {
                             fieldMediaCMRef.value = ''
                         }
                     }
                 })
                 .catch(error => {
+                    this.isSendLoading = false
+                    this.isPostOverLay = true
                     this.selectedFriend = null
                     this.$swal.fire({
                         position: "top-end",
@@ -336,8 +379,18 @@ export default {
                         showConfirmButton: false,
                         timer: this.$config.notificationTimer ?? 3000,
                     });
-                    console.log(error.message);
+                    this.formComment.content = ""
+                    this.formMediaComment = {};
+                    if (fieldMediaCMRef.value) {
+                        fieldMediaCMRef.value = ''
+                    }
                 });
+        },
+        handleCommentOverLayCreated(postId) {
+            this.$emit('comment_overlay-created', postId)
+        },
+        handleCommentoVerLayDeleted(postId) {
+            this.$emit('comment_overlay-deleted', postId)
         },
         handleCommentUpdated(updatedComment) {
             const index = this.comments.findIndex(c => c.id === updatedComment.id);
@@ -372,7 +425,25 @@ export default {
         toggleComments() {
             this.showAllComments = !this.showAllComments;  // Đảo trạng thái hiển thị khi click
         },
+        confirmTashPost(postId) {
+            this.showMorePost = false
+            this.$swal.fire({
+                title: 'Bạn chắc chắn muốn chuyển bài viết này vào thùng rác ?',
+                text: 'Hành động này sẽ không thể hoàn tác!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Xoá',
+                cancelButtonText: 'Hủy',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.trashPost(postId);
+                }
+            });
+        },
         trashPost(postId) {
+            this.showMorePost = false
             this.$store.dispatch('post/trashPost', postId)
                 .then(message => {
 

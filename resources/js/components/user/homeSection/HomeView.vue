@@ -9,13 +9,15 @@
                 :user="post.user" :media="post.media" :comments="post.comments" :comment_count="post.comment_count"
                 @comment-created="handleCommentCreated(post.id)"
                 @comment-deleted="handleCommentdeleted(post.id)"
+                @comment_overlay-created="handleCommentCreated(post.id)"
+                @comment_overlay-deleted="handleCommentdeleted(post.id)"
                 />
         
             </div>
         <div v-if="isLoading" class="spinner-border custom-loading text-primary z-1000" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
-        <div v-if="loading">Đang tải ...</div>
+        <div v-if="loading" class="text-white">Đang tải ...</div>
     </div>
 </template>
 <script>

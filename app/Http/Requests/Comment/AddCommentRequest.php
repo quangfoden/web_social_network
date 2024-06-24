@@ -6,10 +6,11 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\Rules\Each;
 use Illuminate\Http\UploadedFile;
+
 class AddCommentRequest extends FormRequest
 {
     public static array $extensions = [
-        'jpg', 'jpeg', 'png', 'gif', 'webp','txt',
+        'jpg', 'jpeg', 'png', 'gif', 'webp', 'txt',
         'mp3', 'wav', 'mp4',
         "doc", "docx", "pdf", "csv", "xls", "xlsx",
         "zip"
@@ -31,29 +32,29 @@ class AddCommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'content' => 'required_without:files',
-            'files' => [
-                'max:50',
-                function ($attribute, $value, $fail) {
-                    $totalSize = collect($value)->sum(fn (UploadedFile $file) => $file->getSize());
-                    if ($totalSize > 1 * 1024 * 1024 * 1024) {
-                        $fail('Tổng kích thước của tất cả các tệp không được vượt quá 1GB.');
-                    }
-                }
-            ],
-            'files.*'=>[
+            //
+            'content' => 'required_without:file',
+            'file' => [
+                'required_without:content',
+                'nullable',
                 'file',
                 File::types(self::$extensions)
-            ]
+            ],
         ];
     }
     public function messages()
     {
         return [
             'content.required_without' => 'Vui lòng nhập nội dung hoặc chọn tệp tin.',
-            'files.max' => 'Số lượng tệp tin tối đa là 50 tệp.',
-            'files.*.mimes' => 'Định dạng tệp tin không hợp lệ.',
+            'file.required_without' => 'Vui lòng nhập nội dung hoặc chọn tệp tin.',
+            'file.file' => 'Tệp tin không hợp lệ.',
+            'file.mimes' => 'Định dạng tệp tin không hợp lệ.',
         ];
     }
-
+    public function withValidator($validator)
+    {
+        $validator->sometimes('file', 'required', function ($input) {
+            return $input->file != null;
+        });
+    }
 }

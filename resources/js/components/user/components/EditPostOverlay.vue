@@ -26,7 +26,8 @@ const emit = defineEmits(['showModal'])
                             <img :src="authUser.avatar" class="rounded-full img-cus" alt="">
                             <div class="mx-2">
                                 <div class="font-extrabold primary-text">{{ authUser.user_name }}</div>
-                                <select class="bg-item primary-text border" v-model="form.privacyPostEdit" id="privacy" required>
+                                <select class="bg-item primary-text border" v-model="form.privacyPostEdit" id="privacy"
+                                    required>
                                     <option v-for="option in privacyOptions" :value="option.value">{{ option.name }}
                                     </option>
                                 </select>
@@ -81,10 +82,16 @@ const emit = defineEmits(['showModal'])
                                 </a>
                             </div>
                         </div>
-                        <button type="submit"
+                        <button v-if="!isLoading" type="submit"
                             class="w-100 bg-blue-500 hover-bg-blue-600 text-white font-extrabold p-2 mt-3 rounded-lg">
                             Lưu
                         </button>
+                        <div v-if="isLoading" class="w-100 bg-transparent font-extrabold p-2 mt-3 rounded-lg">
+                            <button class="w-100 btn btn-secondary" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                <span role="status">Loading...</span>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -130,6 +137,7 @@ export default {
             deletedImages: ref([]),
             files: ref([]),
             imageUrls: ref([]),
+            isLoading: false,
         }
     },
     computed: {
@@ -152,8 +160,9 @@ export default {
             this.$emit('close-modalEditPost');
         },
         submitEditPost(postId) {
+            this.isLoading = true
             const formData = new FormData();
-            formData.append('content', this.form.contentPostEdit);
+            formData.append('content', this.form.contentPostEdit ? this.form.contentPostEdit : '');
             formData.append('privacy', this.form.privacyPostEdit);
             for (let deletedImage of this.deletedImages) {
                 formData.append('deletedImages[]', deletedImage);
@@ -165,9 +174,11 @@ export default {
             this.$store.dispatch('post/editPost', { postId: postId, formData: formData })
                 .then(() => {
                     formData.values = ''
-                    this.closeModalEditPost()
+                        this.isLoading = false
+                        this.closeModalEditPost()
                 })
                 .catch(error => {
+                    this.isLoading = false
                     this.$swal.fire({
                         position: "top-end",
                         icon: "error",
@@ -175,7 +186,7 @@ export default {
                         showConfirmButton: false,
                         timer: this.$config.notificationTimer ?? 3000,
                     });
-                    this.isEditPostOverlay = false
+                        this.closeModalEditPost()
                 });
         },
         getFileType(file) {
