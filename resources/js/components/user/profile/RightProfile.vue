@@ -16,7 +16,6 @@
 
                         <div class="dropdown-menu dropdown-menu-right">
                             <a class="dropdown-item" href="#">Hành động</a>
-                            <router-link :to="{ name: 'Repository User' }" class="dropdown-item" href="#">Kho lưu trữ</router-link>
                                 <a class="dropdown-item" href="#">More...</a>
                         </div>
                     </div>

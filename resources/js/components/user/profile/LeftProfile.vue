@@ -8,11 +8,23 @@
                 <img :src="authUser.avatar" alt="Jassa Jas" class="img-fluid rounded-circle mb-2" width="128"
                     height="128">
                 <h4 class="card-title mb-2">{{ inUser.user_name }}</h4>
-                <!-- <div class="text-muted mb-2">Front-end Developer</div> -->
                 <div v-if="!isAuthUser">
                     <a class="btn btn-primary btn-sm" href="#">Thêm bạn bè</a>
                     <a class="btn btn-secondary btn-sm" href="#">
                         <i class="fa-solid fa-message mx-1"></i>Nhắn tin</a>
+                </div>
+                <div v-if="isAuthUser">
+                    <a class="btn btn-primary btn-sm" href="#"><i class="fa-solid fa-plus mx-1"></i>Thêm vào tin</a>
+                    <a style="" class="btn btn-secondary btn-sm dropdown show" data-bs-toggle="dropdown"
+                        data-bs-display="static" href="#">
+                        <i class="fa-solid fa-pen-to-square mx-1"></i>xem thêm</a>
+                    <div class="dropdown-menu position-absolute dropdown-menu-right">
+                        <!-- <a class="dropdown-item" href="#">Tuỳ chỉnh</a>
+                        <a class="dropdown-item" href="#">Thêm tiểu sử</a> -->
+                        <router-link class="dropdown-item"
+                            :to="{ name: 'Repository User', params: { id: authUser.user_id } }">Kho lưu
+                            trữ</router-link>
+                    </div>
                 </div>
             </div>
         </div>
@@ -29,7 +41,6 @@
                                 <circle cx="5" cy="12" r="1"></circle>
                             </svg>
                         </a>
-
                         <div class="dropdown-menu dropdown-menu-right">
                             <a class="dropdown-item" href="#">Tuỳ chỉnh</a>
                             <a class="dropdown-item" href="#">Thêm tiểu sử</a>
@@ -92,7 +103,7 @@
                 </div>
                 <h5 class="card-title mb-0">Ảnh</h5>
             </div>
-            <div class="d-flex m-3 flex-wrap align-items-center">
+            <div class="card-body border-bottom-cus d-flex flex-wrap align-items-center">
                 <span class="" v-for="postsByUser in postsByUsers">
                     <span v-if="postsByUser.media" v-for="_media in postsByUser.media">
                         <span v-if="_media.type === 'image/gif' || _media.type === 'image/jpeg'"
@@ -128,7 +139,6 @@
                 <h5 class="card-title mb-0">Bạn bè</h5>
             </div>
             <div class="card-body d-flex align-item-center flex-wrap gap-2">
-
                 <div class="media text-center">
                     <img src="https://therichpost.com/wp-content/uploads/2021/03/avatar3.png" width="56" height="56"
                         class="rounded-circle mr-2 mb-2" alt="Andrew Jones">
@@ -155,6 +165,8 @@
     </div>
 </template>
 <script>
+import { param } from 'jquery';
+
 export default {
     data() {
         return {

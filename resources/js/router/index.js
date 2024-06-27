@@ -153,14 +153,17 @@ export const routes = [
                 path: 'profile/:id',
                 name: 'Profile User',
                 component: ProfileParentUser,
+                children: [
+
+                ]
             },
             {
-                path: 'repository',
+                path: 'repository/:id',
                 name: 'Repository User',
                 component: RepositoryParent,
                 children: [
                     {
-                        path: 'Trash',
+                        path: 'trash',
                         name: 'Trash User',
                         component: Trash
                     }
@@ -179,10 +182,10 @@ import { store } from '../store/store';
 
 router.beforeEach((to, from, next) => {
     store.dispatch('fetchAccounts').then(() => {
-        next(); 
+        next();
     }).catch(error => {
         console.error('Error fetching accounts:', error);
-        next(error); 
+        next(error);
     });
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
     const requiresAuthUser = to.matched.some(record => record.meta.requiresAuthUser)

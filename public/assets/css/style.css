@@ -25,6 +25,19 @@ body .btn-all-add-edit {
   --border-collor: #3b3838;
 }
 
+.dropdown-menu {
+  right: 0;
+  left: inherit;
+  background: var(--bg-item) !important;
+}
+.dropdown-menu a:hover {
+  background: var(--bg-input) !important;
+  color: var(--primary-text);
+}
+.dropdown-menu a {
+  color: var(--secondary-text);
+}
+
 .no-click {
   cursor: not-allowed !important;
   filter: opacity(0.5);
@@ -234,6 +247,33 @@ img.custom {
 
 #loadMoreRepComment.noContent {
   display: none;
+}
+
+.login_register {
+  background: var(--bg-item);
+  color: var(--primary-text);
+}
+.login_register h4 {
+  color: var(--primary-text);
+}
+.login_register label {
+  color: var(--primary-text);
+}
+.login_register input {
+  background: var(--bg-input) !important;
+  color: var(--primary-text) !important;
+}
+.login_register input::-moz-placeholder {
+  color: var(--primary-text) !important;
+}
+.login_register input::placeholder {
+  color: var(--primary-text) !important;
+}
+.login_register input:focus {
+  background: var(--bg-main) !important;
+}
+.login_register i {
+  color: var(--primary-text) !important;
 }
 
 #Mainnav {
@@ -933,6 +973,7 @@ img.custom {
 }
 #ProfileUser .card .card-header .card-actions .dropdown-menu a:hover {
   background: var(--bg-input);
+  color: var(--primary-text);
 }
 #ProfileUser .card .card-body ul.list-unstyled li {
   color: var(--primary-text);
@@ -993,6 +1034,28 @@ img.custom {
 }
 #ProfileUser #RightProfile::-moz-scrollbar {
   display: none;
+}
+
+#RepositoryLeft {
+  max-height: 100vh;
+  overflow-y: auto;
+  background: var(--bg-item);
+}
+
+#RepoParent {
+  padding-top: 56px;
+}
+#RepoParent .left-item {
+  color: var(--primary-text);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 15px;
+  font-weight: 800;
+  padding-left: 0.75rem;
+}
+#RepoParent .left-item:hover {
+  background: var(--bg-input);
 }
 
 .card {
@@ -1220,13 +1283,4 @@ img.custom {
 .btn-group-sm > .btn,
 .btn-sm {
   margin-right: 3px;
-}
-
-#RepoParent {
-  padding-top: 56px;
-}
-#RepoParent .left-item {
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
 }

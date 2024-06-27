@@ -1,30 +1,36 @@
 <script setup>
 import Magnify from 'vue-material-design-icons/Magnify.vue';
 import Home from 'vue-material-design-icons/Home.vue';
-import AccountMultiple from 'vue-material-design-icons/AccountMultiple.vue';
+import History from 'vue-material-design-icons/History.vue';
 import StorefrontOutline from 'vue-material-design-icons/StorefrontOutline.vue';
 import AccountGroup from 'vue-material-design-icons/AccountGroup.vue';
 import ControllerClassicOutline from 'vue-material-design-icons/ControllerClassicOutline.vue';
 import ClockTimetwoOutline from 'vue-material-design-icons/ClockTimetwoOutline.vue';
 import VideoImage from 'vue-material-design-icons/VideoImage.vue';
-import Flag from 'vue-material-design-icons/Flag.vue';
-import DotsHorizontal from 'vue-material-design-icons/DotsHorizontal.vue';
+import Archive from 'vue-material-design-icons/Archive.vue';
+import Delete from 'vue-material-design-icons/Delete.vue';
+import ArrowLeft from 'vue-material-design-icons/ArrowLeft.vue';
 
 </script>
 <template>
-    <div id="RepositoryLeft" style="height: 100vh;" class="card mb-3 mt-3 col-12 col-lg-4 col-xl-3 order-2 order-lg-1">
+    <div id="RepositoryLeft" style="height: 100vh;" class="card mb-3 col-12 col-lg-4 col-xl-3 order-2 order-lg-1">
         <div class="leffsidebar_lists">
+            <a @click="goBack" class="d-flex align-items-center justify-content-start w-100 left-item">
+                <ArrowLeft :size="35" fillColor="#B0B3B8" />
+                <div class="text-items">Trở về</div>
+            </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
-                <AccountMultiple :size="40" fillColor="#5BD7C6" />
+                <History :size="35" fillColor="#6c757d" />
                 <div class="text-items">Nhật ký hoạt động</div>
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
-                <Flag :size="40" fillColor="#F2682C" />
-                <div class="text-items">Kho lưu trữ</div>
+                <Archive :size="35" fillColor="#6c757d" />
+                <div class="text-items">Kho lưu trữ tin</div>
             </a>
 
-            <router-link :to="{ name: 'Trash User' }" class="text-items">
-                <i class="mdi mdi-delete"></i>
+            <router-link :to="{ name: 'Trash User' }"
+                class="d-flex align-items-center justify-content-start w-100 left-item">
+                <Delete :size="35" fillColor="#6c757d" />
                 Thùng rác
             </router-link>
 
@@ -46,6 +52,9 @@ export default {
         // setStatePage() {
         //     this.$store.dispatch('post/setStateToOne');
         // }
+        goBack() {
+            this.$router.go(-1);  // Trở về trang trước
+        },
     }
 }
 </script>

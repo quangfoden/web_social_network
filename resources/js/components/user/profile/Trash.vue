@@ -1,7 +1,11 @@
 <template>
     <div class="col-12 col-lg-8 col-xl-6 order-1 order-lg-2">
+        <div v-show="postsDeleted.length === 0">
+            <p class="primary-text fs-4">Không có bài viết nào</p>
+        </div>
         <div id="posts" v-for="post in postsDeleted" :key="post.id">
-            <Post :post="post" :pinned="post.pinned" :status="post.status" :user="post.user" :media="post.media" :comments="post.comments" />
+            <Post :post="post" :status="post.status" :user="post.user" :media="post.media"
+                :comments="post.comments" />
         </div>
     </div>
 </template>

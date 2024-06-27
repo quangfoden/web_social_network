@@ -191,7 +191,7 @@ export default {
         },
         getFileType(file) {
             const extension = file.name.split('.').pop().toLowerCase();
-            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif','jfif'];
             if (imageExtensions.includes(extension)) {
                 return 'image';
             }
