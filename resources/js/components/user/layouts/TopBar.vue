@@ -96,7 +96,6 @@ import Logout from 'vue-material-design-icons/Logout.vue';
         <CreatePostOverLay v-if="isPostOverlay" />
         <!--  <CropperModal v-if="isCropperModal" @showModal="isCropperModal = false" /> -->
         <MediaDisplay v-if="isFileDisplay.length > 0" />
-
     </div>
 </template>
 <script>
@@ -109,12 +108,14 @@ import { storeToRefs } from 'pinia';
 import CropperModal from '../components/CropperModal.vue'
 import MediaDisplay from '../Components/mediaDisplay.vue'
 import CreatePostOverLay from '../Components/CreatePostOverLay.vue'
+import ChatBox from '../components/ChatBox.vue';
 
 export default {
     components: {
         CropperModal,
         MediaDisplay,
-        CreatePostOverLay
+        CreatePostOverLay,
+        ChatBox
     },
     data() {
         const useGeneral = useGeneralStore();
@@ -153,7 +154,7 @@ export default {
                 console.log("Bạn không ở trang Home, không thực hiện tải lại bài viết.");
             }
         }
-,
+        ,
         logoutSubmit() {
             this.logout();
         },

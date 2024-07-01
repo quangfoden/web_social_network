@@ -179,6 +179,7 @@ const router = createRouter({
     routes
 })
 import { store } from '../store/store';
+import { useUserStatus } from '../core/coreFunction';
 
 router.beforeEach((to, from, next) => {
     store.dispatch('fetchAccounts').then(() => {
@@ -205,6 +206,11 @@ router.beforeEach((to, from, next) => {
         authUser = store.getters.getAuthUser;
     }
     authUser = JSON.parse(localStorage.getItem('authUser'));
+    if(authUser){
+        const { userStatusRef } = useUserStatus(authUser.id);
+        console.log('User status updated in global router middleware.');
+        next();
+    }
     if (requiresAuth) {
         if (!isAuthenticated) {
             next('/login');

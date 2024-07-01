@@ -32,22 +32,7 @@ class UserController extends Controller
         ];
         return response()->json($responseData);
     }
-    public function allaccount()
-    {
-        $users = User::whereHas('roles', function ($query) {
-            $query->where('name', 'user')->where('status', 1);
-        })
-            ->get()
-            ->toArray();
-
-        $responseData = [
-            'status' => 200,
-            'success' => true,
-            'message' => 'success',
-            'data' => ['users' => $users]
-        ];
-        return response()->json($responseData);
-    }
+  
 
     public function roles()
     {

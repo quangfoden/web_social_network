@@ -1,4 +1,5 @@
 // store/modules/users.js
+
 import axios from 'axios';
 const state = {
     users: [],

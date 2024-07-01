@@ -7,16 +7,31 @@
             <SidebarRight />
         </div>
     </div>
+    <ChatBox v-if="isChatBoxOverLay" />
 </template>
 <script>
+import { useGeneralStore } from '../../../store/general';
+import { storeToRefs } from 'pinia';
 import SidebarLeft from './SidebarLeft.vue';
 import SidebarRight from './SidebarRight.vue';
 import TopBar from './TopBar.vue';
+import ChatBox from '../components/ChatBox.vue';
 export default {
     components: {
         SidebarLeft,
         SidebarRight,
-        TopBar
+        TopBar,
+        ChatBox
     },
+    data() {
+        const useGeneral = useGeneralStore();
+        const { isChatBoxOverLay } = storeToRefs(useGeneral)
+        return {
+            isChatBoxOverLay
+        }
+    },
+    method: {
+     
+    }
 }
 </script>

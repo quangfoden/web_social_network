@@ -75,7 +75,8 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                                 <div class="px-3" style="width: 100px;">
                                     <div class="position-absolute" style="right: 50px; bottom: 0;"
                                         v-if="comment.url != null">
-                                        <label  v-if="!isSendLoading" :class="{ 'no-click': !isFileDelete || fileUrls.length >= 2 }"
+                                        <label v-if="!isSendLoading"
+                                            :class="{ 'no-click': !isFileDelete || fileUrls.length >= 2 }"
                                             :disabled="!isFileDelete || fileUrls.length >= 2"
                                             class="hover-200 rounded-full p-2 custom-cursor-pointer"
                                             :for="'fileCommentEdit' + comment.id">
@@ -101,8 +102,8 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                                         class="position-absolute bg-transparent  d-flex border-0 align-items-center text-sm p-2 rounded-full text-white font-bold">
                                         <Send :size="27" fillColor="#4299e1" />
                                     </button>
-                                    <button v-if="isSendLoading" style="right: 0; bottom: 0;"  class="btn position-absolute btn-sm btn-secondary" type="button"
-                                        disabled>
+                                    <button v-if="isSendLoading" style="right: 0; bottom: 0;"
+                                        class="btn position-absolute btn-sm btn-secondary" type="button" disabled>
                                         <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
                                         <span class="visually-hidden" role="status">Loading...</span>
                                     </button>
@@ -675,9 +676,14 @@ export default {
                 if (match) {
                     const userId = match[1];
                     const account = this.getUserById(userId)
-                    this.selectedFrientEidtComment = account
-                    const username = account.user_name
-                    return html.replace(regex, `@${username}`);
+                    if (account && account.user_name) {
+                        this.selectedFrientEidtComment = account;
+                        const username = account.user_name;
+                        return html.replace(regex, `@${username}`);
+                    } else {
+                        console.error(`User with ID ${userId} not found or invalid account structure.`);
+                        return html;
+                    }
                 }
 
                 return html;
@@ -771,6 +777,7 @@ export default {
     created() {
         this.setupCommentWatcher();
         this.friends = this.accounts
+        console.log(this.comment.content);
     },
 }
 </script>

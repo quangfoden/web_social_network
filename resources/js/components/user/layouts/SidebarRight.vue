@@ -31,30 +31,50 @@ import Restore from 'vue-material-design-icons/Restore.vue';
                 </div>
             </div>
             <div class="list_friends">
-                <div class="d-flex align-items-center justify-content-start friend_pr ">
-                    <img class="" src="https://picsum.photos/id/120/300/320" alt="">
-                    <div class="text-pr primary-text">Nguyen Thi Huong</div>
-                </div>
-                <div class="d-flex align-items-center justify-content-start friend_pr ">
-                    <img class="" src="https://picsum.photos/id/120/300/320" alt="">
-                    <div class="text-pr primary-text">Nguyen Thi Huong</div>
-                </div>
-                <div class="d-flex align-items-center justify-content-start friend_pr ">
-                    <img class="" src="https://picsum.photos/id/120/300/320" alt="">
-                    <div class="text-pr primary-text">Nguyen Thi Huong</div>
-                </div>
-                <div class="d-flex align-items-center justify-content-start friend_pr ">
-                    <img class="" src="https://picsum.photos/id/120/300/320" alt="">
-                    <div class="text-pr primary-text">Nguyen Thi Huong</div>
+                <div @click="fetchFriendChat(account.id)" v-for="(account, index) in accounts" :key="account.id"
+                    class="d-flex align-items-center justify-content-start friend_pr ">
+                    <img class="" :src="account.avatar" alt="">
+                    <div class="text-pr primary-text">{{ account.user_name }}</div>
                 </div>
             </div>
         </div>
     </div>
 </template>
 <script>
+import { mapState, mapActions, mapGetters } from 'vuex';
+import { useGeneralStore } from '../../../store/general';
+import { storeToRefs } from 'pinia';
 export default {
+    data() {
+        const useGeneral = useGeneralStore();
+        const { isChatBoxOverLay, isLoadingChatBox } = storeToRefs(useGeneral)
+        return {
+            isChatBoxOverLay,
+            isLoadingChatBox
+        }
+    },
     mounted() {
-    console.log(this.$route.path); // Kiểm tra giá trị của $route.path
-}
+        console.log(this.$route.path);
+    },
+    computed: {
+        ...mapState({
+            accounts: state => state.users.accounts
+        }),
+    },
+    methods: {
+        ...mapActions('chat', ['getFriend']),
+        fetchFriendChat(accountId) {
+            this.isLoadingChatBox = true
+            this.isChatBoxOverLay = true
+            this.getFriend(accountId)
+                .then(response => {
+                    this.isLoadingChatBox = false
+                })
+                .catch(error => {
+                    console.error("Error in fetchFriendChat:", error);
+                    this.isLoadingChatBox = true
+                });
+        },
+    }
 }
 </script>

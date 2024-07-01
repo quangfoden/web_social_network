@@ -82,11 +82,12 @@ export default {
       isLoading: false
     }
   },
+
   methods: {
     LoginUser() {
       this.isLoading = true
       this.$store.dispatch('loginUser', this.user)
-        .then(() => {
+        .then(response => {
           setTimeout(() => {
             this.isLoading = false
           }, 3000);
@@ -107,7 +108,6 @@ export default {
 
           this.$store.dispatch('loginWithFaceId', this.dataUser)
             .then(() => {
-
             })
             .catch((error) => {
               console.log('Đăng nhập thất bại:', error)
@@ -124,7 +124,8 @@ export default {
           })
           this.isLoading = false
         });
-    }
+    },
+
   },
 }
 </script>

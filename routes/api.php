@@ -36,8 +36,9 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
         ];
         return response()->json($responseData);
     });
+    Route::get('allaccount', [UsersController::class, 'allaccount']);
+    Route::get('myinfo', [UsersController::class, 'getProfile']);
     Route::get('allusers', [UserController::class, 'allusers']);
-    Route::get('allaccount', [UserController::class, 'allaccount']);
     Route::get('getUserById/{user_id}', [UsersController::class, 'getUserById']);
     Route::get('roles', [UserController::class, 'roles']);
     Route::post('create-new-user', [UserController::class, 'createNewUser']);
@@ -60,4 +61,6 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('deleteComment/{commentId}', [CommentController::class, 'delete_comment']);
     Route::post('/comments/repcomment/{repCommentId}', [CommentController::class, 'updateRepComment']);
     Route::post('/deleterepcomment/repcomment/{repCommentId}', [CommentController::class, 'delete_repcomment']);
+    // chat
+    Route::get('getfriendchat/{id}', [UsersController::class, 'getFriendChat']);
 });

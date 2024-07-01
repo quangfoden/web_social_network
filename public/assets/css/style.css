@@ -23,6 +23,7 @@ body .btn-all-add-edit {
   --secondary-text: #B0B3B8;
   --bg-input: #3a3b3c;
   --border-collor: #3b3838;
+  --bg-blue: #2906ee;
 }
 
 .dropdown-menu {
@@ -215,6 +216,22 @@ img.custom {
   min-width: 40px;
   max-height: 40px;
   cursor: pointer;
+}
+
+.dot-status {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  position: absolute;
+  left: 30px;
+  top: 30px;
+}
+.dot-status.online {
+  background-color: #31a24c;
+  border: 2px solid var(--bg-item);
+}
+.dot-status.offline {
+  display: none;
 }
 
 .wrapper_customs {
@@ -1056,6 +1073,126 @@ img.custom {
 }
 #RepoParent .left-item:hover {
   background: var(--bg-input);
+}
+
+#ChatBox {
+  width: 350px;
+  max-width: 350px;
+  max-height: 450px;
+  min-height: 450px;
+  position: absolute;
+  bottom: 0;
+  right: 100px;
+  color: var(--primary-text);
+  background: var(--bg-item);
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  flex-direction: column;
+}
+#ChatBox .chat-header {
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border-collor);
+}
+#ChatBox .close-mess {
+  position: absolute;
+  right: 10px;
+  font-size: 25px;
+  cursor: pointer;
+  padding-inline: 5px;
+  border-radius: 50%;
+}
+#ChatBox .close-mess:hover {
+  background-color: var(--bg-input);
+}
+#ChatBox .user-name {
+  font-size: 15px;
+  color: var(--primary-text);
+  font-weight: 800;
+  margin: 0;
+}
+#ChatBox .chat-body {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-inline: 5px;
+}
+#ChatBox .chat-body .left-user {
+  text-align: start;
+}
+#ChatBox .chat-body .left-user p {
+  width: auto;
+  word-wrap: break-word;
+  padding: 10px;
+  background: var(--bg-input);
+  color: var(--primary-text);
+  border-radius: 10px;
+}
+#ChatBox .chat-body .right-user .user-ifo {
+  flex-direction: row-reverse;
+}
+#ChatBox .chat-body .right-user .user-ifo p {
+  width: auto;
+  padding: 10px;
+  background: var(--bg-blue);
+  color: var(--primary-text);
+  border-radius: 10px;
+  float: right;
+  text-align: start;
+  word-wrap: break-word;
+}
+#ChatBox .chat-bottom {
+  padding-inline: 10px;
+  padding-block: 10px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  width: 100%;
+  margin-top: auto;
+}
+#ChatBox .chat-bottom .icon i {
+  font-size: 20px;
+  color: var(--bg-blue);
+}
+#ChatBox .chat-bottom form {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#ChatBox .chat-bottom form label.lmess {
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 5px;
+}
+#ChatBox .chat-bottom form label.lmess:hover {
+  background: var(--bg-item);
+}
+#ChatBox .chat-bottom form .input-icon {
+  width: 90%;
+  background: var(--bg-input);
+  border-radius: 10px;
+}
+#ChatBox .chat-bottom form textarea {
+  width: 90%;
+  background: var(--bg-input);
+  padding: 10px;
+  padding-right: 60px;
+  word-break: break-all;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  color: var(--primary-text);
+}
+#ChatBox .chat-bottom form button.sendmess {
+  background: var(--bg-item);
+  padding: 5px;
+  border-radius: 50%;
+}
+#ChatBox .chat-bottom form button.sendmess:hover {
+  background: var(--bg-input);
+}
+#ChatBox .chat-bottom form button.sendmess i {
+  font-size: 20px;
+  color: var(--bg-blue);
 }
 
 .card {
