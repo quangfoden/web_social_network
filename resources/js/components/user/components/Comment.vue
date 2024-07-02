@@ -342,7 +342,6 @@ export default {
                     this.fileUrls = this.fileUrls.filter(file => file.id !== newFile.id);
                     this.fileUrls.push(newFile);
                     this.isFileDelete = false
-                    console.log(this.fileUrls);
                 });
             }
             else {

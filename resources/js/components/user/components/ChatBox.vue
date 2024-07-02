@@ -28,6 +28,17 @@ import Image from 'vue-material-design-icons/Image.vue'
                     <img src="/images/avatar.gif" class="custom" alt="">
                     <div class="content-message">
                         <p>{{ message.text }}</p>
+                        <div v-if="message.fileURL" class="pb-2">
+                            <template v-if="message.fileType === 'image'">
+                                <img width="150" :src="message.fileURL" alt="Selected File Preview">
+                            </template>
+                            <template v-else-if="message.fileType === 'video'">
+                                <video width="150" controls :src="message.fileURL"></video>
+                            </template>
+                            <template v-else>
+                                <p>{{ filePreview }}</p>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -35,12 +46,26 @@ import Image from 'vue-material-design-icons/Image.vue'
         <div class="chat-bottom">
             <form @submit.prevent="sendMessage">
                 <div class="input-icon d-flex gap-2 align-items-center">
-                    <textarea v-model="contentMessage" name="" id="" placeholder="nhập tin nhắn..."></textarea>
+                    <textarea @keydown.enter="sendMessage" v-model="contentMessage" name="" id=""
+                        placeholder="nhập tin nhắn...">
+            </textarea>
+                    <div v-if="filePreview" class="file-preview p-3">
+                        <template v-if="fileType === 'image'">
+                            <img width="100" :src="filePreview" alt="Selected File Preview">
+                        </template>
+                        <template v-else-if="fileType === 'video'">
+                            <video width="100" controls :src="filePreview"></video>
+                        </template>
+                        <template v-else>
+                            <p>{{ filePreview }}</p>
+                        </template>
+                    </div>
                     <label class="lmess" for="file-mess">
                         <Image :size="27" fillColor="#43BE62" />
                     </label>
-                    <input type="file" id="file-mess" class="hidden">
+                    <input @change="handleFileChange($event)" type="file" id="file-mess" class="hidden">
                 </div>
+
                 <button type="submit" class="sendmess">
                     <i class="fas fa-paper-plane"></i>
                 </button>
@@ -85,7 +110,8 @@ import { useGeneralStore } from '../../../store/general';
 import { useUserStatus } from '../../../core/coreFunction';
 import { storeToRefs } from 'pinia';
 import { mapActions, mapState, mapGetters } from 'vuex';
-import { database, ref, push, onValue, query, orderByChild, equalTo, set } from '../../../firebase';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { database, ref as dbRef, ref, push, onValue, query, orderByChild, equalTo, set } from '../../../firebase';
 export default {
     data() {
         const useGeneral = useGeneralStore();
@@ -95,6 +121,11 @@ export default {
             isLoadingChatBox,
             listMessage: [],
             contentMessage: '',
+            file: null,
+            fileURL: null, // URL của file (nếu có)
+            fileType: null, // Loại file
+            filePath: null,  // Đường dẫn lưu trữ trong dự án (nếu có)
+            filePreview: null,
             sender: null,
             receiver: null,
             reply: {
@@ -128,28 +159,38 @@ export default {
             this.setFriend(null);
         },
         formatLastChanged(lastChanged) {
-            let format = " "
+            let format = '';
             if (!lastChanged) return '';
             const currentTime = Date.now();
             const lastChangedTime = new Date(lastChanged);
-
-            const diffMinutes = Math.floor((currentTime - lastChangedTime) / (1000 * 60));
+            const diffMilliseconds = currentTime - lastChangedTime;
+            const diffMinutes = Math.floor(diffMilliseconds / (1000 * 60));
+            const diffHours = Math.floor(diffMilliseconds / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffMilliseconds / (1000 * 60 * 60 * 24));
+            const diffMonths = Math.floor(diffMilliseconds / (1000 * 60 * 60 * 24 * 30));
             if (diffMinutes) {
-                if (diffMinutes >= 1440) {
-                    const hours = lastChangedTime.getHours();
-                    const minutes = lastChangedTime.getMinutes();
-                    format = `Hoạt động lần cuối vào lúc ${hours}:${minutes}`
+                if (diffMinutes < 1) {
+                    format = 'Hoạt động một vài giây trước';
+                } else if (diffMinutes === 1) {
+                    format = 'Hoạt động một phút trước';
+                } else if (diffMinutes < 60) {
+                    format = `Hoạt động ${diffMinutes} phút trước`;
+                } else if (diffHours === 1) {
+                    format = 'Hoạt động một giờ trước';
+                } else if (diffHours < 24) {
+                    format = `Hoạt động ${diffHours} giờ trước`;
+                } else if (diffDays === 1) {
+                    format = 'Hoạt động một ngày trước';
+                } else if (diffDays < 30) {
+                    format = `Hoạt động ${diffDays} ngày trước`;
                 } else {
-                    if (diffMinutes < 1) {
-                        return format;
-                    } else if (diffMinutes === 1) {
-                        format = 'Hoạt động một phút trước'
-                    } else {
-                        format = `Hoạt động ${diffMinutes} phút trước`
-                    }
+                    const day = String(lastChangedTime.getDate()).padStart(2, '0');
+                    const month = String(lastChangedTime.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+                    const year = lastChangedTime.getFullYear();
+                    format = `Hoạt động lần cuối vào ${day}/${month}/${year}`;
                 }
             }
-            return format
+            return format;
         },
         async startConversation() {
             const participants = [this.currentUser.user_id, this.friend.user_id].sort().join('_');
@@ -170,18 +211,94 @@ export default {
                 this.listMessage = messages;
             });
         },
-        async sendMessage() {
-            if (this.contentMessage.trim() !== '') {
+        // async sendMessage() {
+        //     if (this.contentMessage.trim() !== '') {
+        //         await this.startConversation();
+        //         const messagesRef = ref(database, 'messages');
+        //         push(messagesRef, {
+        //             conversationId: this.conversationId,
+        //             sender: this.currentUser,
+        //             receiver: this.friend,
+        //             text: this.contentMessage,
+        //             timestamp: Date.now()
+        //         });
+        //         if (this.file) {
+        //             const storage = getStorage();
+        //             const fileRef = storageRef(storage, `uploads/${this.file.name}`);
+        //             await uploadBytes(fileRef, this.file);
+        //             const fileURL = await getDownloadURL(fileRef);
+        //             messageData.fileURL = fileURL;
+        //             messageData.fileName = this.file.name;
+        //             this.file = null;
+        //         }
+        //         push(messagesRef, messageData);
+        //         this.contentMessage = '';
+        //     }
+        // },
+        async sendMessage(event) {
+            if (event) event.preventDefault();
+
+            if (this.contentMessage.trim() !== '' || this.file) {
                 await this.startConversation();
-                const messagesRef = ref(database, 'messages');
-                push(messagesRef, {
+                const messagesRef = dbRef(database, 'messages');
+
+                let messageData = {
                     conversationId: this.conversationId,
                     sender: this.currentUser,
                     receiver: this.friend,
                     text: this.contentMessage,
                     timestamp: Date.now()
-                });
+                };
+
+                if (this.file) {
+                    const storage = getStorage();
+                    const fileRef = storageRef(storage, `uploads/message/${this.file.name}`);
+                    await uploadBytes(fileRef, this.file);
+                    const fileURL = await getDownloadURL(fileRef);
+
+                    messageData.fileURL = fileURL;
+                    messageData.fileType = this.getFileType(this.file);
+                    messageData.filePath = `uploads/message/${this.file.name}`; // Đường dẫn trong dự án
+
+                    this.file = null;
+                    this.filePreview = null;
+                    this.fileType = '';
+                }
+                push(messagesRef, messageData);
                 this.contentMessage = '';
+            }
+        },
+        getFileType(file) {
+            const mimeType = file.type;
+
+            if (mimeType.startsWith('image/')) {
+                return 'image';
+            } else if (mimeType.startsWith('video/')) {
+                return 'video';
+            } else if (mimeType.startsWith('audio/')) {
+                return 'audio';
+            } else if (mimeType === 'application/pdf') {
+                return 'pdf';
+            } else {
+                return 'other';
+            }
+        },
+        handleFileChange($event) {
+            this.file = $event.target.files[0];
+            $event.target.value = '';
+
+            if (this.file) {
+                const fileType = this.file.type;
+                if (fileType.startsWith('image/')) {
+                    this.filePreview = URL.createObjectURL(this.file);
+                    this.fileType = 'image';
+                } else if (fileType.startsWith('video/')) {
+                    this.filePreview = URL.createObjectURL(this.file);
+                    this.fileType = 'video';
+                } else {
+                    this.filePreview = this.file.name;
+                    this.fileType = 'other';
+                }
             }
         },
         getFriendStatus(friendId) {
@@ -208,14 +325,14 @@ export default {
                 console.log('No friend');
             }
         },
-        listMessage(newMessages) {
-            this.$nextTick(() => {
-                if (newMessages.length > 0) {
-                    const lastMessage = this.$refs.messageContainer[this.$refs.messageContainer.length - 1];
-                    lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                }
-            });
-        },
+        // listMessage(newMessages) {
+        //     this.$nextTick(() => {
+        //         if (newMessages.length > 0) {
+        //             const lastMessage = this.$refs.messageContainer[this.$refs.messageContainer.length - 1];
+        //             lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        //         }
+        //     });
+        // },
 
     },
     mounted() {
