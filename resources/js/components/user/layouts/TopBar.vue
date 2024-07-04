@@ -108,14 +108,12 @@ import { storeToRefs } from 'pinia';
 import CropperModal from '../components/CropperModal.vue'
 import MediaDisplay from '../Components/mediaDisplay.vue'
 import CreatePostOverLay from '../Components/CreatePostOverLay.vue'
-import ChatBox from '../components/ChatBox.vue';
 
 export default {
     components: {
         CropperModal,
         MediaDisplay,
         CreatePostOverLay,
-        ChatBox
     },
     data() {
         const useGeneral = useGeneralStore();

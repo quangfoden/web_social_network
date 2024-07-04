@@ -47,14 +47,14 @@ import { storeToRefs } from 'pinia';
 export default {
     data() {
         const useGeneral = useGeneralStore();
-        const { isChatBoxOverLay, isLoadingChatBox } = storeToRefs(useGeneral)
+        const { isChatBoxOverLay, isLoadingChatBox,selecFriendId } = storeToRefs(useGeneral)
         return {
             isChatBoxOverLay,
-            isLoadingChatBox
+            isLoadingChatBox,
+            selecFriendId
         }
     },
     mounted() {
-        console.log(this.$route.path);
     },
     computed: {
         ...mapState({
@@ -69,6 +69,7 @@ export default {
             this.getFriend(accountId)
                 .then(response => {
                     this.isLoadingChatBox = false
+                    this.selecFriendId = accountId
                 })
                 .catch(error => {
                     console.error("Error in fetchFriendChat:", error);
