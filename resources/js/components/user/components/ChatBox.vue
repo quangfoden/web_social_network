@@ -34,7 +34,7 @@ import Image from 'vue-material-design-icons/Image.vue'
                                     alt="Selected File Preview">
                             </template>
                             <template v-else-if="message.fileType === 'video'">
-                                <video @click="isFileDisplay = message.fileURL" width="150" controls
+                                <video @click="isFileDisplay = message.fileURL" width="150" autoplay muted
                                     :src="message.fileURL"></video>
                             </template>
                             <template v-else>

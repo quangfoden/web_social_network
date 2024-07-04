@@ -6,13 +6,13 @@ import Close from 'vue-material-design-icons/Close.vue'
 <template>
     <div id="MediaDisplay">
         <Close @click="isFileDisplay = []" fillColor="#000000" :size="30" class="imagedisplay_close" />
-        <div class="media_display" v-if="isVideo(isFileDisplay) || typeFile(isFileDisplay)">
-            <video class="displ" controls>
+        <div class="media_display" v-if="isVideo(isFileDisplay) || fileType === 'video'">
+            <video class="displ" controls autoplay>
                 <source :src="isFileDisplay" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         </div>
-        <div v-if="isImage(isFileDisplay) || typeFile(isFileDisplay)" class="media_display">
+        <div v-if="isImage(isFileDisplay) || fileType === 'image'" class="media_display">
             <img class="displ" :src="isFileDisplay" alt="Image">
         </div>
 
@@ -30,6 +30,17 @@ export default {
             isFileDisplay,
         }
     },
+    computed: {
+        fileType() {
+            const extension = this.isFileDisplay.split('.').pop().split(/\#|\?/)[0];
+            if (['mp4', 'avi', 'mov'].includes(extension)) {
+                return 'video';
+            } else if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
+                return 'image';
+            }
+            return 'unknown';
+        }
+    },
     methods: {
         getFileExtension(url) {
             const index = url.lastIndexOf('.');
@@ -44,17 +55,8 @@ export default {
             const videoExtensions = /\.(mp4|webm|ogg)$/i;
             return videoExtensions.test(fileUrl);
         },
-        typeFile(fileUrl) {
-            const extension = this.getFileExtension(fileUrl);
-            if (extension === 'jpg' || extension === 'jpeg' || extension === 'png' || extension === 'gif') {
-                return true;
-            } else if (extension === 'mp4' || extension === 'mov' || extension === 'avi') {
-                return true;
-            } else {
-                console.log("Unknown file type.");
-                return false;
-            }
-        },
+    },
+    mounted() {
     }
 }
 </script>
