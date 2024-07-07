@@ -33,9 +33,6 @@ import Send from 'vue-material-design-icons/Send.vue';
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div id="" class=""><span class="fs-4 custom-cursor-pointer ellipsis secondary-text"><i
-                                        class="fa-solid fa-ellipsis"></i></span>
-                            </div> -->
                         </div>
                         <div class="px-1 p-2  primary-text text-cus-pos">{{ isPost.content }}</div>
                     </div>
@@ -79,7 +76,6 @@ import Send from 'vue-material-design-icons/Send.vue';
                         </div>
                     </div>
                     <div class="comment-post-ovelay p-3">
-
                         <div>
                             <div class="list-comments">
                                 <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">

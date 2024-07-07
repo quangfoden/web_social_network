@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('post_id');
             $table->unsignedBigInteger('user_id');
-            $table->enum('type', ['like', 'love', 'haha', 'wow']); // Các loại likes
+            $table->enum('type', ['Like', 'Heart', 'Laugh', 'Sad', 'Infuriating']);
             $table->timestamps();
 
             $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');

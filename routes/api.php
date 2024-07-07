@@ -53,6 +53,9 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('post/{postId}/editPost', [PostsController::class, 'updatePost']);
     Route::put('post/{id}/trash', [PostsController::class, 'trash']);
     Route::put('post/{id}/pin', [PostsController::class, 'pin']);
+    Route::get('/getlike/{post_id}', [PostsController::class, 'get_like_post']);
+    Route::delete('/unlike', [PostsController::class, 'delete_like']);
+    Route::post('/like', [PostsController::class, 'like_post']);
     Route::post('create_comment', [CommentController::class, 'create_comment']);
     Route::post('create_rep_comment/{commentId}', [CommentController::class, 'create_rep_comment']);
     // Route::post('get_all_comments/{postId}', [CommentController::class, 'get_all_comments']);

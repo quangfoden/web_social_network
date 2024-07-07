@@ -91,4 +91,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserFaceReg::class);
     }
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
 }

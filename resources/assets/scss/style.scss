@@ -23,6 +23,15 @@ body .btn-all-add-edit {
     --bg-input: #3a3b3c;
     --border-collor: #3b3838;
     --bg-blue: #2906ee;
+    --bg-blur: #ffffff2d;
+}
+
+.hover-span {
+    border-radius: 10px;
+
+    &:hover {
+        background: var(--bg-input);
+    }
 }
 
 .dropdown-menu {
@@ -122,6 +131,10 @@ a {
 
 .primary-text {
     color: var(--primary-text);
+}
+
+.blue-color {
+    color: #2906ee;
 }
 
 .secondary-text {
@@ -624,8 +637,39 @@ img.custom {
 }
 
 .like-tx {
+    position: relative;
+
     &:hover {
         background: var(--bg-input);
+    }
+
+    .icon-like {
+        position: absolute;
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s, visibility 0.5s;
+        background: var(--bg-input);
+        padding-inline: 20px;
+        border-radius: 10px;
+        left: -60px;
+        top: -45px;
+
+        span {
+            font-size: 30px;
+            transition: transform .3s;
+
+            &:hover {
+                transform: scale(1.5);
+            }
+        }
+    }
+
+    &:hover .icon-like {
+        opacity: 1;
+        visibility: visible;
     }
 }
 

@@ -83,9 +83,37 @@ import Pin from 'vue-material-design-icons/Pin.vue'
         </div>
         <div class="like_share_comment-tx secondary-text">
             <div class="d-flex align-items-center justify-content-around border-bottom-cus p-1">
-                <div class="like-tx rounded d-flex gap-1 align-item-center custom-cursor-pointer p-2">
-                    <span><i class="fas fa-thumbs-up secondary-text"></i></span>
-                    <span class="secondary-text">Thích</span>
+                <div :class="{ 'p-2': !hasLiked }"
+                    class="like-tx rounded d-flex gap-1 align-item-center custom-cursor-pointer">
+                    <div v-if="!hasLiked" @click="createLike(typeLike, post.id)"
+                        class="rounded d-flex gap-1 align-item-center custom-cursor-pointer">
+                        <span><i class="fas fa-thumbs-up secondary-text"></i></span>
+                        <span class="secondary-text">Thích</span>
+                    </div>
+                    <div v-if="hasLiked" v-for="like in likes" :key="like.id">
+                        <div v-if="like.user_id === authUser.id">
+                            <span class="p-2 hover-span" style="color: rgb(8, 102, 255);" @click="unLike(post.id)"
+                                v-if="like.type === 'Like'">
+                                <i class="fas fa-thumbs-up"></i>
+                                Thích
+                            </span>
+                            <span class="p-2 hover-span" style="color: rgb(243, 62, 88);" @click="unLike(post.id)"
+                                v-if="like.type === 'Heart'">❤ Yêu thích</span>
+                            <span class="p-2 hover-span" style="color: rgb(247, 177, 37);" @click="unLike(post.id)"
+                                v-if="like.type === 'Laugh'">😂 Haha</span>
+                            <span class="p-2 hover-span" style="color: rgb(247, 177, 37);" @click="unLike(post.id)"
+                                v-if="like.type === 'Sad'">😥 Buồn</span>
+                            <span class="p-2 hover-span" style="color: rgb(247, 177, 37);" @click="unLike(post.id)"
+                                v-if="like.type === 'Infuriating'">😡 Phẫn nộ</span>
+                        </div>
+                    </div>
+                    <div class="icon-like">
+                        <span @click="createLike(typeLike, post.id)"><i class="fas fa-thumbs-up blue-color"></i></span>
+                        <span @click="createLike(typeHeart, post.id)">❤</span>
+                        <span @click="createLike(typeLaugh, post.id)">😂</span>
+                        <span @click="createLike(typeSad, post.id)">😥</span>
+                        <span @click="createLike(typeInfuriating, post.id)">😡</span>
+                    </div>
                 </div>
                 <div @click="showModalpost(post.id)"
                     class="comment-tx rounded d-flex gap-1 align-item-center custom-cursor-pointer p-2">
@@ -256,7 +284,14 @@ export default {
             filteredFriends: [],
             friends: [],
             selectedFriend: null,
-            isSendLoading: false
+            isSendLoading: false,
+            likes: [],
+            typeLiked: null,
+            typeLike: "Like",
+            typeHeart: "Heart",
+            typeLaugh: "Laugh",
+            typeSad: "Sad",
+            typeInfuriating: "Infuriating",
         }
     },
 
@@ -272,11 +307,15 @@ export default {
         }),
         isSubmitDisabled() {
             return this.formComment.content === '' && Object.keys(this.formMediaComment).length === 0;
+        },
+        hasLiked() {
+            return this.likes && this.authUser
+                ? this.likes.some(like => like.user_id === this.authUser.id)
+                : false;
         }
     },
     mounted() {
-        console.log(this.formComment.content === '');
-        console.log(Object.keys(this.formMediaComment).length === 0);
+
     },
     methods: {
         ...mapActions('post', ['fetchPosts']),
@@ -548,9 +587,45 @@ export default {
 
             textArea.focus();
         },
+        fetchLikes() {
+            axios.get(`/api/user/getlike/${this.post.id}`)
+                .then(response => {
+                    this.likes = response.data;
+                })
+                .catch(error => {
+                    console.error('There was an error fetching the likes:', error);
+                });
+        },
+
+        createLike(typeLiked, postId) {
+            this.typeLiked = typeLiked;
+            axios.post('/api/user/like', {
+                post_id: postId,
+                user_id: this.authUser.id,
+                type: this.typeLiked ? this.typeLiked : 'unlike'
+            })
+                .then(response => {
+                    this.likes = this.likes.filter(like => like.user_id !== this.authUser.id);
+                    this.likes.push(response.data.like);
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+        unLike(postId) {
+            axios.delete('/api/user/unlike', { data: { post_id: postId, user_id: this.authUser.id } })
+                .then(response => {
+                    this.likes = this.likes.filter(like => !(like.post_id === postId && like.user_id === this.authUser.id));
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
     },
     created() {
         this.friends = this.accounts
+        this.fetchLikes()
     }
 }
 </script>

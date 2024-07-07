@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Post\AddPostRequest;
+use App\Models\Like;
 use App\Models\Media;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -170,5 +171,30 @@ class PostsController extends Controller
         return response()->json([
             'message' => $post->pinned ? 'Bài viết đã được ghim lên đầu.' : 'Bài viết đã được bỏ ghim.'
         ]);
+    }
+    public function get_like_post($post_id)
+    {
+        $likes = Like::where('post_id', $post_id)->get();
+        return response()->json($likes);
+    }
+    public function like_post(Request $request)
+    {
+        $like = Like::updateOrCreate(
+            ['post_id' => $request->post_id, 'user_id' => $request->user_id],
+            ['type' => $request->type]
+        );
+        return response()->json(['message' => 'Like status updated', 'like' => $like]);
+    }
+    public function delete_like(Request $request)
+    {
+        $like = Like::where('post_id', $request->post_id)
+            ->where('user_id', $request->user_id)
+            ->first();
+        if ($like) {
+            $like->delete(); 
+            return response()->json(['message' => 'Like has been deleted']);
+        } else {
+            return response()->json(['message' => 'Like not found'], 404);
+        }
     }
 }
