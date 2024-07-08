@@ -577,6 +577,81 @@ img.custom {
   font-size: 0.8rem;
 }
 
+.count-comment-like-share {
+  position: relative;
+}
+.count-comment-like-share .list-user-like,
+.count-comment-like-share .list-user-like-type-like,
+.count-comment-like-share .list-user-like-type-heart,
+.count-comment-like-share .list-user-like-type-laugh,
+.count-comment-like-share .list-user-like-type-sad,
+.count-comment-like-share .list-user-like-type-infuriating {
+  width: 50%;
+  border-radius: 10px;
+  background: var(--bg-input);
+  position: absolute;
+  z-index: 1000;
+  top: 30px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s, visibility 0.5s;
+}
+.count-comment-like-share .list-user-like a,
+.count-comment-like-share .list-user-like-type-like a,
+.count-comment-like-share .list-user-like-type-heart a,
+.count-comment-like-share .list-user-like-type-laugh a,
+.count-comment-like-share .list-user-like-type-sad a,
+.count-comment-like-share .list-user-like-type-infuriating a {
+  font-size: 15px;
+  color: var(--secondary-text);
+}
+.count-comment-like-share .list-user-like a:hover,
+.count-comment-like-share .list-user-like-type-like a:hover,
+.count-comment-like-share .list-user-like-type-heart a:hover,
+.count-comment-like-share .list-user-like-type-laugh a:hover,
+.count-comment-like-share .list-user-like-type-sad a:hover,
+.count-comment-like-share .list-user-like-type-infuriating a:hover {
+  text-decoration: underline !important;
+}
+.count-comment-like-share .count-like .like-icon {
+  margin-left: -10px;
+  cursor: pointer;
+}
+.count-comment-like-share .count-like .like-icon:first-of-type {
+  margin-left: 0;
+}
+.count-comment-like-share .count-like .type-like:hover .list-user-like-type-like {
+  opacity: 1;
+  visibility: visible;
+}
+.count-comment-like-share .count-like .type-heart:hover .list-user-like-type-heart {
+  opacity: 1;
+  visibility: visible;
+}
+.count-comment-like-share .count-like .type-laugh:hover .list-user-like-type-laugh {
+  opacity: 1;
+  visibility: visible;
+}
+.count-comment-like-share .count-like .type-sad:hover .list-user-like-type-sad {
+  opacity: 1;
+  visibility: visible;
+}
+.count-comment-like-share .count-like .type-infuriating:hover .list-user-like-type-infuriating {
+  opacity: 1;
+  visibility: visible;
+}
+.count-comment-like-share .count-like .count {
+  cursor: pointer;
+  margin-left: 5px;
+}
+.count-comment-like-share .count-like .count:hover {
+  text-decoration: underline;
+}
+.count-comment-like-share .count-like .count:hover .list-user-like {
+  opacity: 1;
+  visibility: visible;
+}
+
 .like-tx {
   position: relative;
 }

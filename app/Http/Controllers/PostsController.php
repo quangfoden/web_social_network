@@ -183,7 +183,8 @@ class PostsController extends Controller
             ['post_id' => $request->post_id, 'user_id' => $request->user_id],
             ['type' => $request->type]
         );
-        return response()->json(['message' => 'Like status updated', 'like' => $like]);
+        $likeWithUser = Like::with('user')->find($like->id);
+        return response()->json(['message' => 'Like status updated', 'like' =>  $likeWithUser]);
     }
     public function delete_like(Request $request)
     {
@@ -191,7 +192,7 @@ class PostsController extends Controller
             ->where('user_id', $request->user_id)
             ->first();
         if ($like) {
-            $like->delete(); 
+            $like->delete();
             return response()->json(['message' => 'Like has been deleted']);
         } else {
             return response()->json(['message' => 'Like not found'], 404);

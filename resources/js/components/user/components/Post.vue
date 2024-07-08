@@ -81,11 +81,88 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                 </div>
             </div>
         </div>
-        <div class="like_share_comment-tx secondary-text">
+        <div class="count-comment-like-share">
+            <div class="count-like fs-5 mb-2">
+                <span class="like-icon type-like" v-if="hasLike">
+                    <i class="fas fa-thumbs-up blue-color"></i>
+                    <div class="list-user-like-type-like">
+                        <ul style="list-style: none;" class="m-0 p-2">
+                            <li v-for="like in likes" :key="like.id" class="secondary-text type-like">
+                                <router-link v-if="like.type === 'Like'"
+                                    :to="{ name: 'Profile User', params: { id: like.user.user_id } }">
+                                    {{ like.user.id !== authUser.id ? like.user.user_name : "Bạn" }}
+                                </router-link>
+                            </li>
+                        </ul>
+                    </div>
+                </span>
+                <span class="like-icon type-heart" v-if="hasHeart">❤
+                    <div class="list-user-like-type-heart">
+                        <ul style="list-style: none;" class="m-0 p-2">
+                            <li v-for="like in likes" :key="like.id" class="secondary-text type-like">
+                                <router-link v-if="like.type === 'Heart'"
+                                    :to="{ name: 'Profile User', params: { id: like.user.user_id } }">
+                                    {{ like.user.id !== authUser.id ? like.user.user_name : "Bạn" }}
+                                </router-link>
+                            </li>
+                        </ul>
+                    </div>
+                </span>
+                <span class="like-icon type-laugh" v-if="hasLaugh">😂
+                    <div class="list-user-like-type-laugh">
+                        <ul style="list-style: none;" class="m-0 p-2">
+                            <li v-for="like in likes" :key="like.id" class="secondary-text type-like">
+                                <router-link v-if="like.type === 'Laugh'"
+                                    :to="{ name: 'Profile User', params: { id: like.user.user_id } }">
+                                    {{ like.user.id !== authUser.id ? like.user.user_name : "Bạn" }}
+                                </router-link>
+                            </li>
+                        </ul>
+                    </div>
+                </span>
+                <span class="like-icon type-sad" v-if="hasSad">😥
+                    <div class="list-user-like-type-sad">
+                        <ul style="list-style: none;" class="m-0 p-2">
+                            <li v-for="like in likes" :key="like.id" class="secondary-text type-like">
+                                <router-link v-if="like.type === 'Sad'"
+                                    :to="{ name: 'Profile User', params: { id: like.user.user_id } }">
+                                    {{ like.user.id !== authUser.id ? like.user.user_name : "Bạn" }}
+                                </router-link>
+                            </li>
+                        </ul>
+                    </div>
+                </span>
+                <span class="like-icon type-infuriating" v-if="hasInfuriating">😡
+                    <div class="list-user-like-type-infuriating">
+                        <ul style="list-style: none;" class="m-0 p-2">
+                            <li v-for="like in likes" :key="like.id" class="secondary-text type-like">
+                                <router-link v-if="like.type === 'Infuriating'"
+                                    :to="{ name: 'Profile User', params: { id: like.user.user_id } }">
+                                    {{ like.user.id !== authUser.id ? like.user.user_name : "Bạn" }}
+                                </router-link>
+                            </li>
+                        </ul>
+                    </div>
+                </span>
+                <span v-if="like_count != 0" class="count secondary-text">{{ like_count }}
+                    <div class="list-user-like">
+                        <ul style="list-style: none;" class="m-0 p-2">
+                            <li v-for="like in likes" :key="like.id" class="secondary-text">
+                                <router-link :to="{ name: 'Profile User', params: { id: like.user.user_id } }">
+                                    {{ like.user.id !== authUser.id ? like.user.user_name : "Bạn" }}
+                                </router-link>
+                            </li>
+                        </ul>
+                    </div>
+                </span>
+            </div>
+            <div class="count-comment"></div>
+            <div class="count-share"></div>
+        </div>
+        <div class="border-top-cus like_share_comment-tx secondary-text">
             <div class="d-flex align-items-center justify-content-around border-bottom-cus p-1">
-                <div :class="{ 'p-2': !hasLiked }"
-                    class="like-tx rounded d-flex gap-1 align-item-center custom-cursor-pointer">
-                    <div v-if="!hasLiked" @click="createLike(typeLike, post.id)"
+                <div class="like-tx rounded d-flex gap-1 align-item-center custom-cursor-pointer">
+                    <div v-if="!hasLiked" @click="createLike(typeLike, post.id)" :class="{ 'p-2': !hasLiked }"
                         class="rounded d-flex gap-1 align-item-center custom-cursor-pointer">
                         <span><i class="fas fa-thumbs-up secondary-text"></i></span>
                         <span class="secondary-text">Thích</span>
@@ -212,9 +289,11 @@ import Pin from 'vue-material-design-icons/Pin.vue'
         <EditPostOverlay :postEdit="post" :medias="post.media" v-if="isEditPostOverlay"
             @close-modalEditPost="closeEditModalEditPost" />
         <ModalPostOverLay :isPost="post" :medias="post.media" :comments="post.comments" v-if="isPostOverLay"
-            @close-modal-post="closeModalPost" @comment_overlay-created="handleCommentOverLayCreated"
+            :likes="post.likes" :like_count="post.like_count" @close-modal-post="closeModalPost"
+            @comment_overlay-created="handleCommentOverLayCreated"
             @repcomment-created="handleRepCommentCreated(comment.id)"
-            @comment_overlay-deleted="handleCommentoVerLayDeleted" />
+            @comment_overlay-deleted="handleCommentoVerLayDeleted" @updated_like="handleUpdatedLike(post.id)"
+            @deleted_like="handleLikedeleted(post.id)" />
     </div>
 </template>
 <script>
@@ -260,7 +339,15 @@ export default {
             required: true,
         },
         media: {
-            type: Object,
+            type: Array,
+            required: true,
+        },
+        likes: {
+            type: Array,
+            required: true,
+        },
+        like_count: {
+            type: Number,
             required: true,
         },
     },
@@ -285,7 +372,7 @@ export default {
             friends: [],
             selectedFriend: null,
             isSendLoading: false,
-            likes: [],
+            // likes: [],
             typeLiked: null,
             typeLike: "Like",
             typeHeart: "Heart",
@@ -312,6 +399,21 @@ export default {
             return this.likes && this.authUser
                 ? this.likes.some(like => like.user_id === this.authUser.id)
                 : false;
+        },
+        hasLike() {
+            return this.likes.some(like => like.type === 'Like');
+        },
+        hasHeart() {
+            return this.likes.some(like => like.type === 'Heart');
+        },
+        hasLaugh() {
+            return this.likes.some(like => like.type === 'Laugh');
+        },
+        hasSad() {
+            return this.likes.some(like => like.type === 'Sad');
+        },
+        hasInfuriating() {
+            return this.likes.some(like => like.type === 'Infuriating');
         }
     },
     mounted() {
@@ -587,15 +689,6 @@ export default {
 
             textArea.focus();
         },
-        fetchLikes() {
-            axios.get(`/api/user/getlike/${this.post.id}`)
-                .then(response => {
-                    this.likes = response.data;
-                })
-                .catch(error => {
-                    console.error('There was an error fetching the likes:', error);
-                });
-        },
 
         createLike(typeLiked, postId) {
             this.typeLiked = typeLiked;
@@ -605,9 +698,14 @@ export default {
                 type: this.typeLiked ? this.typeLiked : 'unlike'
             })
                 .then(response => {
-                    this.likes = this.likes.filter(like => like.user_id !== this.authUser.id);
+                    const likeIndex = this.likes.findIndex(like => (like.post_id === postId && like.user_id === this.authUser.id));
+                    if (likeIndex !== -1) {
+                        this.likes.splice(likeIndex, 1);
+                    }
+                    else {
+                        this.$emit('updated_like')
+                    }
                     this.likes.push(response.data.like);
-                    console.log(response.data);
                 })
                 .catch(error => {
                     console.error(error);
@@ -616,16 +714,25 @@ export default {
         unLike(postId) {
             axios.delete('/api/user/unlike', { data: { post_id: postId, user_id: this.authUser.id } })
                 .then(response => {
-                    this.likes = this.likes.filter(like => !(like.post_id === postId && like.user_id === this.authUser.id));
+                    const likeIndex = this.likes.findIndex(like => (like.post_id === postId && like.user_id === this.authUser.id));
+                    if (likeIndex !== -1) {
+                        this.likes.splice(likeIndex, 1);
+                        this.$emit('deleted_like')
+                    }
                 })
                 .catch(error => {
                     console.error(error);
                 });
-        }
+        },
+        handleUpdatedLike(postId) {
+            this.$emit('updated-like-overlay', postId)
+        },
+        handleLikedeleted(postId) {
+            this.$emit('deleted-like-overlay', postId)
+        },
     },
     created() {
         this.friends = this.accounts
-        this.fetchLikes()
     }
 }
 </script>

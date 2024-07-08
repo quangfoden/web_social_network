@@ -18,7 +18,7 @@ class PostRepository
 
     public function getAll()
     {
-        $query = $this->model->query()->with('user', 'media', 'comments.user', 'comments.repcomments.user')
+        $query = $this->model->query()->with('user', 'likes', 'likes.user', 'media', 'comments.user', 'comments.repcomments.user')
             ->where('status', 1)
             ->where(function ($query) {
                 $query->where('privacy', 'public')
@@ -29,6 +29,7 @@ class PostRepository
         $posts->getCollection()->transform(function ($post) {
             $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
             $post->comment_count =  $post->comments->count();
+            $post->like_count =  $post->likes->count();
             $post->comments->each(function ($comment) {
                 $comment->repcomment_count = $comment->repcomments->count();
                 $comment->created_at_formatted = $this->postService->formatTimeAgo($comment->created_at);
@@ -45,13 +46,14 @@ class PostRepository
     public function getPostById($postId): array
     {
         $post = $this->model->query()
-            ->with('user', 'media', 'comments.user', 'comments.repcomments.user')
+            ->with('user', 'media', 'comments.user', 'likes', 'likes.user', 'comments.repcomments.user')
             ->where('id', $postId)
             ->first();
 
         if ($post) {
             $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
             $post->comment_count =  $post->comments->count();
+            $post->like_count =  $post->likes->count();
             $post->comments->each(function ($comment) {
                 $comment->repcomment_count = $comment->repcomments->count();
                 $comment->created_at_formatted = $this->postService->formatTimeAgo($comment->created_at);
@@ -69,14 +71,15 @@ class PostRepository
     {
         $query = $this->model->query()
             ->where('status', 1)
-            ->where('user_id', $userId) 
-            ->with('user', 'media', 'comments.user', 'comments.repcomments.user')
+            ->where('user_id', $userId)
+            ->with('user', 'media', 'comments.user', 'likes', 'likes.user',  'comments.repcomments.user')
             ->orderByRaw('CASE WHEN pinned = 1 THEN 0 ELSE 1 END')
             ->orderBy('created_at', 'desc');
         $posts = $query->paginate(10);
         $posts->getCollection()->transform(function ($post) {
             $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
             $post->comment_count = $post->comments->count();
+            $post->like_count =  $post->likes->count();
             $post->comments->each(function ($comment) {
                 $comment->repcomment_count = $comment->repcomments->count();
                 $comment->created_at_formatted = $this->postService->formatTimeAgo($comment->created_at);
@@ -96,7 +99,7 @@ class PostRepository
         $query = $this->model->query()
             ->where('status', 0)
             ->where('user_id', $userId)
-            ->with('user', 'media', 'comments.user', 'comments.repcomments.user')
+            ->with('user', 'media', 'comments.user','likes', 'likes.user',  'comments.repcomments.user')
             ->orderByRaw('CASE WHEN pinned = 1 THEN 0 ELSE 1 END')
             ->orderBy('created_at', 'desc');
 
@@ -104,6 +107,8 @@ class PostRepository
 
         $posts->getCollection()->transform(function ($post) {
             $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
+            $post->comment_count = $post->comments->count();
+            $post->like_count =  $post->likes->count();
             $post->comments->each(function ($comment) {
                 $comment->created_at_formatted = $this->postService->formatTimeAgo($comment->created_at);
                 if ($comment->repcomments) {

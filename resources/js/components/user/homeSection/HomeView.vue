@@ -7,10 +7,16 @@
         <div v-else id="posts" v-for="post in posts " :key="post.id">
             <Post v-if="post.privacy === 'public' || post.privacy === 'friends'" :status="post.status" :post="post"
                 :user="post.user" :media="post.media" :comments="post.comments" :comment_count="post.comment_count"
+                :likes="post.likes"
+                :like_count="post.like_count"
                 @comment-created="handleCommentCreated(post.id)"
                 @comment-deleted="handleCommentdeleted(post.id)"
                 @comment_overlay-created="handleCommentCreated(post.id)"
                 @comment_overlay-deleted="handleCommentdeleted(post.id)"
+                @updated_like="handleUpdatedLike(post.id)"
+                @deleted_like="handleLikedeleted(post.id)"
+                @updated-like-overlay="handleUpdatedLike(post.id)"
+                @deleted-like-overlay="handleLikedeleted(post.id)"
                 />
         
             </div>
@@ -72,8 +78,20 @@ export default {
             if (post) {
                 post.comment_count -= 1;
             }
-        }
-
+        },
+        handleUpdatedLike(postId) {
+            const post = this.posts.find(p => p.id === postId);
+            if (post) {
+                post.like_count += 1;
+            }
+        },
+        handleLikedeleted(postId) {
+            const post = this.posts.find(p => p.id === postId);
+            if (post) {
+                post.like_count -= 1;
+            }
+        },
+        
     },
     created() {
         this.fetchPosts();

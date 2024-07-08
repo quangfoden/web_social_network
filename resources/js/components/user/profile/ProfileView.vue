@@ -15,8 +15,14 @@
                     <div id="posts" v-for="post in postsByUser" :key="post.id">
                         <Post v-if="checkPrivacy(post) && isProfile(post.user.user_id)" :post="post"
                             :pinned="post.pinned" :status="post.status" :user="post.user" :media="post.media"
-                            :comments="post.comments" :comment_count="post.comment_count"
-                            @comment-created="handleCommentCreated(post.id)" />
+                            :comments="post.comments" :comment_count="post.comment_count" :likes="post.likes"
+                            :like_count="post.like_count" @comment-created="handleCommentCreated(post.id)"
+                            @comment-deleted="handleCommentdeleted(post.id)"
+                            @comment_overlay-created="handleCommentCreated(post.id)"
+                            @comment_overlay-deleted="handleCommentdeleted(post.id)"
+                            @updated_like="handleUpdatedLike(post.id)" @deleted_like="handleLikedeleted(post.id)"
+                            @updated-like-overlay="handleUpdatedLike(post.id)"
+                            @deleted-like-overlay="handleLikedeleted(post.id)" />
                     </div>
                     <div v-if="loading" class="spinner-border text-primary z-1000"
                         style="position: absolute;bottom:0;left: 50%;" role="status">
@@ -141,11 +147,29 @@ export default {
                 post.comment_count += 1;
             }
         },
+        handleCommentdeleted(postId) {
+            const post = this.postsByUser.find(p => p.id === postId);
+            if (post) {
+                post.comment_count -= 1;
+            }
+        },
         loadUserProfile() {
             this.resetData();
             this.loadData();
             this.loadUserbyId();
-        }
+        },
+        handleUpdatedLike(postId) {
+            const post = this.postsByUser.find(p => p.id === postId);
+            if (post) {
+                post.like_count += 1;
+            }
+        },
+        handleLikedeleted(postId) {
+            const post = this.postsByUser.find(p => p.id === postId);
+            if (post) {
+                post.like_count -= 1;
+            }
+        },
     },
     watch: {
         '$route.params.id': {
