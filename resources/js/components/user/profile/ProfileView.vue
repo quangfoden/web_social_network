@@ -65,6 +65,7 @@ export default {
     computed: {
         ...mapState('post', ['postsByUser']),
         ...mapState('post', ['user']),
+   
         authUser() {
             if (this.$store.getters.getAuthUser.id !== undefined) {
                 return this.$store.getters.getAuthUser;

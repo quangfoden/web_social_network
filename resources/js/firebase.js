@@ -10,6 +10,7 @@ import {
     equalTo,
     limitToLast,
     set,
+    get,
     onDisconnect,
 } from "firebase/database";
 const firebaseConfig = {
@@ -36,5 +37,6 @@ export {
     equalTo,
     limitToLast,
     set,
-    onDisconnect
+    onDisconnect,
+    get
 };

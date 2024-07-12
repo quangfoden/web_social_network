@@ -8,15 +8,36 @@
                 <img :src="authUser.avatar" alt="Jassa Jas" class="img-fluid rounded-circle mb-2" width="128"
                     height="128">
                 <h4 class="card-title mb-2">{{ inUser.user_name }}</h4>
-                <div v-if="!isAuthUser">
-                    <a class="btn btn-primary btn-sm" href="#">Thêm bạn bè</a>
-                    <a class="btn btn-secondary btn-sm" href="#">
+                <div v-if="!isAuthUser" class="dropdown show">
+                    <button v-if="loading" class="btn btn-primary btn-sm" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                        <span role="status">Loading...</span>
+                    </button>
+                    <a v-else-if="isRequestSent" @click="cancelFriendship(inUser.id)" class="btn btn-primary btn-sm">Đã
+                        gửi lời mời kết bạn
+                    </a>
+                    <a v-else-if="isRequestReceived" data-bs-toggle="dropdown" data-bs-display="static"
+                        class="btn btn-primary btn-sm">Phản hồi
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a @click="acceptRequest(inUser.id)" class="dropdown-item">Chấp nhận</a>
+                            <a @click="declineRequest(inUser.id)" class="dropdown-item">Từ chối</a>
+                        </div>
+                    </a>
+                    <a v-else-if="isFriend" data-bs-toggle="dropdown" data-bs-display="static"
+                        class="btn btn-primary btn-sm">Bạn bè
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a @click="cancelFriendship(inUser.id)" class="dropdown-item">Huỷ kết bạn</a>
+                        </div>
+                    </a>
+                    <a v-else @click.prevent="sendRequest(inUser.id)" class="btn btn-primary btn-sm">Thêm bạn
+                        bè</a>
+                    <a class="btn btn-secondary btn-sm">
                         <i class="fa-solid fa-message mx-1"></i>Nhắn tin</a>
                 </div>
                 <div v-if="isAuthUser">
-                    <a class="btn btn-primary btn-sm" href="#"><i class="fa-solid fa-plus mx-1"></i>Thêm vào tin</a>
+                    <a class="btn btn-primary btn-sm"><i class="fa-solid fa-plus mx-1"></i>Thêm vào tin</a>
                     <a style="" class="btn btn-secondary btn-sm dropdown show" data-bs-toggle="dropdown"
-                        data-bs-display="static" href="#">
+                        data-bs-display="static">
                         <i class="fa-solid fa-pen-to-square mx-1"></i>xem thêm</a>
                     <div class="dropdown-menu position-absolute dropdown-menu-right">
                         <!-- <a class="dropdown-item" href="#">Tuỳ chỉnh</a>
@@ -166,6 +187,7 @@
 </template>
 <script>
 import { param } from 'jquery';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
     data() {
@@ -182,7 +204,23 @@ export default {
         },
         isAuthUser() {
             return this.inUser.id == this.authUser.id;
-        }
+        },
+        isRequestSent() {
+            return this.sentRequests.some(request => request.receiver_id === this.inUser.id);
+        },
+        isRequestReceived() {
+            return this.receivedRequests.some(request => request.sender_id === this.inUser.id);
+        },
+        isFriend() {
+            return this.friends.some(friend => friend.friend_id === this.inUser.id);
+
+        },
+        ...mapState('friends', {
+            receivedRequests: state => state.receivedRequests,
+            sentRequests: state => state.sentRequests,
+            friends: state => state.friends,
+            loading: state => state.loading
+        }),
     },
     props: {
         postsByUsers: {
@@ -194,5 +232,35 @@ export default {
             required: true,
         },
     },
+    methods: {
+        ...mapActions('friends', ['sendFriendRequest']),
+        ...mapActions('friends', ['getFriends']),
+        ...mapActions('friends', ['getFriendRequests']),
+        ...mapActions('friends', ['acceptRequests']),
+        ...mapActions('friends', ['declineRequests']),
+        ...mapActions('friends', ['cancelFriendships']),
+        sendRequest(receiverId) {
+            this.sendFriendRequest(receiverId);
+        },
+        getFriend() {
+            this.getFriends(this.authUser.id)
+        },
+        getFriendRequest() {
+            this.getFriendRequests(this.authUser.id)
+        },
+        acceptRequest(id) {
+            this.acceptRequests(id)
+        },
+        declineRequest(id) {
+            this.declineRequests(id)
+        },
+        cancelFriendship(id) {
+            this.cancelFriendships(id)
+        }
+    },
+    mounted() {
+        this.getFriendRequest()
+        this.getFriend()
+    }
 }
 </script>

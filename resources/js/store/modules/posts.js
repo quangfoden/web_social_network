@@ -143,9 +143,7 @@ const actions = {
     getUserbyId({ commit }, id) {
         return axios.get(`/api/user/getUserById/${id}`)
             .then(response => {
-                console.log(response);
                 commit('SET_USER', response.data);
-                console.log(state.user);
             })
             .catch(error => {
                 console.log("Error fetching getUserbyId:", error);

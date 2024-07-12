@@ -23,7 +23,6 @@ const actions = {
         axios.get('/api/user/allusers')
             .then(response => {
                 commit('setUsers', response.data.data);
-                console.log(response.data.data);
             })
             .catch(error => {
                 console.error('Error fetching users:', error);
