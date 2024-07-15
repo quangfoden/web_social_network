@@ -5,6 +5,7 @@ use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FriendController;
 use App\Http\Controllers\FriendRequestController;
 use App\Http\Controllers\PostsController;
 use Illuminate\Support\Facades\Route;
@@ -40,7 +41,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::get('allaccount', [UsersController::class, 'allaccount']);
     Route::get('myinfo', [UsersController::class, 'getProfile']);
     Route::get('allusers', [UserController::class, 'allusers']);
-    Route::get('getUserById/{user_id}', [UsersController::class, 'getUserById']);
+    Route::get('getUserById/{user_id}', [UsersController::class, 'getUserByUser_Id']);
+    Route::get('getUserByIds/{id}', [UsersController::class, 'getUserById']);
     Route::get('roles', [UserController::class, 'roles']);
     Route::post('create-new-user', [UserController::class, 'createNewUser']);
     Route::post('change-role-user/{id}', [UserController::class, 'changeRoleUser']);
@@ -65,13 +67,16 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('deleteComment/{commentId}', [CommentController::class, 'delete_comment']);
     Route::post('/comments/repcomment/{repCommentId}', [CommentController::class, 'updateRepComment']);
     Route::post('/deleterepcomment/repcomment/{repCommentId}', [CommentController::class, 'delete_repcomment']);
-    //friend
+    //    Friends
+    Route::get('/allfriends', [FriendController::class, 'index']);
+    Route::get('/mutual-friends', [FriendController::class, 'mutual_friends']);
+    //friend-requst
     Route::post('/friend-request', [FriendRequestController::class, 'sendRequest']);
     Route::post('/friend-request/{id}/accept', [FriendRequestController::class, 'acceptRequest']);
     Route::post('/friend-request/{id}/decline', [FriendRequestController::class, 'declineRequest']);
     Route::get('/friend-requests', [FriendRequestController::class, 'getFriendRequests']);
     Route::get('/friends', [FriendRequestController::class, 'getFriends']);
     Route::delete('/friends/{id}', [FriendRequestController::class, 'cancelFriendship']);
-      // chat
+    // chat
     Route::get('getfriendchat/{id}', [UsersController::class, 'getFriendChat']);
 });

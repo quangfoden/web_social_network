@@ -17,9 +17,17 @@ class UsersController extends Controller
     {
         $this->userRepo = $userRepo;
     }
-    public function getUserById($user_id)
+    public function getUserByUser_Id($user_id)
     {
-        $user = $this->userRepo->getUserById($user_id);
+        $user = $this->userRepo->getUserByUserId($user_id);
+        if (!$user) {
+            return response()->json(['message' => 'Người dùng không tồn tại'], 404);
+        }
+        return response()->json($user);
+    }
+    public function getUserById($id)
+    {
+        $user = $this->userRepo->getUserById($id);
         if (!$user) {
             return response()->json(['message' => 'Người dùng không tồn tại'], 404);
         }

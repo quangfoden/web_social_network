@@ -31,10 +31,10 @@ import Restore from 'vue-material-design-icons/Restore.vue';
                 </div>
             </div>
             <div class="list_friends">
-                <div @click="fetchFriendChat(account.id)" v-for="(account, index) in accounts" :key="account.id"
+                <div @click="fetchFriendChat(friend.user.id)" v-for="(friend , index) in friendsWithUsers" :key="friend.id"
                     class="d-flex align-items-center justify-content-start friend_pr ">
-                    <img class="" :src="account.avatar" alt="">
-                    <div class="text-pr primary-text">{{ account.user_name }}</div>
+                    <img class="" :src="friend.user.avatar" alt="">
+                    <div class="text-pr primary-text">{{ friend.user.user_name }}</div>
                 </div>
             </div>
         </div>
@@ -47,7 +47,7 @@ import { storeToRefs } from 'pinia';
 export default {
     data() {
         const useGeneral = useGeneralStore();
-        const { isChatBoxOverLay, isLoadingChatBox,selecFriendId } = storeToRefs(useGeneral)
+        const { isChatBoxOverLay, isLoadingChatBox, selecFriendId } = storeToRefs(useGeneral)
         return {
             isChatBoxOverLay,
             isLoadingChatBox,
@@ -55,14 +55,29 @@ export default {
         }
     },
     mounted() {
+        this.fetchIsFriend()
     },
     computed: {
+        authUser() {
+            if (this.$store.getters.getAuthUser.id !== undefined) {
+                return this.$store.getters.getAuthUser;
+            }
+            return JSON.parse(localStorage.getItem('authUser'));
+        },
         ...mapState({
             accounts: state => state.users.accounts
         }),
+        ...mapGetters('friends',['getFriendsWithUsers']),
+        friendsWithUsers() {
+            return this.getFriendsWithUsers;
+        },
     },
     methods: {
         ...mapActions('chat', ['getFriend']),
+        ...mapActions('friends', ['fetchIsFriends']),
+        fetchIsFriend() {
+            this.fetchIsFriends()
+        },
         fetchFriendChat(accountId) {
             this.isLoadingChatBox = true
             this.isChatBoxOverLay = true
@@ -76,6 +91,8 @@ export default {
                     this.isLoadingChatBox = true
                 });
         },
+    },
+    created() {
     }
 }
 </script>

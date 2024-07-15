@@ -1,15 +1,5 @@
 import axios from 'axios';
-import {
-    database,
-    ref,
-    push,
-    onValue,
-    query,
-    orderByChild,
-    equalTo,
-    limitToLast,
-    set,
-} from "../../firebase";
+
 const state = {
     friend: null
 }

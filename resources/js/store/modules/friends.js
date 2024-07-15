@@ -15,8 +15,12 @@ const state = {
     sentRequests: [],
     friends: [],
     loading: false,
+    isfriends: [],
 }
 const mutations = {
+    SET_ISFRIENDS(state, isfriends) {
+        state.isfriends = isfriends;
+    },
     SET_RECEIVED_REQUESTS(state, requests) {
         state.receivedRequests = requests;
     },
@@ -37,6 +41,14 @@ const mutations = {
     },
 }
 const actions = {
+    async fetchIsFriends({ commit }) {
+        try {
+            const response = await axios.get('/api/user/allfriends');
+            commit('SET_ISFRIENDS', response.data);
+        } catch (error) {
+            console.error('Error fetching friends:', error);
+        }
+    },
     async sendFriendRequest({ commit, dispatch }, receiverId) {
         try {
             commit('SET_LOADING', true);
@@ -89,7 +101,7 @@ const actions = {
                     const friendsArray = Object.values(friendsData);
                     commit('SET_FRIENDS', friendsArray);
                 } else {
-                    const _friendsArray=[]
+                    const _friendsArray = []
                     commit('SET_FRIENDS', _friendsArray);
                     console.error('No friends found');
                 }
@@ -135,6 +147,14 @@ const actions = {
 
 }
 const getters = {
+    getFriendsWithUsers: state => {
+        return state.isfriends.map(friend => {
+            return {
+                ...friend,
+                user: friend.user || null,
+            };
+        });
+    },
     receivedRequests: state => state.receivedRequests,
     sentRequests: state => state.sentRequests,
     friends: state => state.friends,
