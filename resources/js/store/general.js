@@ -6,9 +6,10 @@ export const useGeneralStore = defineStore('general', {
         isCropperModal: false,
         myProfile: false,
         isChatBoxOverLay: false,
-        selecFriendId:null,
+        selecFriendId: null,
         isFileDisplay: [],
-        isLoadingChatBox: false
+        isLoadingChatBox: false,
+        showClickBack: false
     }),
     persist: true,
 })

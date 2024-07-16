@@ -31,6 +31,10 @@ import ProfileParentUser from '../components/user/profile/ProfileParent.vue';
 import RepositoryParent from '../components/user/profile/RepositoryParent.vue';
 import Trash from '../components/user/profile/Trash.vue';
 
+// friend
+import FriendsParent from '../components/user/AllFriends/FriendsParent.vue'
+import allYourFriends from '../components/user/AllFriends/allYourFriends.vue'
+
 const ErrorPaBlogge = {
     template:
         '<div class="error-page">Trang Này Hiện Đang Trong Quá Trình Phát Triển <i class="fas fa-heart text-danger"></i></div>'
@@ -169,6 +173,20 @@ export const routes = [
                     }
                 ]
             },
+            {
+                path: 'friends',
+                name: 'FriendsParent',
+                component: FriendsParent,
+                children:
+                [
+                    {
+                        path: 'all-firend',
+                        name: 'allYourFriends',
+                        component: allYourFriends,
+                        
+                    }
+                ]
+            },
 
         ]
     }
@@ -182,7 +200,9 @@ import { store } from '../store/store';
 import { useUserStatus } from '../core/coreFunction';
 
 router.beforeEach((to, from, next) => {
-    store.dispatch('fetchAccounts').then(() => {
+    store.dispatch('fetchAccounts')
+    store.dispatch('friends/fetchIsFriends')
+    .then(() => {
         next();
     }).catch(error => {
         console.error('Error fetching accounts:', error);

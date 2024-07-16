@@ -31,9 +31,12 @@ import Restore from 'vue-material-design-icons/Restore.vue';
                 </div>
             </div>
             <div class="list_friends">
-                <div @click="fetchFriendChat(friend.user.id)" v-for="(friend , index) in friendsWithUsers" :key="friend.id"
-                    class="d-flex align-items-center justify-content-start friend_pr ">
+                <div @click="fetchFriendChat(friend.user.id)" v-for="(friend, index) in friendsWithUsers"
+                    :key="friend.id"
+                    class="d-flex position-relative align-items-center justify-content-start friend_pr ">
                     <img class="" :src="friend.user.avatar" alt="">
+                    <!-- <span class="dot-status"
+                        :class="{ 'online': friendStatus.state === 'online'}"></span> -->
                     <div class="text-pr primary-text">{{ friend.user.user_name }}</div>
                 </div>
             </div>
@@ -44,6 +47,8 @@ import Restore from 'vue-material-design-icons/Restore.vue';
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { useGeneralStore } from '../../../store/general';
 import { storeToRefs } from 'pinia';
+import { database, ref as dbRef, ref, push, onValue, query, orderByChild, equalTo, set } from '../../../firebase';
+
 export default {
     data() {
         const useGeneral = useGeneralStore();
@@ -51,11 +56,22 @@ export default {
         return {
             isChatBoxOverLay,
             isLoadingChatBox,
-            selecFriendId
+            selecFriendId,
+            friendStatus: {
+                state: 'loading...',
+                last_changed: ' '
+            },
         }
     },
     mounted() {
-        this.fetchIsFriend()
+        this.updateFriendStatus()
+    },
+    watch: {
+        friendsWithUsers(newValue) {
+            if (newValue && newValue.length) {
+                this.updateFriendStatus();
+            }
+        }
     },
     computed: {
         authUser() {
@@ -67,17 +83,13 @@ export default {
         ...mapState({
             accounts: state => state.users.accounts
         }),
-        ...mapGetters('friends',['getFriendsWithUsers']),
+        ...mapGetters('friends', ['getFriendsWithUsers']),
         friendsWithUsers() {
             return this.getFriendsWithUsers;
         },
     },
     methods: {
         ...mapActions('chat', ['getFriend']),
-        ...mapActions('friends', ['fetchIsFriends']),
-        fetchIsFriend() {
-            this.fetchIsFriends()
-        },
         fetchFriendChat(accountId) {
             this.isLoadingChatBox = true
             this.isChatBoxOverLay = true
@@ -90,6 +102,17 @@ export default {
                     console.error("Error in fetchFriendChat:", error);
                     this.isLoadingChatBox = true
                 });
+        },
+        getFriendStatus(friendId) {
+            const friendStatusRef = ref(database, `status/${friendId}`);
+            onValue(friendStatusRef, snapshot => {
+                this.friendStatus = snapshot.val();
+            });
+        },
+        updateFriendStatus() {
+            for (let friend of this.friendsWithUsers) {
+                this.getFriendStatus(friend.user.id);
+            }
         },
     },
     created() {

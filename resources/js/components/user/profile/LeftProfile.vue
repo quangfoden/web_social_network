@@ -31,7 +31,7 @@
                     </a>
                     <a v-else @click.prevent="sendRequest(inUser.id)" class="btn btn-primary btn-sm">Thêm bạn
                         bè</a>
-                    <a class="btn btn-secondary btn-sm">
+                    <a @click="fetchFriendChat(inUser.id)" class="btn btn-secondary btn-sm">
                         <i class="fa-solid fa-message mx-1"></i>Nhắn tin</a>
                 </div>
                 <div v-if="isAuthUser">
@@ -175,7 +175,6 @@
                     <img src="https://therichpost.com/wp-content/uploads/2021/03/avatar3.png" width="56" height="56"
                         class="rounded-circle mr-2 mb-2" alt="John Smit">
                     <div class="media-body">
-                        <!-- <p class="my-1"><strong>Quốc Lê</strong></p> -->
                         <a class="btn btn-sm btn-outline-primary" href="#">Xem thêm</a>
                     </div>
                 </div>
@@ -188,11 +187,16 @@
 <script>
 import { param } from 'jquery';
 import { mapState, mapActions, mapGetters } from 'vuex';
-
+import { useGeneralStore } from '../../../store/general';
+import { storeToRefs } from 'pinia';
 export default {
     data() {
+        const useGeneral = useGeneralStore();
+        const { isChatBoxOverLay, isLoadingChatBox, selecFriendId } = storeToRefs(useGeneral)
         return {
-
+            isChatBoxOverLay,
+            isLoadingChatBox,
+            selecFriendId,
         }
     },
     computed: {
@@ -256,7 +260,20 @@ export default {
         },
         cancelFriendship(id) {
             this.cancelFriendships(id)
-        }
+        },
+        fetchFriendChat(accountId) {
+            this.isLoadingChatBox = true
+            this.isChatBoxOverLay = true
+            this.$store.dispatch('chat/getFriend', accountId)
+                .then(response => {
+                    this.isLoadingChatBox = false
+                    this.selecFriendId = accountId
+                })
+                .catch(error => {
+                    console.error("Error in fetchFriendChat:", error);
+                    this.isLoadingChatBox = true
+                });
+        },
     },
     mounted() {
         this.getFriendRequest()

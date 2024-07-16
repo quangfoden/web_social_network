@@ -195,7 +195,7 @@ export default {
                 if (diffMinutes < 1) {
                     format = 'Hoạt động một vài giây trước';
                 } else if (diffMinutes === 1) {
-                    format = 'Hoạt động một phút trước';
+                    format = 'Hoạt động 1 phút trước';
                 } else if (diffMinutes < 60) {
                     format = `Hoạt động ${diffMinutes} phút trước`;
                 } else if (diffHours === 1) {
@@ -330,7 +330,6 @@ export default {
                     this.friendStatusId = typingUsers[0]
                     if (this.friendStatusId != this.currentUser.user_id) {
                         this.isTyping = typingUsers.length > 0;
-                        console.log('hahah');
                     }
                 } else {
                     this.isTyping = false;

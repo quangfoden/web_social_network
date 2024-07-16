@@ -17,13 +17,14 @@ import Restore from 'vue-material-design-icons/Restore.vue';
         <div class="leffsidebar_lists">
             <router-link :to="{ name: 'Profile User', params: { id: authUser.user_id } }"
                 class="d-flex align-items-center justify-content-start w-100 left-item">
-                <img :src="authUser.avatar" alt="" class="img-cus">
+                <img :src="authUser.avatar" alt="" class="custom">
                 <div class="text-profile">{{ authUser.user_name }}</div>
             </router-link>
-            <a class="d-flex align-items-center justify-content-start w-100 left-item">
+            <router-link :to="{ name: 'FriendsParent' }"
+                class="d-flex align-items-center justify-content-start w-100 left-item">
                 <AccountMultiple :size="35" fillColor="#5BD7C6" />
                 <div class="text-items">Bạn bè</div>
-            </a>
+            </router-link>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
                 <Flag :size="35" fillColor="#F2682C" />
                 <div class="text-items">Trang</div>
@@ -63,7 +64,7 @@ export default {
         },
     },
     methods: {
-      
+
     }
 }
 </script>

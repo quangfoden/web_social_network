@@ -513,6 +513,67 @@ img.custom {
     }
 }
 
+#allYourFriends {
+    padding-top: 66px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    .card {
+        background: var(--bg-item);
+
+        h3 {
+            color: var(--primary-text);
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+}
+
+#LeftAllFriends {
+    padding-top: 1rem;
+    max-width: 320px;
+    padding-right: 1rem;
+    background: var(--bg-main);
+    padding-top: 56px;
+
+    .left-item {
+        cursor: pointer;
+
+        &:hover {
+            background-color: var(--bg-input);
+        }
+
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+    }
+
+    img.img-cus {
+        border-radius: 9999px;
+        margin-left: 0.25rem;
+        min-width: 40px;
+        max-height: 40px;
+    }
+
+    .text-profile {
+        font-size: 15px;
+        font-weight: 800;
+        padding-left: 0.75rem;
+        color: var(--primary-text);
+    }
+
+    .text-items {
+        font-size: 15px;
+        font-weight: 800;
+        padding-left: 0.75rem;
+        color: var(--primary-text);
+    }
+}
+
 // sidebar right 
 #RightSection {
     padding-left: 1rem;
@@ -681,24 +742,28 @@ img.custom {
                 visibility: visible;
             }
         }
+
         .type-heart {
             &:hover .list-user-like-type-heart {
                 opacity: 1;
                 visibility: visible;
             }
         }
+
         .type-laugh {
             &:hover .list-user-like-type-laugh {
                 opacity: 1;
                 visibility: visible;
             }
         }
+
         .type-sad {
             &:hover .list-user-like-type-sad {
                 opacity: 1;
                 visibility: visible;
             }
         }
+
         .type-infuriating {
             &:hover .list-user-like-type-infuriating {
                 opacity: 1;

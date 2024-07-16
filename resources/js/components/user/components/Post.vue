@@ -219,10 +219,10 @@ import Pin from 'vue-material-design-icons/Pin.vue'
                         <ul v-show="showSuggestions && filteredFriends.length >= 1"
                             class="suggestions rounded  position-absolute">
                             <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
-                                @click="selectFriend(friend, post.id)">
+                                @click="selectFriend(friend.user, post.id)">
                                 <div class="d-flex gap-2 align-items-center">
-                                    <img class="rounded-full ml-1 img-cus" :src="friend.avatar" alt="">
-                                    <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
+                                    <img class="rounded-full ml-1 img-cus" :src="friend.user.avatar" alt="">
+                                    <p class="primary-text fw-bold mb-0">{{ friend.user.user_name }}</p>
                                 </div>
                             </li>
                         </ul>
@@ -389,6 +389,10 @@ export default {
             }
             return JSON.parse(localStorage.getItem('authUser'));
         },
+        ...mapGetters('friends', ['getFriendsWithUsers']),
+        friendsWithUsers() {
+            return this.getFriendsWithUsers;
+        },
         ...mapState({
             accounts: state => state.users.accounts
         }),
@@ -415,6 +419,7 @@ export default {
         hasInfuriating() {
             return this.likes.some(like => like.type === 'Infuriating');
         }
+        
     },
     mounted() {
 
@@ -664,7 +669,7 @@ export default {
                 const query = diacritics.remove(match[1].toLowerCase());
                 this.filteredFriends = this.friends.filter(
                     friend =>
-                        diacritics.remove(friend.user_name.toLowerCase()).includes(query)
+                        diacritics.remove(friend.user.user_name.toLowerCase()).includes(query)
                 );
                 this.showSuggestions = true;
             } else {
@@ -674,8 +679,6 @@ export default {
         },
         selectFriend(friend, id) {
             this.selectedFriend = friend;
-            console.log(this.selectedFriend.user_name);
-            console.log(this.selectedFriend);
             const textArea = this.$refs['textAreaComment' + id];
             const position = textArea.selectionStart;
 
@@ -732,7 +735,7 @@ export default {
         },
     },
     created() {
-        this.friends = this.accounts
+        this.friends = this.friendsWithUsers
     }
 }
 </script>

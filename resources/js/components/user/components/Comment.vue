@@ -65,10 +65,10 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                                 <ul v-show="showSuggestions && filteredFriends.length >= 1"
                                     class="suggestions rounded position-absolute" style="top: 105px;left: 0;">
                                     <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
-                                        @click="selectFriend(friend, comment.id)">
+                                        @click="selectFriend(friend.user, comment.id)">
                                         <div class="d-flex gap-2 align-items-center">
-                                            <img class="rounded-full ml-1 custom" :src="friend.avatar" alt="">
-                                            <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
+                                            <img class="rounded-full ml-1 custom" :src="friend.user.avatar" alt="">
+                                            <p class="primary-text fw-bold mb-0">{{ friend.user.user_name }}</p>
                                         </div>
                                     </li>
                                 </ul>
@@ -181,10 +181,10 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                             style="top: -145px;left: 0px;min-height: 130px;"
                             class="suggestions rounded  position-absolute">
                             <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
-                                @click="_selectFriend(friend, comment.id)">
+                                @click="_selectFriend(friend.user, comment.id)">
                                 <div class="d-flex gap-2 align-items-center">
-                                    <img class="rounded-full ml-1 custom" :src="friend.avatar" alt="">
-                                    <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
+                                    <img class="rounded-full ml-1 custom" :src="friend.user.avatar" alt="">
+                                    <p class="primary-text fw-bold mb-0">{{ friend.user.user_name }}</p>
                                 </div>
                             </li>
                         </ul>
@@ -228,7 +228,7 @@ import Undo from 'vue-material-design-icons/Undo.vue'
 <script>
 import diacritics from 'diacritics';
 import { toRefs, reactive, ref } from 'vue';
-import { mapState } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import RepComment from '../Components/Repcomment.vue'
 import { useGeneralStore } from '../../../store/general';
 import { storeToRefs } from 'pinia';
@@ -291,9 +291,16 @@ export default {
         ...mapState({
             accounts: state => state.users.accounts
         }),
+        ...mapGetters('friends', ['getFriendsWithUsers']),
+        friendsWithUsers() {
+            return this.getFriendsWithUsers;
+        },
         isSubmitDisabled() {
             return this.formRepComment.content === '' && Object.keys(this.formMediarepComment).length === 0;
         }
+    },
+    mounted() {
+      
     },
     methods: {
         getUploadedImageRepComment(e) {
@@ -699,7 +706,7 @@ export default {
                 const query = diacritics.remove(match[1].toLowerCase());
                 this.filteredFriends = this.friends.filter(
                     friend =>
-                        diacritics.remove(friend.user_name.toLowerCase()).includes(query)
+                        diacritics.remove(friend.user.user_name.toLowerCase()).includes(query)
                 );
                 this.showSuggestions = true;
             } else {
@@ -718,7 +725,7 @@ export default {
                 const query = diacritics.remove(match[1].toLowerCase());
                 this.filteredFriends = this.friends.filter(
                     friend =>
-                        diacritics.remove(friend.user_name.toLowerCase()).includes(query)
+                        diacritics.remove(friend.user.user_name.toLowerCase()).includes(query)
                 );
                 this.showSuggestions = true;
             } else {
@@ -746,8 +753,6 @@ export default {
         },
         selectFriend(friend, id) {
             this.selectedFrientEidtComment = friend;
-            console.log(this.selectedFrientEidtComment.user_name);
-            console.log(this.selectedFrientEidtComment);
             const textArea = this.$refs['comment' + id];
             const position = textArea.selectionStart;
 
@@ -775,8 +780,7 @@ export default {
 
     created() {
         this.setupCommentWatcher();
-        this.friends = this.accounts
-        console.log(this.comment.content);
+        this.friends = this.friendsWithUsers
     },
 }
 </script>

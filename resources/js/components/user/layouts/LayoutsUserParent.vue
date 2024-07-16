@@ -7,7 +7,7 @@
             <SidebarRight />
         </div>
     </div>
-    <ChatBox v-if="isChatBoxOverLay" />
+    <!-- <ChatBox v-if="isChatBoxOverLay" /> -->
 </template>
 <script>
 import { useGeneralStore } from '../../../store/general';

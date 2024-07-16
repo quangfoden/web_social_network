@@ -472,6 +472,58 @@ img.custom {
   color: var(--primary-text);
 }
 
+#allYourFriends {
+  padding-top: 66px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+#allYourFriends .card {
+  background: var(--bg-item);
+}
+#allYourFriends .card h3 {
+  color: var(--primary-text);
+}
+#allYourFriends .card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#LeftAllFriends {
+  padding-top: 1rem;
+  max-width: 320px;
+  padding-right: 1rem;
+  background: var(--bg-main);
+  padding-top: 56px;
+}
+#LeftAllFriends .left-item {
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+}
+#LeftAllFriends .left-item:hover {
+  background-color: var(--bg-input);
+}
+#LeftAllFriends img.img-cus {
+  border-radius: 9999px;
+  margin-left: 0.25rem;
+  min-width: 40px;
+  max-height: 40px;
+}
+#LeftAllFriends .text-profile {
+  font-size: 15px;
+  font-weight: 800;
+  padding-left: 0.75rem;
+  color: var(--primary-text);
+}
+#LeftAllFriends .text-items {
+  font-size: 15px;
+  font-weight: 800;
+  padding-left: 0.75rem;
+  color: var(--primary-text);
+}
+
 #RightSection {
   padding-left: 1rem;
   display: none;
