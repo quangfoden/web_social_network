@@ -13,7 +13,7 @@
         <!-- ============================================================== -->
         <div class="main-content">
 
-            <div class="page-content">
+            <div class="page-content" style="background: #fff;">
                 <div class="container-fluid">
 
                     <!-- start page title -->
