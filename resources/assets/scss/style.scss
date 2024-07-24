@@ -534,6 +534,48 @@ img.custom {
     }
 }
 
+#allRequestFriends {
+    padding-top: 66px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    .card {
+        background: var(--bg-item);
+
+        h3 {
+            color: var(--primary-text);
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+}
+
+#FriendSuggestions {
+    padding-top: 66px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    .card {
+        background: var(--bg-item);
+
+        h3 {
+            color: var(--primary-text);
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+}
+
 #LeftAllFriends {
     padding-top: 1rem;
     max-width: 320px;

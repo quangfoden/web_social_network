@@ -1,12 +1,15 @@
 <template>
     <div id="allYourFriends" class="col-12 col-lg-8 order-1 order-lg-2">
-        <div v-for="friend in friendsWithUsers" :key="friend.id" class="card"
+        <div v-if="friendsWithUsers.length === 0">
+            <h4 class="text-white">Không có dữ liệu</h4>
+        </div>
+        <div v-else v-for="friend in friendsWithUsers" :key="friend.id" class="card"
             style="width: 200px; height: fit-content;">
             <img :src="friend.user.avatar" class="card-img-top" alt="Placeholder Image">
             <div class="card-body">
                 <h3 href="#" class="text-pr custom-cursor-pointer text-center">{{ friend.user.user_name }}</h3>
                 <router-link @click="gotoFriendPr()" :to="{ name: 'Profile User', params: { id: friend.user.user_id } }"
-                    href="#" class="btn btn-primary text-center">Xem trang cá nhân</router-link>
+                    href="#" class="btn btn-sm btn-primary text-center">Xem trang cá nhân</router-link>
             </div>
         </div>
     </div>

@@ -34,6 +34,8 @@ import Trash from '../components/user/profile/Trash.vue';
 // friend
 import FriendsParent from '../components/user/AllFriends/FriendsParent.vue'
 import allYourFriends from '../components/user/AllFriends/allYourFriends.vue'
+import AllRequestFriend from '../components/user/AllFriends/AllRequestFriend.vue'
+import FriendSuggestions from '../components/user/AllFriends/FriendSuggestions.vue'
 
 const ErrorPaBlogge = {
     template:
@@ -183,6 +185,18 @@ export const routes = [
                         path: 'all-firend',
                         name: 'allYourFriends',
                         component: allYourFriends,
+                        
+                    },
+                    {
+                        path: 'firends-request',
+                        name: 'AllFriendsRequest',
+                        component: AllRequestFriend,
+                        
+                    },
+                    {
+                        path: 'firends-suggestions',
+                        name: 'FriendSuggestions',
+                        component: FriendSuggestions,
                         
                     }
                 ]

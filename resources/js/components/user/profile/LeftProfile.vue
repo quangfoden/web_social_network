@@ -239,7 +239,7 @@ export default {
     methods: {
         ...mapActions('friends', ['sendFriendRequest']),
         ...mapActions('friends', ['getFriends']),
-        ...mapActions('friends', ['getFriendRequests']),
+        ...mapActions('friends', ['getFriendRequestsFrbase']),
         ...mapActions('friends', ['acceptRequests']),
         ...mapActions('friends', ['declineRequests']),
         ...mapActions('friends', ['cancelFriendships']),
@@ -250,7 +250,7 @@ export default {
             this.getFriends(this.authUser.id)
         },
         getFriendRequest() {
-            this.getFriendRequests(this.authUser.id)
+            this.getFriendRequestsFrbase(this.authUser.id)
         },
         acceptRequest(id) {
             this.acceptRequests(id)

@@ -30,13 +30,11 @@ class FriendRequestController extends Controller
     public function acceptRequest($id)
     {
         $result = $this->friendRequestService->acceptRequest($id);
-
         return $result;
     }
     public function declineRequest($id)
     {
         $result = $this->friendRequestService->declineRequest($id);
-
         return $result;
     }
     public function getFriendRequests()

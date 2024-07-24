@@ -60,7 +60,19 @@ const actions = {
             commit('SET_LOADING', false);
         }
     },
-    async getFriendRequests({ commit }, userId) {
+    async fetchFriendRequests({ commit }) {
+        try {
+            commit('SET_LOADING', true);
+
+            const response = await axios.get('/api/user/friend-requests');
+            commit('SET_RECEIVED_REQUESTS', response.data.received_requests);
+        } catch (error) {
+            console.error('Error fetching friend requests:', error);
+        } finally {
+            commit('SET_LOADING', false);
+        }
+    },
+    async getFriendRequestsFrbase({ commit }, userId) {
         try {
             commit('SET_LOADING', true);
 
@@ -71,11 +83,10 @@ const actions = {
 
                 snapshot.forEach((childSnapshot) => {
                     const request = childSnapshot.val();
-
                     if (request.receiver_id === userId && request.status === 'pending') {
                         receivedRequests.push(request);
                     }
-
+                    
                     if (request.sender_id === userId && request.status === 'pending') {
                         sentRequests.push(request);
                     }
@@ -114,6 +125,8 @@ const actions = {
         try {
             commit('SET_LOADING', true);
             await axios.post(`api/user/friend-request/${id}/accept`);
+            dispatch.fetchFriendRequests
+            dispatch.fetchIsFriends
         } catch (error) {
             console.error(error);
         }
@@ -136,6 +149,7 @@ const actions = {
         try {
             commit('SET_LOADING', true);
             const response = await axios.delete(`/api/user/friends/${friendId}`);
+            dispatch.fetchFriendRequests
             return response.data;
         } catch (error) {
             console.error('Error cancelling friendship:', error);

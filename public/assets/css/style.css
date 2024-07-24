@@ -490,6 +490,42 @@ img.custom {
   gap: 20px;
 }
 
+#allRequestFriends {
+  padding-top: 66px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+#allRequestFriends .card {
+  background: var(--bg-item);
+}
+#allRequestFriends .card h3 {
+  color: var(--primary-text);
+}
+#allRequestFriends .card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#FriendSuggestions {
+  padding-top: 66px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+#FriendSuggestions .card {
+  background: var(--bg-item);
+}
+#FriendSuggestions .card h3 {
+  color: var(--primary-text);
+}
+#FriendSuggestions .card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 #LeftAllFriends {
   padding-top: 1rem;
   max-width: 320px;

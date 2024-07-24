@@ -19,18 +19,21 @@ import ArrowLeft from 'vue-material-design-icons/ArrowLeft.vue';
                 <ArrowLeft :size="35" fillColor="#B0B3B8" />
                 <div class="text-items">Trở về</div>
             </a>
-            <router-link :to="{name:'allYourFriends'}" class="d-flex align-items-center justify-content-start w-100 left-item">
+            <router-link :to="{ name: 'allYourFriends' }"
+                class="d-flex align-items-center justify-content-start w-100 left-item">
                 <AccountGroup :size="35" fillColor="#007bff" />
                 <div class="text-items">Tất cả bạn bè</div>
             </router-link>
-            <a class="d-flex align-items-center justify-content-start w-100 left-item">
+            <router-link :to="{ name: 'AllFriendsRequest' }"
+                class="d-flex align-items-center justify-content-start w-100 left-item">
                 <AccountPlus :size="35" fillColor="#007bff" />
                 <div class="text-items">Yêu cầu kết bạn</div>
-            </a>
-            <a class="d-flex align-items-center justify-content-start w-100 left-item">
+            </router-link>
+            <router-link :to="{ name: 'FriendSuggestions' }"
+                class="d-flex align-items-center justify-content-start w-100 left-item">
                 <Group :size="35" fillColor="#007bff" />
                 <div class="text-items">Gợi ý bạn bè</div>
-            </a>
+            </router-link>
         </div>
     </div>
 </template>
