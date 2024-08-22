@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Post\AddPostRequest;
+use App\Http\Requests\Post\EditPostRequest;
 use App\Models\Like;
 use App\Models\Media;
 use Illuminate\Support\Facades\Auth;
@@ -100,7 +101,7 @@ class PostsController extends Controller
             'data' => $posts
         ]);
     }
-    public function updatePost(AddPostRequest $request, $postId)
+    public function updatePost(Request $request, $postId)
     {
         $ispost = Post::find($postId);
         if (!$ispost) {

@@ -261,7 +261,7 @@ const actions = {
             .catch(error => {
                 Swal.fire({
                     icon: 'error',
-                    title: ' bài viết cập nhật thành công',
+                    title: ' bài viết cập nhật không thành công thành công',
                     showConfirmButton: false,
                     timer: 3000
                 })

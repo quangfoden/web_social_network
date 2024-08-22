@@ -7,6 +7,7 @@ export const useGeneralStore = defineStore('general', {
         myProfile: false,
         isChatBoxOverLay: false,
         selecFriendId: null,
+        filesMessUpload: null,
         isFileDisplay: [],
         isLoadingChatBox: false,
         showClickBack: false

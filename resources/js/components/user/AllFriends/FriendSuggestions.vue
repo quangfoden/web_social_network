@@ -4,7 +4,7 @@
             <h4 class="text-white">Không có dữ liệu</h4>
         </div>
         <div v-else class="d-flex gap-2">
-            <div v-for="friend in AllFriendSuggestions" :key="friend.id"style="width: 200px; height: fit-content;">
+            <div v-for="friend in AllFriendSuggestions" :key="friend.id" style="max-width: 200px; height: fit-content;">
                 <div class="card" v-if="!friendsWithUsersMap[friend.id]">
                     <img :src="friend.avatar" class="card-img-top" alt="Placeholder Image">
                     <div class="card-body">
@@ -12,7 +12,7 @@
                             :to="{ name: 'Profile User', params: { id: friend.user_id } }"
                             class="text-pr text-white custom-cursor-pointer text-center">{{ friend.user_name
                             }}</router-link>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex justify-content-center gap-2">
                             <div>
                                 <a style="font-size: 12px;" v-if="friendRequestsMap[friend.id]"
                                     @click.prevent="cancelFriendships(friend.id)" class="btn btn-sm btn-primary">Đã gửi
@@ -40,9 +40,12 @@
     </div>
 </template>
 <script>
+import { ref, onValue } from "firebase/database";
+import { database } from '../../../firebase'
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { useGeneralStore } from '../../../store/general';
 import { storeToRefs } from 'pinia';
+import friends from '../../../store/modules/friends';
 export default {
     data() {
         const useGeneral = useGeneralStore();
@@ -51,6 +54,7 @@ export default {
             isChatBoxOverLay,
             isLoadingChatBox,
             selecFriendId,
+            friendsWithUsersMap: {},
         }
     },
     computed: {
@@ -75,12 +79,12 @@ export default {
             return JSON.parse(localStorage.getItem('authUser'));
         },
         ...mapGetters('friends', ['getFriendsWithUsers']),
-        friendsWithUsersMap() {
-            return this.getFriendsWithUsers.reduce((map, request) => {
-                map[request.user.id] = request;
-                return map;
-            }, {});
-        },
+        // friendsWithUsersMap() {
+        //     return this.getFriendsWithUsers.reduce((map, request) => {
+        //         map[request.user.id] = request;
+        //         return map;
+        //     }, {});
+        // },
         AllFriendSuggestions() {
             return this.accounts.filter(account => account.id !== this.authUser.id);
         },
@@ -96,10 +100,10 @@ export default {
                 return map;
             }, {});
         },
-
     },
-    created() {
-        this.$store.dispatch('friends/getFriendRequestsFrbase', this.authUser.id);
+    async created() {
+        await this.buildFriendsWithUsersMap()
+        await this.$store.dispatch('friends/getFriendRequestsFrbase', this.authUser.id);
     },
     methods: {
         ...mapActions('friends', ['sendFriendRequest']),
@@ -119,6 +123,29 @@ export default {
                     console.error("Error in fetchFriendChat:", error);
                     this.isLoadingChatBox = true
                 });
+        },
+        async buildFriendsWithUsersMap() {
+            const userId = this.authUser.id;
+            const friendsRef = ref(database, `friends/${userId}`);
+            
+            onValue(friendsRef, (snapshot) => {
+                const friendsData = snapshot.val();
+                const friendsMap = {};
+                console.log(friendsData);
+                
+                if (friendsData) {
+                    Object.keys(friendsData).forEach((key) => {
+                        const friend = friendsData[key];
+                        if (friend.friend_id) {
+                            friendsMap[friend.friend_id] = true;
+                        }
+                    });
+                }
+
+                this.friendsWithUsersMap = friendsMap;
+                console.log(this.friendsWithUsersMap);
+                
+            });
         },
     }
 }

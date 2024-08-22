@@ -1448,10 +1448,13 @@ img.custom {
   padding-inline: 10px;
   padding-block: 10px;
   display: flex;
-  gap: 20px;
-  align-items: center;
+  flex-direction: column;
   width: 100%;
   margin-top: auto;
+}
+#ChatBox .chat-bottom .file-preview {
+  max-width: 120px;
+  z-index: 1;
 }
 #ChatBox .chat-bottom .icon i {
   font-size: 20px;

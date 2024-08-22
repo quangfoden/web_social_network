@@ -134,14 +134,14 @@ import { database, ref as dbRef, ref, push, onValue, query, orderByChild, equalT
 export default {
     data() {
         const useGeneral = useGeneralStore();
-        const { isChatBoxOverLay, isLoadingChatBox, isFileDisplay } = storeToRefs(useGeneral)
+        const { isChatBoxOverLay, isLoadingChatBox, isFileDisplay, filesMessUpload } = storeToRefs(useGeneral)
         return {
             isChatBoxOverLay,
             isLoadingChatBox,
             isFileDisplay,
             listMessage: [],
             contentMessage: '',
-            file: null,
+            filesMessUpload,
             fileURL: null,
             fileType: null,
             filePath: null,
@@ -234,10 +234,13 @@ export default {
                 this.listMessage = messages;
             });
         },
+
         async sendMessage(event) {
             if (event) event.preventDefault();
             this.stopTyping()
-            if (this.contentMessage.trim() !== '' || this.file) {
+            console.log(this.filesMessUpload);
+
+            if (this.contentMessage.trim() !== '' || this.filesMessUpload) {
                 await this.startConversation();
                 const messagesRef = dbRef(database, 'messages');
 
@@ -249,19 +252,20 @@ export default {
                     timestamp: Date.now()
                 };
 
-                if (this.file) {
+                if (this.filesMessUpload) {
+                    console.log('hehe');
+
                     const storage = getStorage();
-                    const fileRef = storageRef(storage, `uploads/message/${this.file.name}`);
-                    await uploadBytes(fileRef, this.file);
+                    const fileRef = storageRef(storage, `uploads/message/${this.filesMessUpload.name}`);
+                    await uploadBytes(fileRef, this.filesMessUpload);
                     const fileURL = await getDownloadURL(fileRef);
 
                     messageData.fileURL = fileURL;
-                    messageData.fileType = this.getFileType(this.file);
-                    messageData.filePath = `uploads/message/${this.file.name}`;
+                    messageData.fileType = this.getFileType(this.filesMessUpload);
+                    messageData.filePath = `uploads/message/${this.filesMessUpload.name}`;
 
-                    this.file = null;
-                    this.filePreview = null;
-                    this.fileType = '';
+                    this.clearFileMess()
+
                 }
                 push(messagesRef, messageData);
                 this.contentMessage = '';
@@ -283,25 +287,33 @@ export default {
             }
         },
         handleFileChange($event) {
-            this.file = $event.target.files[0];
+            this.filesMessUpload = $event.target.files[0];
             $event.target.value = '';
-            if (this.file) {
-                const fileType = this.file.type;
+            if (this.filesMessUpload) {
+                const fileType = this.filesMessUpload.type;
                 if (fileType.startsWith('image/')) {
-                    this.filePreview = URL.createObjectURL(this.file);
+                    this.filePreview = URL.createObjectURL(this.filesMessUpload);
                     this.fileType = 'image';
                 } else if (fileType.startsWith('video/')) {
-                    this.filePreview = URL.createObjectURL(this.file);
+                    this.filePreview = URL.createObjectURL(this.filesMessUpload);
                     this.fileType = 'video';
                 } else {
                     this.filePreview = this.file.name;
                     this.fileType = 'other';
                 }
             }
+            console.log(this.filePreview);
+
         },
         clearFileMess() {
-            this.file = null
+            console.log('clear');
+
+            this.filesMessUpload = null
             this.filePreview = null
+            this.fileType = null;
+            console.log(this.filesMessUpload);
+            console.log(this.filePreview);
+
         },
         getFriendStatus(friendId) {
             const friendStatusRef = ref(database, `status/${friendId}`);

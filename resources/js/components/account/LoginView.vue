@@ -56,11 +56,11 @@
           Don't have an account ?
           <router-link :to="{ name: 'Register' }" class="font-weight-medium text-login-register">Register</router-link>
         </p>
-        <p>
+        <!-- <p>
           © 2023 Create
           <i class="mdi mdi-heart text-danger"></i> by
           me
-        </p>
+        </p> -->
       </div>
     </div>
   </div>

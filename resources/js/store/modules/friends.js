@@ -86,7 +86,7 @@ const actions = {
                     if (request.receiver_id === userId && request.status === 'pending') {
                         receivedRequests.push(request);
                     }
-                    
+
                     if (request.sender_id === userId && request.status === 'pending') {
                         sentRequests.push(request);
                     }
@@ -125,8 +125,8 @@ const actions = {
         try {
             commit('SET_LOADING', true);
             await axios.post(`api/user/friend-request/${id}/accept`);
-            dispatch.fetchFriendRequests
-            dispatch.fetchIsFriends
+            await dispatch('fetchFriendRequests');
+            await dispatch('fetchIsFriends'); 
         } catch (error) {
             console.error(error);
         }
@@ -145,11 +145,11 @@ const actions = {
             commit('SET_LOADING', false);
         }
     },
-    async cancelFriendships({ commit }, friendId) {
+    async cancelFriendships({ commit, dispatch }, friendId) {
         try {
             commit('SET_LOADING', true);
             const response = await axios.delete(`/api/user/friends/${friendId}`);
-            dispatch.fetchFriendRequests
+            await dispatch('fetchFriendRequests');
             return response.data;
         } catch (error) {
             console.error('Error cancelling friendship:', error);

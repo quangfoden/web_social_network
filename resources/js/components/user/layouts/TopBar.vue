@@ -17,8 +17,8 @@ import Logout from 'vue-material-design-icons/Logout.vue';
     <div id="Mainnav" class="border-bottom-cus">
         <div class="d-flex gap-2">
             <router-link :to="{ name: 'Home Section' }" class="text_name">
-                <!-- <img class="Logo" width="40" src="/images/logoclient.png" alt=""> -->
-                 <h3 class="primary-text m-0">Logo</h3>
+                <img class="Logo" width="40" src="/images/icons/FacebookLogoCircle.png" alt="">
+                 <!-- <h3 class="primary-text m-0">Logo</h3> -->
             </router-link>
             <div id="Navleft">
                 <Magnify class="p-2" :size="27" fillColor="#B0B3B8" />
@@ -81,7 +81,7 @@ import Logout from 'vue-material-design-icons/Logout.vue';
                     <span v-if="authUser.user_face_regs.length > 0" lass="w-full  ml-2">
                         <div style="cursor: pointer;"
                             class="d-flex menu_item align-items-center justify-content-center gap-1">
-                            <span @click="deleteFaceId">Xoá khuôn mặt đã đăng ký</span>
+                            <span class="text-white" @click="deleteFaceId">Xoá khuôn mặt đã đăng ký</span>
                         </div>
                     </span>
                     <a @click="logoutSubmit" class="w-full  ml-2" as="button" method="post">
