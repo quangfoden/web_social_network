@@ -1,7 +1,8 @@
 <template>
     <div class="card shadow mb-4">
-        <button ref="myModalAddUserBtn" type="button" class="btn btn-all-add-edit btn-primary my-3 mx-3 position-absolute"
-            data-bs-toggle="modal" data-bs-target="#ModalAddUser">
+        <button ref="myModalAddUserBtn" type="button"
+            class="btn btn-all-add-edit btn-primary my-3 mx-3 position-absolute" data-bs-toggle="modal"
+            data-bs-target="#ModalAddUser">
             <i class="ri-user-add-fill mr-1"></i> Add user
         </button>
         <div class="card-body">
@@ -71,8 +72,8 @@
                                         <div v-if="showCheckbox" class="form-check" v-for="(role, index) in roles"
                                             :key="`checkbox_${role.id}`">
                                             <input type="checkbox" class="form-check-input" value=""
-                                                :key="`checkbox_${role.id}`" :checked="isRolesChecked(userRoles, role.id)"
-                                                @click="handleCheckboxClick(role.id, $event.target.checked)
+                                                :key="`checkbox_${role.id}`"
+                                                :checked="isRolesChecked(userRoles, role.id)" @click="handleCheckboxClick(role.id, $event.target.checked)
                                                     " />{{ role.name }}
                                         </div>
                                     </div>
@@ -107,7 +108,8 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                         <div class="col-md-12 d-flex gap-2 align-items-center justify-content-center">
-                            <router-link :to="{ name: 'Profile User' }" class="btn btn-primary" @click="closeModal">Go to Profile </router-link>
+                            <router-link :to="{ name: 'Profile Admin' }" class="btn btn-primary" @click="closeModal">Go
+                                to Profile </router-link>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -155,13 +157,15 @@
                                         </div>
                                         <div class="form-group mb-3">
                                             <label>New Password</label>
-                                            <input type="password" placeholder="Enter new password..." class="form-control"
-                                                v-model="userPasswwordForm.password_new" required />
+                                            <input type="password" placeholder="Enter new password..."
+                                                class="form-control" v-model="userPasswwordForm.password_new"
+                                                required />
                                         </div>
                                         <div class="form-group mb-3">
                                             <label>Repassword</label>
-                                            <input type="password" placeholder="Enter repassword..." class="form-control"
-                                                v-model="userPasswwordForm.repassword_new" required />
+                                            <input type="password" placeholder="Enter repassword..."
+                                                class="form-control" v-model="userPasswwordForm.repassword_new"
+                                                required />
                                         </div>
 
                                     </div>
@@ -204,13 +208,13 @@
                                                 </div>
                                                 <div class="form-group mb-3 col-12 col-lg-6">
                                                     <label>Last Name</label>
-                                                    <input type="text" placeholder="Enter last name..." class="form-control"
-                                                        v-model="newUser.last_name" required />
+                                                    <input type="text" placeholder="Enter last name..."
+                                                        class="form-control" v-model="newUser.last_name" required />
                                                 </div>
                                                 <div class="form-group mb-3 col-12 col-lg-6">
                                                     <label>User Name</label>
-                                                    <input type="text" placeholder="Enter username..." class="form-control"
-                                                        v-model="newUser.user_name" required />
+                                                    <input type="text" placeholder="Enter username..."
+                                                        class="form-control" v-model="newUser.user_name" required />
                                                 </div>
                                             </div>
                                             <div class="form-group mb-3">
@@ -220,8 +224,8 @@
                                             </div>
                                             <div class="form-group mb-3">
                                                 <label>Password</label>
-                                                <input type="password" placeholder="Enter password..." class="form-control"
-                                                    v-model="newUser.password" required />
+                                                <input type="password" placeholder="Enter password..."
+                                                    class="form-control" v-model="newUser.password" required />
                                             </div>
                                             <div class="form-group mb-3">
                                                 <div class="row">
@@ -327,6 +331,9 @@ export default {
                 });
 
             });
+
+    },
+    mounted() {
         this.fetchData()
     },
     methods: {
@@ -626,16 +633,15 @@ export default {
                         });
                     }
                 })
-                .catch((error) => {
-                    console.log("lỗi rồi", error)
-                    if (error.response.status == 403) {
-                        this.logout();
-                    }
-                    if (error.response.status == 401) {
-                        this.logout();
-                    }
+            // .catch((error) => {
+            //     if (error.response.status == 403) {
+            //         this.logout();
+            //     }
+            //     if (error.response.status == 401) {
+            //         this.logout();
+            //     }
 
-                });
+            // });
         },
         isRolesChecked(roles, roleId) {
             if (Array.isArray(roles)) {

@@ -13,44 +13,47 @@ import DotsHorizontal from 'vue-material-design-icons/DotsHorizontal.vue';
 import Restore from 'vue-material-design-icons/Restore.vue';
 </script>
 <template>
-    <div id="LeftSection">
+    <div id="LeftSection" class="card mb-3">
         <div class="leffsidebar_lists">
-            <a href="/" class="d-flex align-items-center justify-content-start w-100 left-item">
-                <img :src="authUser.avatar" alt="" class="img-cus">
+            <router-link :to="{ name: 'Profile User', params: { id: authUser.user_id } }"
+                class="d-flex align-items-center justify-content-start w-100 left-item">
+                <img :src="authUser.avatar" alt="" class="custom">
                 <div class="text-profile">{{ authUser.user_name }}</div>
+            </router-link>
+            <router-link :to="{ name: 'FriendsParent' }"
+                class="d-flex align-items-center justify-content-start w-100 left-item">
+                <AccountMultiple :size="35" fillColor="#5BD7C6" />
+                <div class="text-items">Bạn bè</div>
+            </router-link>
+            <a class="d-flex align-items-center justify-content-start w-100 left-item">
+                <Flag :size="35" fillColor="#F2682C" />
+                <div class="text-items">Trang</div>
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
-                <AccountMultiple :size="40" fillColor="#5BD7C6" />
-                <div class="text-items">Friends</div>
+                <ClockTimetwoOutline :size="35" fillColor="#21AAFA" />
+                <div class="text-items">Gần đây nhất</div>
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
-                <Flag :size="40" fillColor="#F2682C" />
-                <div class="text-items">Pages</div>
+                <AccountGroup :size="35" fillColor="#2A09FD" />
+                <div class="text-items">Nhóm</div>
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
-                <ClockTimetwoOutline :size="40" fillColor="#21AAFA" />
-                <div class="text-items">Most Recent</div>
-            </a>
-            <a class="d-flex align-items-center justify-content-start w-100 left-item">
-                <AccountGroup :size="40" fillColor="#2A09FD" />
-                <div class="text-items">Groups</div>
-            </a>
-            <a class="d-flex align-items-center justify-content-start w-100 left-item">
-                <StorefrontOutline :size="40" fillColor="#48C0D8" />
+                <StorefrontOutline :size="35" fillColor="#48C0D8" />
                 <div class="text-items">marketplace</div>
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
-                <TelevisionPlay :size="40" fillColor="#9739CF" />
-                <div class="text-items">Watch</div>
+                <TelevisionPlay :size="35" fillColor="#9739CF" />
+                <div class="text-items">Video</div>
             </a>
             <a class="d-flex align-items-center justify-content-start w-100 left-item">
-                <Restore :size="40" fillColor="#32D4D0" />
-                <div class="text-items">Memories</div>
+                <Restore :size="35" fillColor="#32D4D0" />
+                <div class="text-items">Kỷ niệm</div>
             </a>
         </div>
     </div>
 </template>
 <script>
+import { mapState, mapActions } from 'vuex';
 export default {
     computed: {
         authUser() {
@@ -60,5 +63,8 @@ export default {
             return JSON.parse(localStorage.getItem('authUser'));
         },
     },
+    methods: {
+
+    }
 }
 </script>

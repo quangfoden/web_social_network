@@ -13,7 +13,7 @@
             </div>
             <div class="description-profile d-flex gap-2">
               <div class="form-group">
-                <router-link :to="{ name: 'Profile User' }" class="btn btn-primary text-white p-2"> <i
+                <router-link :to="{ name: 'Profile Admin' }" class="btn btn-primary text-white p-2"> <i
                     class="fas fa-user px-2"></i>Profile</router-link>
               </div>
               <div class="form-group pb-3">

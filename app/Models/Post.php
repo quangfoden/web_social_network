@@ -10,6 +10,10 @@ class Post extends Model
     use HasFactory;
     protected $fillable = ['user_id', 'content', 'privacy', 'status'];
 
+    public function setContentAttribute($value)
+    {
+        $this->attributes['content'] = $value === 'null' ? null : $value;
+    }
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');

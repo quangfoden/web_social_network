@@ -32,6 +32,8 @@ class UserController extends Controller
         ];
         return response()->json($responseData);
     }
+  
+
     public function roles()
     {
         $roles = Role::all()
@@ -106,10 +108,14 @@ class UserController extends Controller
                     $query->where('status', 1);
                 },
             ]);
-
+            $status = $request->input('status');
+            if ($status === 1) {
+                $login_attempts = 0;
+            };
             $this->userRepo->update($id, [
-                'status' => $request->input('status'),
-                'is_lock' => $request->input('is_lock')
+                'status' => $status,
+                'is_lock' => $request->input('is_lock'),
+                'login_attempts' => $login_attempts
             ]);
 
             $responseData = [

@@ -14,6 +14,7 @@ class Replycomment extends Model
         'content',
         'path',
         'type',
+        'url',
         'likes_count',
         'status',
     ];

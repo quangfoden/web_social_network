@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->text('content');
+            $table->text('content')->nullable();
             $table->enum('privacy', ['public', 'friends', 'only_me'])->default('public');
             $table->tinyInteger('status')->default(1);
             $table->timestamps();

@@ -55,7 +55,7 @@
                         <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <router-link :to="{name:'Profile User'}" class="dropdown-item"><i class="fas fa-user align-middle mr-1"></i>
+                        <router-link :to="{name:'Profile Admin'}" class="dropdown-item"><i class="fas fa-user align-middle mr-1"></i>
                             Profile</router-link>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item text-danger" @click="logoutSubmit" href="#"><i

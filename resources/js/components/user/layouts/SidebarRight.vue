@@ -13,44 +13,109 @@ import DotsHorizontal from 'vue-material-design-icons/DotsHorizontal.vue';
 import Restore from 'vue-material-design-icons/Restore.vue';
 </script>
 <template>
-    <div id="RightSection">
+    <div id="RightSection" class="mb-3">
         <div class="rightsection_cus">
             <div class="d-flex align-items-center justify-content-between">
-                <div class="font-semibold">Contacts</div>
+                <div v-if="$route.path === '/'" class="font-semibold primary-text">Liên hệ</div>
+                <div v-else="$route.path.startsWith('profile')" class="font-semibold primary-text">Liên hệ chung</div>
                 <div class="d-flex align-items-center">
                     <div class="icon-right">
-                        <VideoImage :size="23" fillColor="#050505" />
+                        <VideoImage :size="23" fillColor="#fff" />
                     </div>
                     <div class="icon-right">
-                        <Magnify :size="23" fillColor="#050505" />
+                        <Magnify :size="23" fillColor="#fff" />
                     </div>
                     <div class="icon-right">
-                        <DotsHorizontal :size="23" fillColor="#050505" />
+                        <DotsHorizontal :size="23" fillColor="#fff" />
                     </div>
                 </div>
             </div>
             <div class="list_friends">
-                <div class="d-flex align-items-center justify-content-start friend_pr">
-                    <img class="" src="https://picsum.photos/id/120/300/320"
-                        alt="">
-                    <div class="text-pr">Nguyen Thi Huong</div>
-                </div>
-                <div class="d-flex align-items-center justify-content-start friend_pr">
-                    <img class="" src="https://picsum.photos/id/120/300/320"
-                        alt="">
-                    <div class="text-pr">Nguyen Thi Huong</div>
-                </div>
-                <div class="d-flex align-items-center justify-content-start friend_pr">
-                    <img class="" src="https://picsum.photos/id/120/300/320"
-                        alt="">
-                    <div class="text-pr">Nguyen Thi Huong</div>
-                </div>
-                <div class="d-flex align-items-center justify-content-start friend_pr">
-                    <img class="" src="https://picsum.photos/id/120/300/320"
-                        alt="">
-                    <div class="text-pr">Nguyen Thi Huong</div>
+                <div @click="fetchFriendChat(friend.user.id)" v-for="(friend, index) in friendsWithUsers"
+                    :key="friend.id"
+                    class="d-flex position-relative align-items-center justify-content-start friend_pr ">
+                    <img class="" :src="friend.user.avatar" alt="">
+                    <!-- <span class="dot-status"
+                        :class="{ 'online': friendStatus.state === 'online'}"></span> -->
+                    <div class="text-pr primary-text">{{ friend.user.user_name }}</div>
                 </div>
             </div>
         </div>
     </div>
 </template>
+<script>
+import { mapState, mapActions, mapGetters } from 'vuex';
+import { useGeneralStore } from '../../../store/general';
+import { storeToRefs } from 'pinia';
+import { database, ref as dbRef, ref, push, onValue, query, orderByChild, equalTo, set } from '../../../firebase';
+
+export default {
+    data() {
+        const useGeneral = useGeneralStore();
+        const { isChatBoxOverLay, isLoadingChatBox, selecFriendId } = storeToRefs(useGeneral)
+        return {
+            isChatBoxOverLay,
+            isLoadingChatBox,
+            selecFriendId,
+            friendStatus: {
+                state: 'loading...',
+                last_changed: ' '
+            },
+        }
+    },
+    mounted() {
+        this.updateFriendStatus()
+    },
+    watch: {
+        friendsWithUsers(newValue) {
+            if (newValue && newValue.length) {
+                this.updateFriendStatus();
+            }
+        }
+    },
+    computed: {
+        authUser() {
+            if (this.$store.getters.getAuthUser.id !== undefined) {
+                return this.$store.getters.getAuthUser;
+            }
+            return JSON.parse(localStorage.getItem('authUser'));
+        },
+        ...mapState({
+            accounts: state => state.users.accounts
+        }),
+        ...mapGetters('friends', ['getFriendsWithUsers']),
+        friendsWithUsers() {
+            return this.getFriendsWithUsers;
+        },
+    },
+    methods: {
+        ...mapActions('chat', ['getFriend']),
+        fetchFriendChat(accountId) {
+            this.isLoadingChatBox = true
+            this.isChatBoxOverLay = true
+            this.getFriend(accountId)
+                .then(response => {
+                    this.isLoadingChatBox = false
+                    this.selecFriendId = accountId
+                })
+                .catch(error => {
+                    console.error("Error in fetchFriendChat:", error);
+                    this.isLoadingChatBox = true
+                });
+        },
+        getFriendStatus(friendId) {
+            const friendStatusRef = ref(database, `status/${friendId}`);
+            onValue(friendStatusRef, snapshot => {
+                this.friendStatus = snapshot.val();
+            });
+        },
+        updateFriendStatus() {
+            for (let friend of this.friendsWithUsers) {
+                this.getFriendStatus(friend.user.id);
+            }
+        },
+    },
+    created() {
+    }
+}
+</script>

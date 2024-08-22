@@ -17,6 +17,19 @@ class UserRepository
     {
         return $this->model->query()->where('email', $email)->first();
     }
+    public function getUserById(int $id): ?User
+    {
+        return $this->model->query()->where('id', $id)->first();
+    }
+    public function getUserByUserId(int $user_id): ?User
+    {
+        return $this->model->query()->where('user_id', $user_id)->first();
+    }
+    public function getUserChatById(int $id): ?User
+    {
+        return $this->model->query()->where('id', $id)->first();
+    }
+
     public function createUser(array $userData)
     {
         return User::create($userData);

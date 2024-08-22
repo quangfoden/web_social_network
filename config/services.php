@@ -30,5 +30,12 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    'firebase' => [
+    'credentials' => [
+        'file' => storage_path('app/mangxahoi-b7499-firebase-adminsdk-evqac-7968711565.json'),
+    ],
+    'database_url' => 'https://mangxahoi-b7499-default-rtdb.firebaseio.com',
+],
+
 
 ];
