@@ -20,6 +20,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'user_id',
         'first_name',
         'last_name',
         'user_name',
@@ -59,8 +60,52 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public static function generateUniqueUserId()
+    {
+        do {
+            $user_id = rand(1000000000, 9999999999);
+        } while (self::where('user_id', $user_id)->exists());
+
+        return $user_id;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            $model->user_id = self::generateUniqueUserId();
+        });
+    }
+
     public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+    public function faceIds()
+    {
+        return $this->hasMany(FaceId::class);
+    }
+
+    public function userFaceRegs()
+    {
+        return $this->hasMany(UserFaceReg::class);
+    }
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
+    public function sentFriendRequests()
+    {
+        return $this->hasMany(FriendRequest::class, 'sender_id');
+    }
+
+    public function receivedFriendRequests()
+    {
+        return $this->hasMany(FriendRequest::class, 'receiver_id');
+    }
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id');
     }
 }

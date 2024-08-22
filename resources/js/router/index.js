@@ -6,6 +6,8 @@ import LoginView from '../components/account/LoginView.vue'
 import RegisterView from '../components/account/RegisterView.vue'
 import ForgotPasswordView from '../components/account/ForgotPasswordView.vue'
 
+import RgFaceIF from '../../js/components/user/components/regFaceId.vue'
+
 import AdminView from '../components/admin/adminView.vue';
 
 import ProfileParent from '../components/admin/profile/ProfileParent.vue';
@@ -28,6 +30,12 @@ import HomeView from '../components/user/homeSection/HomeView.vue'
 import ProfileParentUser from '../components/user/profile/ProfileParent.vue';
 import RepositoryParent from '../components/user/profile/RepositoryParent.vue';
 import Trash from '../components/user/profile/Trash.vue';
+
+// friend
+import FriendsParent from '../components/user/AllFriends/FriendsParent.vue'
+import allYourFriends from '../components/user/AllFriends/allYourFriends.vue'
+import AllRequestFriend from '../components/user/AllFriends/AllRequestFriend.vue'
+import FriendSuggestions from '../components/user/AllFriends/FriendSuggestions.vue'
 
 const ErrorPaBlogge = {
     template:
@@ -143,23 +151,57 @@ export const routes = [
                 ]
             },
             {
+                path: 'face-id',
+                name: 'RgFaceIF User',
+                component: RgFaceIF,
+            },
+            {
                 path: 'profile/:id',
                 name: 'Profile User',
                 component: ProfileParentUser,
+                children: [
+
+                ]
             },
             {
-                path: 'repository',
+                path: 'repository/:id',
                 name: 'Repository User',
                 component: RepositoryParent,
-                children:[
+                children: [
                     {
-                        path:'Trash',
-                        name:'Trash User',
-                        component:Trash
+                        path: 'trash',
+                        name: 'Trash User',
+                        component: Trash
                     }
                 ]
             },
-            
+            {
+                path: 'friends',
+                name: 'FriendsParent',
+                component: FriendsParent,
+                children:
+                [
+                    {
+                        path: 'all-firend',
+                        name: 'allYourFriends',
+                        component: allYourFriends,
+                        
+                    },
+                    {
+                        path: 'firends-request',
+                        name: 'AllFriendsRequest',
+                        component: AllRequestFriend,
+                        
+                    },
+                    {
+                        path: 'firends-suggestions',
+                        name: 'FriendSuggestions',
+                        component: FriendSuggestions,
+                        
+                    }
+                ]
+            },
+
         ]
     }
 ]
@@ -169,8 +211,17 @@ const router = createRouter({
     routes
 })
 import { store } from '../store/store';
+import { useUserStatus } from '../core/coreFunction';
 
 router.beforeEach((to, from, next) => {
+    store.dispatch('fetchAccounts')
+    store.dispatch('friends/fetchIsFriends')
+    .then(() => {
+        next();
+    }).catch(error => {
+        console.error('Error fetching accounts:', error);
+        next(error);
+    });
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
     const requiresAuthUser = to.matched.some(record => record.meta.requiresAuthUser)
     const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
@@ -189,6 +240,11 @@ router.beforeEach((to, from, next) => {
         authUser = store.getters.getAuthUser;
     }
     authUser = JSON.parse(localStorage.getItem('authUser'));
+    if(authUser){
+        const { userStatusRef } = useUserStatus(authUser.id);
+        console.log('User status updated in global router middleware.');
+        next();
+    }
     if (requiresAuth) {
         if (!isAuthenticated) {
             next('/login');

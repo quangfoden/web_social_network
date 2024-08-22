@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Post\AddPostRequest;
+use App\Http\Requests\Post\EditPostRequest;
+use App\Models\Like;
 use App\Models\Media;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -75,9 +77,11 @@ class PostsController extends Controller
     }
     public function all_PostByUserId($userId)
     {
-        // $userId = Auth::id();
-        $posts = $this->postRepo->getAllByUserId($userId);
-        // dd($userId);
+        $user = User::where('user_id', $userId)->first();
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        $posts = $this->postRepo->getAllByUserId($user->id);
         return response()->json([
             'status' => 200,
             'success' => true,
@@ -97,7 +101,7 @@ class PostsController extends Controller
             'data' => $posts
         ]);
     }
-    public function updatePost(AddPostRequest $request, $postId)
+    public function updatePost(Request $request, $postId)
     {
         $ispost = Post::find($postId);
         if (!$ispost) {
@@ -157,15 +161,42 @@ class PostsController extends Controller
 
         return response()->json([
             'message' => $post->status ? 'Bài viết đã được khôi phục thành công.' : 'Bài viết đã được chuyển vào thùng rác.'
-        ]);    }
+        ]);
+    }
     public function pin(Request $request, $id)
     {
         $post = Post::findOrFail($id);
-        $post->pinned = !$post->pinned; // Đảo ngược trạng thái ghim bài viết
+        $post->pinned = !$post->pinned;
         $post->save();
 
         return response()->json([
             'message' => $post->pinned ? 'Bài viết đã được ghim lên đầu.' : 'Bài viết đã được bỏ ghim.'
         ]);
+    }
+    public function get_like_post($post_id)
+    {
+        $likes = Like::where('post_id', $post_id)->get();
+        return response()->json($likes);
+    }
+    public function like_post(Request $request)
+    {
+        $like = Like::updateOrCreate(
+            ['post_id' => $request->post_id, 'user_id' => $request->user_id],
+            ['type' => $request->type]
+        );
+        $likeWithUser = Like::with('user')->find($like->id);
+        return response()->json(['message' => 'Like status updated', 'like' =>  $likeWithUser]);
+    }
+    public function delete_like(Request $request)
+    {
+        $like = Like::where('post_id', $request->post_id)
+            ->where('user_id', $request->user_id)
+            ->first();
+        if ($like) {
+            $like->delete();
+            return response()->json(['message' => 'Like has been deleted']);
+        } else {
+            return response()->json(['message' => 'Like not found'], 404);
+        }
     }
 }

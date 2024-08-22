@@ -32,6 +32,8 @@ class UserController extends Controller
         ];
         return response()->json($responseData);
     }
+  
+
     public function roles()
     {
         $roles = Role::all()

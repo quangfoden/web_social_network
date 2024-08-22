@@ -2,11 +2,11 @@
     <div class="col-lg-12">
         <div>
             <div class="text-center">
-                <div>
+                <!-- <div>
                     <a href="/" class="logo">
                         <img src="/assets/images/logo-dark.png" height="20" alt="logo" />
                     </a>
-                </div>
+                </div> -->
                 <h4 class="font-size-18 mt-4 mt-md-3">Register account</h4>
             </div>
             <div class="p-2 mt-5 mt-md-3">
@@ -24,13 +24,14 @@
                             <input v-model="user.last_name" type="text" class="form-control" id="userlastname"
                                 placeholder="Enter last name" />
                         </div>
-                        <div class="form-group auth-form-group-custom mb-3">
-                            <i class="mdi mdi-alphabetical text-black auti-custom-input-icon"></i>
-                            <label for="userlastname">User Name</label>
-                            <input v-model="user.user_name" type="text" class="form-control" id="userusername"
-                                placeholder="Enter username" />
-                        </div>
 
+
+                    </div>
+                    <div class="form-group auth-form-group-custom mb-3">
+                        <i class="mdi mdi-alphabetical text-black auti-custom-input-icon"></i>
+                        <label for="userlastname">User Name</label>
+                        <input v-model="user.user_name" type="text" class="form-control" id="userusername"
+                            placeholder="Enter username" />
                     </div>
                     <div class="form-group auth-form-group-custom mb-3">
                         <i class="mdi mdi-email-outline text-black auti-custom-input-icon"></i>
@@ -48,8 +49,8 @@
                     <div class="form-group auth-form-group-custom mb-3">
                         <i class="mdi mdi-lock text-black auti-custom-input-icon"></i>
                         <label for="userpassword">Repassword</label>
-                        <input v-model="user.password_confirmation" type="password" class="form-control" id="userrepassword"
-                            placeholder="Enter repassword" />
+                        <input v-model="user.password_confirmation" type="password" class="form-control"
+                            id="userrepassword" placeholder="Enter repassword" />
                     </div>
 
                     <div class="text-center">
@@ -63,10 +64,11 @@
             <div class="mt-2 text-center">
                 <p>
                     Already have an account ?
-                    <router-link :to="{ name: 'Login' }" class="font-weight-medium text-login-register">Login</router-link>
+                    <router-link :to="{ name: 'Login' }"
+                        class="font-weight-medium text-login-register">Login</router-link>
                 </p>
                 <p>
-                    © 2023. Create 
+                    © 2023. Create
                     <i class="mdi mdi-heart text-danger"></i> by
                     me
                 </p>

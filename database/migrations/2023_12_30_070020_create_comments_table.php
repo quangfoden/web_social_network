@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('post_id');
             $table->unsignedBigInteger('user_id');
-            $table->text('content');
+            $table->text('content')->nullable();
             $table->string('path')->nullable();
             $table->string('type')->nullable();
             $table->unsignedInteger('likes_count')->default(0);

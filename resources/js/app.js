@@ -10,7 +10,6 @@ const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate)
 import VueAxios from 'vue-axios';
 import router from "./router/index"
-
 import "bootstrap";
 import { store } from './store/store';
 import "bootstrap/dist/css/bootstrap.min.css";

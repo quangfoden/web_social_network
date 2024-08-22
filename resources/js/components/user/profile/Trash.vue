@@ -1,7 +1,16 @@
 <template>
     <div class="col-12 col-lg-8 col-xl-6 order-1 order-lg-2">
+        <div v-show="postsDeleted.length === 0">
+            <p class="primary-text fs-4">Không có bài viết nào</p>
+        </div>
         <div id="posts" v-for="post in postsDeleted" :key="post.id">
-            <Post :post="post" :pinned="post.pinned" :status="post.status" :user="post.user" :media="post.media" :comments="post.comments" />
+            <Post :post="post" :status="post.status" :user="post.user" :media="post.media" :comments="post.comments"
+                :comment_count="post.comment_count" :likes="post.likes" :like_count="post.like_count"
+                @comment-deleted="handleCommentdeleted(post.id)" @comment-created="handleCommentCreated(post.id)"
+                @comment_overlay-created="handleCommentCreated(post.id)"
+                @comment_overlay-deleted="handleCommentdeleted(post.id)" @updated_like="handleUpdatedLike(post.id)"
+                @deleted_like="handleLikedeleted(post.id)" @updated-like-overlay="handleUpdatedLike(post.id)"
+                @deleted-like-overlay="handleLikedeleted(post.id)" />
         </div>
     </div>
 </template>
@@ -43,7 +52,31 @@ export default {
         },
         resetData() {
             this.$store.commit('post/RESET_POSTS_BY_USER_DELETED');
-        }
+        },
+        handleCommentCreated(postId) {
+            const post = this.postsDeleted.find(p => p.id === postId);
+            if (post) {
+                post.comment_count += 1;
+            }
+        },
+        handleCommentdeleted(postId) {
+            const post = this.postsDeleted.find(p => p.id === postId);
+            if (post) {
+                post.comment_count -= 1;
+            }
+        },
+        handleUpdatedLike(postId) {
+            const post = this.postsDeleted.find(p => p.id === postId);
+            if (post) {
+                post.like_count += 1;
+            }
+        },
+        handleLikedeleted(postId) {
+            const post = this.postsDeleted.find(p => p.id === postId);
+            if (post) {
+                post.like_count -= 1;
+            }
+        },
     },
 
     created() {

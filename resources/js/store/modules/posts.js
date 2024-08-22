@@ -13,17 +13,22 @@ const state = {
     loading: false
 };
 const getters = {
-    getUserStatus: state => state.user.status
+    getUserStatus: state => state.user.status,
+    isLoading: state => state.loading
 };
 
 const mutations = {
-    RESET_POSTS_BY_USER(state) {
-        state.postsDeleted = [];
-        state.page3 = 1;
+    RESET_ALL_POSTS(state) {
+        state.posts = [];
+        state.page = 1;
     },
-    RESET_POSTS_BY_USER_DELETED(state) {
+    RESET_POSTS_BY_USER(state) {
         state.postsByUser = [];
         state.page2 = 1;
+    },
+    RESET_POSTS_BY_USER_DELETED(state) {
+        state.postsDeleted = [];
+        state.page3 = 1;
     },
     SET_USER(state, user) {
         state.user = user;
@@ -47,7 +52,6 @@ const mutations = {
         state.page2 = 1;
     },
     allPosts(state, posts) {
-        // state.posts = posts;
         state.posts.push(...posts)
     },
     allPostsByUser(state, posts) {
@@ -104,17 +108,29 @@ const mutations = {
     TOGGLE_PIN(state, postId) {
         const index = state.postsByUser.findIndex(post => post.id === postId);
         if (index !== -1) {
-            state.postsByUser[index].pinned = !state.postsByUser[index].pinned;
-            if (state.postsByUser[index].pinned) {
+            const post = state.postsByUser[index];
+            post.pinned = !post.pinned;
+            if (post.pinned) {
+                // Lưu trữ vị trí ban đầu nếu chưa lưu
+                if (post.originalIndex === undefined) {
+                    post.originalIndex = index;
+                }
+                // Di chuyển bài viết được ghim lên đầu
                 const pinnedPost = state.postsByUser.splice(index, 1)[0];
                 state.postsByUser.unshift(pinnedPost);
             } else {
-                const unpinnedPost = state.postsByUser.splice(index, 1)[0];
-                state.postsByUser.push(unpinnedPost);
+                // Lấy vị trí ban đầu của bài viết
+                const originalIndex = post.originalIndex;
+                if (originalIndex !== undefined) {
+                    // Xóa bài viết từ vị trí hiện tại
+                    const unpinnedPost = state.postsByUser.splice(index, 1)[0];
+                    // Chèn lại bài viết vào vị trí ban đầu
+                    state.postsByUser.splice(originalIndex, 0, unpinnedPost);
+                }
             }
         }
-
     }
+
 
 };
 const actions = {
@@ -127,9 +143,7 @@ const actions = {
     getUserbyId({ commit }, id) {
         return axios.get(`/api/user/getUserById/${id}`)
             .then(response => {
-                console.log(response);
                 commit('SET_USER', response.data);
-                console.log(state.user);
             })
             .catch(error => {
                 console.log("Error fetching getUserbyId:", error);
@@ -137,6 +151,7 @@ const actions = {
             });
     },
     fetchPosts({ commit }) {
+        commit('SET_LOADING', true);
         axios.get(`/api/user/allposts?page=${state.page}`)
             .then(({ data }) => {
                 commit('allPosts', data.data.data);
@@ -215,7 +230,7 @@ const actions = {
     },
     editPost({ commit }, payload) {
         const { postId, formData } = payload;
-        axios.post(`/api/user/post/${postId}/editPost`, formData, {
+        return axios.post(`/api/user/post/${postId}/editPost`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -246,8 +261,7 @@ const actions = {
             .catch(error => {
                 Swal.fire({
                     icon: 'error',
-                    title: ' bài viết cập nhật thành công',
-                    text: `Error ${error}`,
+                    title: ' bài viết cập nhật không thành công thành công',
                     showConfirmButton: false,
                     timer: 3000
                 })
@@ -276,7 +290,6 @@ const actions = {
         });
     },
     togglePin({ commit }, postId) {
-        console.log(state.postsByUser);
         axios.put(`/api/user/post/${postId}/pin`)
             .then(response => {
                 commit('TOGGLE_PIN', postId);
@@ -291,7 +304,45 @@ const actions = {
             .catch(error => {
                 console.error("Error toggling pin:", error);
             });
-    }
+    },
+
+    createComment({ commit }, formData) {
+        return axios.post('api/user/create_comment', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+    },
+    editComment({ commit }, payload) {
+        const { commentId, formData } = payload;
+        return axios.post(`api/user/comments/${commentId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+    },
+    delete_comment({ commit }, commentId) {
+        return axios.post(`api/user/deleteComment/${commentId}`)
+    },
+    createRepComment({ commit }, payload) {
+        const { commentId, formData } = payload;
+        return axios.post(`api/user/create_rep_comment/${commentId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+    },
+    editRepComment({ commit }, payload) {
+        const { repCommentId, formData } = payload;
+        return axios.post(`api/user/comments/repcomment/${repCommentId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+    },
+    delete_repcomment({ commit }, repcommentId) {
+        return axios.post(`api/user/deleterepcomment/repcomment/${repcommentId}`)
+    },
 };
 
 
