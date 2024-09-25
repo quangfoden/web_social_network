@@ -20,41 +20,48 @@ const getters = {
 const mutations = {
     mutateRegisterResponse: (state, payload) => (state.registerResponse = payload),
     mutateLoginResponse: (state, payload) => (state.loginResponse = payload),
-    mutateAuthUser: (state, payload) => (state.authUser = payload),
+    mutateAuthUser: (state, payload) => {
+        console.log('Mutating authUser:', payload); // Kiểm tra xem payload có dữ liệu không
+        state.authUser = payload;
+    }
 }
 const actions = {
-    registerUser({ commit, getters }, userData) {
-        axios.get('/sanctum/csrf-cookie').then(() => {
-            axios.post('/api/register', userData)
-                .then(response => {
-                    commit('mutateRegisterResponse', response.data);
-                    localStorage.setItem(
-                        'registerResponse',
-                        JSON.stringify(response.data)
-                    );
-                    if (getters.getRegisterResponse.authenticated === true) {
-                        if (response.status === 200) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Đăng ký thành công',
-                                text: `Chào Bạn ${getters.getRegisterResponse.response_data[0].user_name}`,
-                                showConfirmButton: false,
-                                timer: Config.notificationTimer ?? 3000
-                            })
-                            Router.push('/login');
-                        }
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi đăng ký',
-                            text: `Error ${getters.getRegisterResponse.response_data[0]}`,
-                            showConfirmButton: false,
-                            timer: Config.notificationTimer ?? 3000
-                        })
-                    }
-                })
-        });
+
+    async registerUser({ commit, getters }, userData) {
+        try {
+            await axios.get('/sanctum/csrf-cookie');
+            const response = await axios.post('/api/register', userData);
+            commit('mutateRegisterResponse', response.data);
+            localStorage.setItem('registerResponse', JSON.stringify(response.data));
+            if (getters.getRegisterResponse.authenticated === true) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đăng ký thành công',
+                    text: `Kiểm tra email của bạn để xác thực.`,
+                    showConfirmButton: false,
+                    timer: Config.notificationTimer ?? 5000
+                });
+                Router.push('/login');
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi đăng ký',
+                    text: `${getters.getRegisterResponse.response_data[0]}`,
+                    showConfirmButton: false,
+                    timer: Config.notificationTimer ?? 5000
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi đăng ký',
+                text: error.response?.data?.response_data?.[0] || 'Có lỗi xảy ra, vui lòng thử lại sau.',
+                showConfirmButton: false,
+                timer: Config.notificationTimer ?? 5000
+            });
+        }
     },
+
     loginUser({ commit, getters }, loginData) {
         return new Promise((resolve, reject) => {
             axios.get('/sanctum/csrf-cookie')
@@ -72,9 +79,8 @@ const actions = {
                                             Swal.fire({
                                                 icon: 'success',
                                                 title: 'Chào mừng Admin',
-                                                text: `Success ${getters.getLoginResponse.response_data[0]}`,
                                                 showConfirmButton: false,
-                                                timer: Config.notificationTimer ?? 3000
+                                                timer: Config.notificationTimer ?? 5000
                                             });
                                             Router.push('/admin');
                                             resolve(response.data.data.user); // Trả về user khi đăng nhập thành công
@@ -84,12 +90,11 @@ const actions = {
                                             Swal.fire({
                                                 icon: 'success',
                                                 title: 'Đăng nhập thành công',
-                                                text: `Success ${getters.getLoginResponse.response_data[0]}`,
                                                 showConfirmButton: false,
-                                                timer: Config.notificationTimer ?? 3000
+                                                timer: Config.notificationTimer ?? 5000
                                             });
                                             Router.push('/');
-                                            resolve(response.data.data.user); // Trả về user khi đăng nhập thành công
+                                            resolve(response.data.data.user);
                                         }
                                     })
                                     .catch(error => {
@@ -101,9 +106,9 @@ const actions = {
                                     title: 'Lỗi đăng nhập',
                                     text: `${getters.getLoginResponse.response_data[0]}`,
                                     showConfirmButton: false,
-                                    timer: Config.notificationTimer ?? 3000
+                                    timer: Config.notificationTimer ?? 5000
                                 });
-                                reject(new Error('Authentication failed')); // Reject nếu đăng nhập không thành công
+                                reject(new Error('Authentication failed'));
                             }
                         })
                         .catch(error => {
@@ -111,15 +116,16 @@ const actions = {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Lỗi đăng nhập',
-                                text: `${error.response.data.message}`,
+                                text: error.response?.data?.response_data?.[0] || 'Có lỗi xảy ra, vui lòng thử lại sau.',
                                 showConfirmButton: false,
-                                timer: Config.notificationTimer ?? 3000
+                                timer: Config.notificationTimer ?? 5000
                             });
                             reject(error);
                         });
                 });
         });
     },
+
     loginWithFaceId({ commit, getters }, userData) {
         axios.get('/sanctum/csrf-cookie').then(() => {
             axios.post('/api/login-faceid', userData)
@@ -146,7 +152,7 @@ const actions = {
                                         title: 'Chào mừng Admin',
                                         text: `Success ${getters.getLoginResponse.response_data[0]}`,
                                         showConfirmButton: false,
-                                        timer: Config.notificationTimer ?? 3000
+                                        timer: Config.notificationTimer ?? 5000
                                     })
                                     Router.push('/admin');
                                 }
@@ -162,7 +168,7 @@ const actions = {
                                         title: 'Đăng nhập thành công',
                                         text: `Success ${getters.getLoginResponse.response_data[0]}`,
                                         showConfirmButton: false,
-                                        timer: Config.notificationTimer ?? 3000
+                                        timer: Config.notificationTimer ?? 5000
                                     })
                                     Router.push('/');
                                 }
@@ -173,7 +179,7 @@ const actions = {
                             icon: 'error',
                             title: 'Lỗi đăng nhập',
                             showConfirmButton: false,
-                            timer: Config.notificationTimer ?? 3000
+                            timer: Config.notificationTimer ?? 5000
                         })
                     }
                 })
@@ -184,7 +190,7 @@ const actions = {
                         title: 'Lỗi đăng nhập',
                         text: `${error.response.data.message}`,
                         showConfirmButton: false,
-                        timer: Config.notificationTimer ?? 3000
+                        timer: Config.notificationTimer ?? 5000
                     })
                 })
         })
@@ -207,7 +213,7 @@ const actions = {
                 icon: 'success',
                 title: 'Đăng xuất thành công',
                 showConfirmButton: false,
-                timer: Config.notificationTimer ?? 3000
+                timer: Config.notificationTimer ?? 5000
             })
             Router.push('/login');
         });

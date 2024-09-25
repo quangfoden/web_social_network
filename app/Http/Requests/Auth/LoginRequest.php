@@ -2,7 +2,8 @@
 
 namespace App\Http\Requests\Auth;
 
-
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
 
 
@@ -36,5 +37,16 @@ class LoginRequest extends FormRequest
             'password.required' => 'Vui lòng nhập mật khẩu',
         ];
     }
-
+    protected function failedValidation(Validator $validator)
+    {
+        $errors = $validator->errors()->all(); 
+        throw new HttpResponseException(
+            response()->json([
+                'response_index' => true,
+                'response_type' => 'error',
+                'response_data' => [$errors[0]], 
+                'authenticated' => false,
+            ], 422)
+        );
+    }
 }

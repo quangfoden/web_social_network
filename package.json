@@ -34,6 +34,7 @@
         "pinia-plugin-persistedstate": "^3.2.0",
         "popper.js": "^1.16.1",
         "sweetalert2": "^11.10.2",
+        "themify-icons": "^1.0.0",
         "uuid": "^9.0.1",
         "vue": "^3.4.0",
         "vue-advanced-cropper": "^2.8.8",
@@ -41,6 +42,7 @@
         "vue-jquery": "^1.0.6",
         "vue-material-design-icons": "^5.2.0",
         "vue-router": "^4.2.5",
+        "vuetify": "^3.7.0",
         "vuex": "^4.1.0"
     }
 }

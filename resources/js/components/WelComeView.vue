@@ -14,8 +14,8 @@
                             <div class="w-100">
                                 <div class="row justify-content-center">
                                     <div class="d-flex justify-content-center gap-2">
-                                        <div class="btn btn-primary"><router-link class="text-black" :to="{ name: 'Login' }">Login</router-link></div>
-                                        <div class="btn btn-danger"><router-link class="text-black" :to="{ name: 'Register' }">Register</router-link></div>
+                                        <div class="btn btn-primary"><router-link class="text-black" :to="{ name: 'Login User' }">Login</router-link></div>
+                                        <div class="btn btn-danger"><router-link class="text-black" :to="{ name: 'Register User' }">Register</router-link></div>
                                     </div>
 
                                 </div>

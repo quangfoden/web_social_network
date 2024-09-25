@@ -1,12 +1,10 @@
 <template>
+    <div @click="isPostOverlay = false" v-show="isPostOverlay" class="postoverlay"></div>
     <TopBar />
-    <div class="wrapper_customs">
-        <div class="wrapper_2">
-            <SidebarLeft />
-            <router-view></router-view>
-            <SidebarRight />
-        </div>
-    </div>
+    <router-view></router-view>
+    <SidebarRight />
+    <SidebarLeft />
+
     <!-- <ChatBox v-if="isChatBoxOverLay" /> -->
 </template>
 <script>
@@ -25,13 +23,15 @@ export default {
     },
     data() {
         const useGeneral = useGeneralStore();
-        const { isChatBoxOverLay } = storeToRefs(useGeneral)
+        const { isChatBoxOverLay,isEditPostOverlay, isPostOverlay } = storeToRefs(useGeneral)
         return {
-            isChatBoxOverLay
+            isChatBoxOverLay,
+            isPostOverlay,
+            isEditPostOverlay
         }
     },
     method: {
-     
+
     }
 }
 </script>

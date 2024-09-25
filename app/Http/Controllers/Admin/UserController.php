@@ -58,7 +58,7 @@ class UserController extends Controller
                 'first_name' => $request->input('first_name'),
                 'last_name' => $request->input('last_name'),
                 'user_name' => $request->input('user_name'),
-                'avatar' => '/images/avatar.gif',
+                'avatar' => '/images/avatar.png',
                 'email' => $request->input('email'),
                 'password' => Hash::make($request->input('password')),
                 'status' => $request->input('status'),

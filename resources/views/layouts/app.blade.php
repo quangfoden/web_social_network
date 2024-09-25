@@ -22,10 +22,25 @@
     <!-- swiper style css  -->
     <link href="{{ asset('assets/libs/swiper/swiper-bundle.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <!-- style.css  -->
-    <link href="{{ mix('assets/css/style.css') }}" type="text/css" rel="stylesheet" />
-    <link href="{{ asset('assets/css/authentication.css') }}" type="text/css" rel="stylesheet" />
-    <link href="{{ asset('assets/css/custom.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/css/user_side/style.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <!-- <link href="{{ asset('assets/css/style.css') }}" type="text/css" rel="stylesheet" /> -->
+    <!-- <link href="{{ asset('assets/css/authentication.css') }}" type="text/css" rel="stylesheet" /> -->
+    <!-- <link href="{{ asset('assets/css/custom.min.css') }}" id="app-style" rel="stylesheet" type="text/css" /> -->
+  
+    <!-- user-css  -->
+    <link href="{{ asset('assets/css/user_css/calendar.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/user_css/color-pink.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/user_css/color.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/user_css/eventCalendar.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/user_css/jquery.cookieBar.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/user_css/main.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/user_css/nprogress.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/user_css/page-tour.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/user_css/responsive.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/user_css/toast-notification.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/user_css/video-player.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/user_css/weather-icon.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/user_css/weather-icons.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/user_css/style.css') }}" id="app-style" rel="stylesheet" type="text/css" />
 
 <body>
     <div id="app">

@@ -1,103 +1,298 @@
-<script setup>
-import Magnify from 'vue-material-design-icons/Magnify.vue';
-import Home from 'vue-material-design-icons/Home.vue';
-import HomeOutline from 'vue-material-design-icons/HomeOutline.vue';
-import TelevisionPlay from 'vue-material-design-icons/TelevisionPlay.vue';
-import StorefrontOutline from 'vue-material-design-icons/StorefrontOutline.vue';
-import AccountGroup from 'vue-material-design-icons/AccountGroup.vue';
-import ControllerClassicOutline from 'vue-material-design-icons/ControllerClassicOutline.vue';
-import DotsGrid from 'vue-material-design-icons/DotsGrid.vue';
-import FacebookMessenger from 'vue-material-design-icons/FacebookMessenger.vue';
-import Bell from 'vue-material-design-icons/Bell.vue';
-import Logout from 'vue-material-design-icons/Logout.vue';
-
-</script>
-
 <template>
-    <div id="Mainnav" class="border-bottom-cus">
-        <div class="d-flex gap-2">
-            <router-link :to="{ name: 'Home Section' }" class="text_name">
-                <img class="Logo" width="40" src="/images/icons/FacebookLogoCircle.png" alt="">
-                 <!-- <h3 class="primary-text m-0">Logo</h3> -->
-            </router-link>
-            <div id="Navleft">
-                <Magnify class="p-2" :size="27" fillColor="#B0B3B8" />
-                <input class="search" placeholder="Search..." type="text">
-            </div>
+    <!-- topbar -->
+    <div class="topbar stick">
+        <div class="logo">
+            <a title="" href="newsfeed.html"><img src="/images/logo/logo2.png" alt=""></a>
         </div>
-        <div id="NavCenter">
-            <router-link @click="clickHome" :to="{ name: 'Home Section' }" class="w-100">
-                <div :class="$route.path == '/' ? 'mt-1' : ''"
-                    class="list_items d-flex align-items-center justify-content-center w-100">
-                    <div>
-                        <Home v-if="$route.path == '/'" class="mx-auto" :size="27" fillColor="#1A73E3" />
-                        <HomeOutline v-else class="mx-auto" :size="32" fillColor="#B0B3B8" />
-                    </div>
-                </div>
-                <div v-if="$route.path == '/'" class="border-b-4 border-b-blue-400 rounded-400 item-active"></div>
-            </router-link>
-            <div class="list_items d-flex align-items-center justify-content-center w-100">
-                <TelevisionPlay class="mx-auto" :size="27" fillColor="#B0B3B8" />
+        <div class="top-area">
+            <div class="top-search">
+                <form method="post" class="">
+                    <input type="text" placeholder="Search People, Pages, Groups etc">
+                    <button data-ripple><i class="fas fa-search"></i></button>
+                </form>
             </div>
-            <div class="list_items d-flex align-items-center justify-content-center w-100">
-                <StorefrontOutline class="mx-auto" :size="27" fillColor="#B0B3B8" />
-            </div>
-            <div class="list_items d-flex align-items-center justify-content-center w-100">
-                <span class="rounded-full border-[2px] border-[#B0B3B8] p-1">
-                    <AccountGroup class="mx-auto" :size="22" fillColor="#B0B3B8" />
-                </span>
-            </div>
-            <div class="list_items d-flex align-items-center justify-content-center w-100">
-                <ControllerClassicOutline class="mx-auto" :size="32" fillColor="#B0B3B8" />
-            </div>
-        </div>
-        <div id="NavLeft" class="d-flex align-items-center justify-content-end">
-            <div class="nav_left_items">
-                <DotsGrid :size="23" fillColor="#fff" />
-            </div>
-            <div class="nav_left_items">
-                <FacebookMessenger :size="23" fillColor="#fff" />
-            </div>
-            <div class="nav_left_items">
-                <Bell :size="23" fillColor="#fff" />
-            </div>
-            <div class="d-flex align-items-center justify-content-center position-relative">
-                <div @click="showMenu = !showMenu">
-                    <img :src="authUser.avatar" alt="" class="custom">
-                </div>
-                <div v-if="showMenu" class="show_menu position-absolute">
-                    <router-link :to="{ name: 'Profile User', params: { id: authUser.user_id } }" @click="loadUserbyId">
-                        <div class="d-flex menu_item align-items-center gap-3 ">
-                            <img :src="authUser.avatar" alt="" class="custom">
-                            <span>{{ authUser.user_name }}</span>
-                        </div>
-                    </router-link>
-                    <router-link v-if="!authUser.user_face_regs.length > 0" :to="{ name: 'RgFaceIF User' }"
-                        class="w-full  ml-2" as="button" method="post">
-                        <div class="d-flex menu_item align-items-center justify-content-center gap-1">
-                            <span>Đăng ký khuôn mặt</span>
-                        </div>
-                    </router-link>
-                    <span v-if="authUser.user_face_regs.length > 0" lass="w-full  ml-2">
-                        <div style="cursor: pointer;"
-                            class="d-flex menu_item align-items-center justify-content-center gap-1">
-                            <span class="text-white" @click="deleteFaceId">Xoá khuôn mặt đã đăng ký</span>
-                        </div>
-                    </span>
-                    <a @click="logoutSubmit" class="w-full  ml-2" as="button" method="post">
-                        <div class="d-flex menu_item align-items-center justify-content-center gap-1">
-                            <Logout :size="30" class="pl-2" />
-                            <span>Logout</span>
-                        </div>
+            <ul class="setting-area">
+                <li><a @click.prevent="clickHome" href="newsfeed.html" title="Home" v-ripple><i
+                            class="fa fa-home"></i></a></li>
+                <li>
+                    <a href="#" title="Friend Requests" v-ripple>
+                        <i class="fa fa-user"></i><em class="bg-red">5</em>
                     </a>
-
+                    <div class="dropdowns">
+                        <span>5 New Requests <a href="#" title="">View all Requests</a></span>
+                        <ul class="drops-menu">
+                            <li>
+                                <div>
+                                    <figure>
+                                        <img src="/images/resources/thumb-2.jpg" alt="">
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6><a href="#" title="">Loren</a></h6>
+                                        <span><b>Amy</b> is mutule friend</span>
+                                        <i>yesterday</i>
+                                    </div>
+                                    <div class="add-del-friends">
+                                        <a href="#" title=""><i class="fa fa-heart"></i></a>
+                                        <a href="#" title=""><i class="fa fa-trash"></i></a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <figure>
+                                        <img src="/images/resources/thumb-3.jpg" alt="">
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6><a href="#" title="">Tina Trump</a></h6>
+                                        <span><b>Simson</b> is mutule friend</span>
+                                        <i>2 days ago</i>
+                                    </div>
+                                    <div class="add-del-friends">
+                                        <a href="#" title=""><i class="fa fa-heart"></i></a>
+                                        <a href="#" title=""><i class="fa fa-trash"></i></a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <figure>
+                                        <img src="/images/resources/thumb-4.jpg" alt="">
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6><a href="#" title="">Andrew</a></h6>
+                                        <span><b>Bikra</b> is mutule friend</span>
+                                        <i>4 hours ago</i>
+                                    </div>
+                                    <div class="add-del-friends">
+                                        <a href="#" title=""><i class="fa fa-heart"></i></a>
+                                        <a href="#" title=""><i class="fa fa-trash"></i></a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <figure>
+                                        <img src="/images/resources/thumb-5.jpg" alt="">
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6><a href="#" title="">Dasha</a></h6>
+                                        <span><b>Sarah</b> is mutule friend</span>
+                                        <i>9 hours ago</i>
+                                    </div>
+                                    <div class="add-del-friends">
+                                        <a href="#" title=""><i class="fa fa-heart"></i></a>
+                                        <a href="#" title=""><i class="fa fa-trash"></i></a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <figure>
+                                        <img src="/images/resources/thumb-1.jpg" alt="">
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6><a href="#" title="">Emily</a></h6>
+                                        <span><b>Amy</b> is mutule friend</span>
+                                        <i>4 hours ago</i>
+                                    </div>
+                                    <div class="add-del-friends">
+                                        <a href="#" title=""><i class="fa fa-heart"></i></a>
+                                        <a href="#" title=""><i class="fa fa-trash"></i></a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <a href="friend-requests.html" title="" class="more-mesg">View All</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="#" title="Notification" v-ripple>
+                        <i class="fa fa-bell"></i><em class="bg-purple">7</em>
+                    </a>
+                    <div class="dropdowns">
+                        <span>4 New Notifications <a href="#" title="">Mark all as read</a></span>
+                        <ul class="drops-menu">
+                            <li>
+                                <a href="notifications.html" title="">
+                                    <figure>
+                                        <img src="/images/resources/thumb-1.jpg" alt="">
+                                        <span class="status f-online"></span>
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6>sarah Loren</h6>
+                                        <span>commented on your new profile status</span>
+                                        <i>2 min ago</i>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="notifications.html" title="">
+                                    <figure>
+                                        <img src="/images/resources/thumb-2.jpg" alt="">
+                                        <span class="status f-online"></span>
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6>Jhon doe</h6>
+                                        <span>Nicholas Grissom just became friends. Write on his wall.</span>
+                                        <i>4 hours ago</i>
+                                        <figure>
+                                            <span>Today is Marina Valentine’s Birthday! wish for celebrating</span>
+                                            <img src="images/birthday.png" alt="">
+                                        </figure>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="notifications.html" title="">
+                                    <figure>
+                                        <img src="/images/resources/thumb-3.jpg" alt="">
+                                        <span class="status f-online"></span>
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6>Andrew</h6>
+                                        <span>commented on your photo.</span>
+                                        <i>Sunday</i>
+                                        <figure>
+                                            <span>"Celebrity looks Beautiful in that outfit! We should see each"</span>
+                                            <img src="/images/resources/admin.jpg" alt="">
+                                        </figure>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="notifications.html" title="">
+                                    <figure>
+                                        <img src="/images/resources/thumb-4.jpg" alt="">
+                                        <span class="status f-online"></span>
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6>Tom cruse</h6>
+                                        <span>nvited you to attend to his event Goo in</span>
+                                        <i>May 19</i>
+                                    </div>
+                                </a>
+                                <span class="tag">New</span>
+                            </li>
+                            <li>
+                                <a href="notifications.html" title="">
+                                    <figure>
+                                        <img src="/images/resources/thumb-5.jpg" alt="">
+                                        <span class="status f-online"></span>
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6>Amy</h6>
+                                        <span>Andrew Changed his profile picture. </span>
+                                        <i>dec 18</i>
+                                    </div>
+                                </a>
+                                <span class="tag">New</span>
+                            </li>
+                        </ul>
+                        <a href="notifications.html" title="" class="more-mesg">View All</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="#" title="Messages" v-ripple><i class="fa fa-commenting"></i><em class="bg-blue">9</em></a>
+                    <div class="dropdowns">
+                        <span>5 New Messages <a href="#" title="">Mark all as read</a></span>
+                        <ul class="drops-menu">
+                            <li>
+                                <a class="show-mesg" href="#" title="">
+                                    <figure>
+                                        <img src="/images/resources/thumb-1.jpg" alt="">
+                                        <span class="status f-online"></span>
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6>sarah Loren</h6>
+                                        <span><i class="ti-check"></i> Hi, how r u dear ...?</span>
+                                        <i>2 min ago</i>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="show-mesg" href="#" title="">
+                                    <figure>
+                                        <img src="/images/resources/thumb-2.jpg" alt="">
+                                        <span class="status f-offline"></span>
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6>Jhon doe</h6>
+                                        <span><i class="ti-check"></i> We’ll have to check that at the office and see if
+                                            the client is on board with</span>
+                                        <i>2 min ago</i>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="show-mesg" href="#" title="">
+                                    <figure>
+                                        <img src="/images/resources/thumb-3.jpg" alt="">
+                                        <span class="status f-online"></span>
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6>Andrew</h6>
+                                        <span> <i class="fa fa-paperclip"></i>Hi Jack's! It’s Diana, I just wanted to
+                                            let you know that we have to reschedule..</span>
+                                        <i>2 min ago</i>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="show-mesg" href="#" title="">
+                                    <figure>
+                                        <img src="/images/resources/thumb-4.jpg" alt="">
+                                        <span class="status f-offline"></span>
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6>Tom cruse</h6>
+                                        <span><i class="ti-check"></i> Great, I’ll see you tomorrow!.</span>
+                                        <i>2 min ago</i>
+                                    </div>
+                                </a>
+                                <span class="tag">New</span>
+                            </li>
+                            <li>
+                                <a class="show-mesg" href="#" title="">
+                                    <figure>
+                                        <img src="/images/resources/thumb-5.jpg" alt="">
+                                        <span class="status f-away"></span>
+                                    </figure>
+                                    <div class="mesg-meta">
+                                        <h6>Amy</h6>
+                                        <span><i class="fa fa-paperclip"></i> Sed ut perspiciatis unde omnis iste natus
+                                            error sit </span>
+                                        <i>2 min ago</i>
+                                    </div>
+                                </a>
+                                <span class="tag">New</span>
+                            </li>
+                        </ul>
+                        <a href="chat-messenger.html" title="" class="more-mesg">View All</a>
+                    </div>
+                </li>
+            </ul>
+            <div @click="showMenu = !showMenu" class="user-img">
+                <h5>{{ authUser.user_name }}</h5>
+                <img width="40" height="40" :src="authUser.avatar" alt="">
+                <span class="status f-online"></span>
+                <div class="user-setting" :class="{ 'active': showMenu }">
+                    <ul class="log-out">
+                        <li v-ripple><a href="#" title=""><i class="fas fa-user"></i>Trang cá nhân</a></li>
+                        <li v-ripple><a href="#" title=""><i class="fas fa-pencil-alt"></i>Chỉnh sửa trang cá nhân</a>
+                        </li>
+                        <li v-ripple><a href="#" title=""><i class="fas fa-id-badge"></i>Đăng ký khuôn mặt</a></li>
+                        <!-- <li><a href="#" title=""><i class="fas fa-user-slash"></i>Xoá xác thực khuôn mặt</a></li> -->
+                        <li v-ripple><a href="#" title=""><i class="fas fa-cog"></i>Tài khoản</a></li>
+                        <li v-ripple><a @click.prevent="logoutSubmit" title="đăng xuất">
+                                <i class="fas fa-sign-out-alt"></i>Đăng
+                                xuất</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
-        <CreatePostOverLay v-if="isPostOverlay" />
-        <!--  <CropperModal v-if="isCropperModal" @showModal="isCropperModal = false" /> -->
-        <MediaDisplay v-if="isFileDisplay.length > 0" />
-    </div>
+    </div><!-- topbar -->
+
 </template>
 <script>
 import Router from '../../../router';
@@ -108,13 +303,11 @@ import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import CropperModal from '../components/CropperModal.vue'
 import MediaDisplay from '../Components/mediaDisplay.vue'
-import CreatePostOverLay from '../Components/CreatePostOverLay.vue'
 
 export default {
     components: {
         CropperModal,
         MediaDisplay,
-        CreatePostOverLay,
     },
     data() {
         const useGeneral = useGeneralStore();
@@ -124,7 +317,8 @@ export default {
             isPostOverlay,
             isCropperModal,
             isFileDisplay,
-            isLoading: false
+            isLoading: false,
+            activeIndex: null,
         }
     },
     computed: {
@@ -137,6 +331,9 @@ export default {
     },
     methods: {
         ...mapActions(["logout"]),
+        toggleActive(index) {
+            this.activeIndex = this.activeIndex === index ? null : index;
+        },
         clickHome() {
             if (this.$route.path === '/') {
                 this.isLoading = true;

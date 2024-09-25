@@ -35,7 +35,7 @@ class PermissionsDemoSeeder extends Seeder
             'first_name' => "admin",
             'last_name' => "admin",
             'user_name' => "admin",
-            'avatar' => '/images/avatar.gif',
+            'avatar' => '/images/avatar.png',
             'email' => "admin@gmail.com",
             'password' => Hash::make('123456'),
         ]);
@@ -45,7 +45,7 @@ class PermissionsDemoSeeder extends Seeder
             'first_name' => "Quang",
             'last_name' => "Nguyễn Văn",
             'user_name' => "QuangFoden",
-            'avatar' => '/images/avatar.gif',
+            'avatar' => '/images/avatar.png',
             'email' => "quang@gmail.com",
             'password' => Hash::make('123456'),
         ]);

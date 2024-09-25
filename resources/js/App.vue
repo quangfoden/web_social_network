@@ -1,7 +1,11 @@
 <template>
     <div id="app_vue">
-        <div v-if="$route.path == '/login' || $route.path == '/register' || $route.path == '/forgot-password'">
-            <LayoutAccount />
+        <div
+            v-if="$route.path.startsWith('/login') || $route.path.startsWith('/register') || $route.path.startsWith('/forgot-password') || $route.path.startsWith('/reset-password')">
+            <LayoutUserAccount />
+        </div>
+        <div v-else-if="$route.path == '/admin/login'">
+            <LayoutAdminAccount />
         </div>
         <div v-else-if="isAdminRoute && authUser">
             <LayoutParent :authUser="authUser" />
@@ -10,18 +14,20 @@
             <PageUserParent :authUser="authUser" />
         </div>
         <div v-else>
-            <WelComeView />
+            <router-view></router-view>
         </div>
     </div>
 </template>
 <script>
-import LayoutAccount from './components/account/layoutAccountView.vue'
+import LayoutUserAccount from './components/user/account/layoutAccountView.vue'
+import LayoutAdminAccount from './components/admin/account/layoutAccountView.vue'
 import WelComeView from './components/WelComeView.vue'
 import LayoutParent from './components/admin/layouts/LayoutParent.vue';
 import PageUserParent from './components/user/PageUserParent.vue';
 export default {
     components: {
-        LayoutAccount,
+        LayoutUserAccount,
+        LayoutAdminAccount,
         LayoutParent,
         WelComeView,
         PageUserParent
@@ -41,7 +47,7 @@ export default {
         isAdminRoute() {
             return this.$route.path.startsWith("/admin");
         },
-        isUserRoute(){
+        isUserRoute() {
             return this.$route.path.startsWith("/");
         }
     }

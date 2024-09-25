@@ -2,9 +2,15 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import WelComeView from '../components/WelComeView.vue'
 
-import LoginView from '../components/account/LoginView.vue'
-import RegisterView from '../components/account/RegisterView.vue'
-import ForgotPasswordView from '../components/account/ForgotPasswordView.vue'
+// Admin account 
+import LoginAdminView from '../components/admin/account/LoginView.vue'
+
+
+// user account 
+import LoginUserView from '../components/user/account/LoginView.vue'
+import RegisterUserView from '../components/user/account/RegisterView.vue'
+import ForgotPasswordUserView from '../components/user/account/ForgotPasswordView.vue'
+import ResetPasswordUserView from '../components/user/account/ResetPasswordView.vue'
 
 import RgFaceIF from '../../js/components/user/components/regFaceId.vue'
 
@@ -39,7 +45,7 @@ import FriendSuggestions from '../components/user/AllFriends/FriendSuggestions.v
 
 const ErrorPaBlogge = {
     template:
-        '<div class="error-page">Trang Này Hiện Đang Trong Quá Trình Phát Triển <i class="fas fa-heart text-danger"></i></div>'
+        '<div class="error-page">Liên kết này không còn sử dụng được nữa. Vui lòng thử lại sau <i class="fas fa-heart text-danger"></i></div>'
 };
 export const routes = [
 
@@ -55,21 +61,11 @@ export const routes = [
         component: WelComeView
     },
     {
-        path: '/login',
-        name: "Login",
-        component: LoginView
+        path: '/admin/login',
+        name: "Login Admin",
+        component: LoginAdminView
     },
 
-    {
-        path: '/register',
-        name: "Register",
-        component: RegisterView
-    },
-    {
-        path: '/forgot-password',
-        name: "ForgotPassword",
-        component: ForgotPasswordView
-    },
     {
         path: '/admin',
         name: "Dashboard",
@@ -133,6 +129,30 @@ export const routes = [
             },
         ]
     },
+
+    {
+        path: '/login',
+        name: "Login User",
+        component: LoginUserView
+    },
+    {
+        path: '/forgot-password',
+        name: "Forgot Password User",
+        component: ForgotPasswordUserView
+    },
+
+    {
+        path: '/reset-password/:token',
+        name: 'Reset Password User',
+        component: ResetPasswordUserView
+    },
+
+    {
+        path: '/register',
+        name: "Register User",
+        component: RegisterUserView
+    },
+
     {
         path: '/',
         component: PageUserParent,
@@ -180,26 +200,26 @@ export const routes = [
                 name: 'FriendsParent',
                 component: FriendsParent,
                 children:
-                [
-                    {
-                        path: 'all-firend',
-                        name: 'allYourFriends',
-                        component: allYourFriends,
-                        
-                    },
-                    {
-                        path: 'firends-request',
-                        name: 'AllFriendsRequest',
-                        component: AllRequestFriend,
-                        
-                    },
-                    {
-                        path: 'firends-suggestions',
-                        name: 'FriendSuggestions',
-                        component: FriendSuggestions,
-                        
-                    }
-                ]
+                    [
+                        {
+                            path: 'all-firend',
+                            name: 'allYourFriends',
+                            component: allYourFriends,
+
+                        },
+                        {
+                            path: 'firends-request',
+                            name: 'AllFriendsRequest',
+                            component: AllRequestFriend,
+
+                        },
+                        {
+                            path: 'firends-suggestions',
+                            name: 'FriendSuggestions',
+                            component: FriendSuggestions,
+
+                        }
+                    ]
             },
 
         ]
@@ -214,21 +234,21 @@ import { store } from '../store/store';
 import { useUserStatus } from '../core/coreFunction';
 
 router.beforeEach((to, from, next) => {
-    store.dispatch('fetchAccounts')
-    store.dispatch('friends/fetchIsFriends')
-    .then(() => {
-        next();
-    }).catch(error => {
-        console.error('Error fetching accounts:', error);
-        next(error);
-    });
+    // store.dispatch('fetchAccounts')
+    // store.dispatch('friends/fetchIsFriends')
+    //     .then(() => {
+    //         next();
+    //     }).catch(error => {
+    //         console.error('Error fetching accounts:', error);
+    //         next(error);
+    //     });
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
     const requiresAuthUser = to.matched.some(record => record.meta.requiresAuthUser)
     const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
 
     const isAdmin = loginResponse?.role?.includes('admin');
     const isUser = loginResponse?.role?.includes('user');
-
+    const token = localStorage.getItem('auth_token');
     const isAuthenticated =
         store.getters.getLoginResponse.authenticated && isAdmin
         || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated && isAdmin
@@ -240,19 +260,19 @@ router.beforeEach((to, from, next) => {
         authUser = store.getters.getAuthUser;
     }
     authUser = JSON.parse(localStorage.getItem('authUser'));
-    if(authUser){
+    if (authUser) {
         const { userStatusRef } = useUserStatus(authUser.id);
         console.log('User status updated in global router middleware.');
         next();
     }
     if (requiresAuth) {
         if (!isAuthenticated) {
-            next('/login');
+            next('/admin/login');
             return;
         }
     }
     if (requiresAuthUser) {
-        if (!isUserAuthenticated) {
+        if (!isUserAuthenticated && !token) {
             next('/login');
             return;
         }

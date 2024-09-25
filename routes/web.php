@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-			Route::get('{any}', function () {
-				return view('layouts.app');
-			})->where('any', '.*');
+Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail']);
+
+Route::get('{any}', function () {
+	return view('layouts.app');
+})->where('any', '.*');
+
+
