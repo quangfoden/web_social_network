@@ -199,7 +199,8 @@
                                 @repcomment-deleted="handleRepCommentDeleted(comments[0].id)" />
                             <li>
                                 <a v-if="comments.length > 1" @click.prevent="showModalpost(post.id)" href="#" title=""
-                                    class="showmore underline">Xem tất cả {{ comment_count }} bình luận</a>
+                                    class="showmore underline" style="margin: 0">Xem tất cả {{ comment_count  }} bình
+                                    luận</a>
                             </li>
                             <li class="post-comment">
                                 <div class="comet-avatar">
@@ -282,8 +283,8 @@
         v-if="isEditPostOverlay && postBeingEdited && postBeingEdited.id == post.id"
         @close-modalEditPost="closeEditModalEditPost" />
 
-    <ModalPostOverLay :isPost="post" :medias="post.media" :comments="post.comments" :comment_count="comment_count" v-if="isPostOverLay"
-        :likes="post.likes" :like_count="post.like_count" @close-modal-post="closeModalPost"
+    <ModalPostOverLay :isPost="post" :medias="post.media" :comments="post.comments" :comment_count="comment_count"
+        v-if="isPostOverLay" :likes="post.likes" :like_count="post.like_count" @close-modal-post="closeModalPost"
         @comment_overlay-created="handleCommentOverLayCreated" @repcomment-created="handleRepCommentCreated(comment.id)"
         @comment_overlay-deleted="handleCommentoVerLayDeleted" @updated_like="handleUpdatedLike(post.id)"
         @deleted_like="handleLikedeleted(post.id)" />
@@ -662,13 +663,11 @@ export default {
             if (match) {
                 const query = diacritics.remove(match[1].toLowerCase());
                 this.filteredFriends = this.friends.filter(
-                    friend =>
-                        diacritics.remove(friend.user.user_name.toLowerCase()).includes(query)
+                    friend => diacritics.remove(friend.user.user_name.toLowerCase()).includes(query)
                 );
                 this.showSuggestions = true;
             } else {
                 this.showSuggestions = false;
-                console.log('lỗi nè');
             }
         },
         selectFriend(friend, id) {

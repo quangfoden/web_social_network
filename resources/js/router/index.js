@@ -234,14 +234,14 @@ import { store } from '../store/store';
 import { useUserStatus } from '../core/coreFunction';
 
 router.beforeEach((to, from, next) => {
-    // store.dispatch('fetchAccounts')
-    // store.dispatch('friends/fetchIsFriends')
-    //     .then(() => {
-    //         next();
-    //     }).catch(error => {
-    //         console.error('Error fetching accounts:', error);
-    //         next(error);
-    //     });
+    store.dispatch('fetchAccounts')
+    store.dispatch('friends/fetchIsFriends')
+        .then(() => {
+            next();
+        }).catch(error => {
+            console.error('Error fetching accounts:', error);
+            next(error);
+        });
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
     const requiresAuthUser = to.matched.some(record => record.meta.requiresAuthUser)
     const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));

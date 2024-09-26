@@ -36,10 +36,99 @@ import Undo from 'vue-material-design-icons/Undo.vue'
             </div>
             <div class="inline-itms">
                 <span>{{ comment.created_at_formatted }}</span>
-                <a class="we-reply" href="#" title="Reply"><i class="fa fa-reply"></i></a>
-                <p v-if="comment.created_at != comment.updated_at" class="mx-2 d-inline secondary-text" style="font-size: 10px;">
+                <a @click.prevent="clickRepComment(comment.id)" class="we-reply" href="#" title="Reply"><i
+                        class="fa fa-reply"></i></a>
+                <p v-if="comment.created_at != comment.updated_at" class="mx-2 d-inline secondary-text"
+                    style="font-size: 10px;">
                     đã chỉnh sửa</p>
             </div>
+            <div v-if="comment.repcomments.length > 0" class="repComment_array" id="repComment">
+                <div v-if="!showAllRepComments" class="text-center mb-1">
+                    <a v-if="comment.repcomments.length > 0" @click.prevent="toggleRepComments" href="#" title=""
+                        class="showmore underline">{{ repcomment_count }} phản hồi</a>
+                </div>
+                <div v-if="showAllRepComments" class="m-3 repcomment_list boxrepcomment-cus"
+                    v-for="(repcomment, index) in comment.repcomments" :key="index">
+                    <RepComment :repcomment="repcomment" :index=index :commentId=comment.id
+                        @repcomment-updated="handleRepCommentUpdated" @repcomment-deleted="handleRepCommentDeleted"
+                        @reply-comment-clicked="handleReplyCommentClicked" @focus-input="focusInput" />
+                </div>
+                <div v-if="showAllRepComments" class="text-center mb-1">
+                    <a @click.prevent="toggleRepComments" href="#" title="" class="showmore underline">Ẩn bớt</a>
+                </div>
+            </div>
+            <div style="margin-left:90px;" v-if="formMediarepComment.url" class="mb-2 cus-img-dis">
+                <span
+                    class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
+                    @click="clearImageRepComment(comment.id)"><i class="fas fa-close"></i></span>
+                <div v-if="formMediarepComment.type === 'image'"><img width="150" class="rounded-lg mx-auto"
+                        :src="formMediarepComment.url" loading="lazy" alt=""></div>
+                <div v-else-if="formMediarepComment.type === 'video'">
+                    <video width="150" class="rounded-lg mx-auto" controls>
+                        <source :src="formMediarepComment.url" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <div v-else>
+                    <a href="formMediaComment.url">{{ formMediarepComment.url }}</a>
+                </div>
+            </div>
+            <form v-show="boxRepComment" style="margin-left:90px; position: relative;"
+                @submit.prevent="CreateRepComment(comment.id)" method="post">
+                <textarea style="resize: none; background: none 0px 0px repeat scroll rgb(237, 242, 246);
+                     border-color: transparent;
+                     border-radius: 5px;
+                     color: inherit;
+                     font-size: 13px;
+                     min-height: 80px;
+                     line-height: 16px;
+                     padding: 10px 70px 10px 20px;"
+                    :placeholder="`Trả lời bình luận với vai trò ${authUser.user_name} ...`"
+                    @input="_onInput(comment.id, $event)" v-model="formRepComment.content"
+                    :id="'repcomment' + comment.id" :ref="'repcomment' + comment.id"></textarea>
+                <ul v-show="showSuggestions && filteredFriends.length >= 1"
+                    class="suggestions rounded  position-absolute">
+                    <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
+                        @click="selectFriend(friend.user, post.id)">
+                        <div class="d-flex gap-2 align-items-center">
+                            <img class="rounded-full ml-1 img-cus" :src="friend.user.avatar" alt="">
+                            <p class="primary-text fw-bold mb-0">{{ friend.user.user_name }}</p>
+                        </div>
+                    </li>
+                </ul>
+                <div class="add-smiles">
+                    <div class="uploadimage">
+                        <i class="fa fa-image"></i>
+                        <label :for="`fieldMediaRepCM_${comment.id}`" class="fileContainer">
+                            <input type="file" :ref="`fieldMediaRepCM_${comment.id}`" class="hidden"
+                                :id="`fieldMediaRepCM_${comment.id}`" accept="image/*,video/*"
+                                @input="getUploadedImageRepComment($event)">
+                        </label>
+                    </div>
+                    <span class="em em-expressionless" title="add icon"></span>
+                    <div class="smiles-bunch active">
+                        <i class="em em---1"></i>
+                        <i class="em em-smiley"></i>
+                        <i class="em em-anguished"></i>
+                        <i class="em em-laughing"></i>
+                        <i class="em em-angry"></i>
+                        <i class="em em-astonished"></i>
+                        <i class="em em-blush"></i>
+                        <i class="em em-disappointed"></i>
+                        <i class="em em-worried"></i>
+                        <i class="em em-kissing_heart"></i>
+                        <i class="em em-rage"></i>
+                        <i class="em em-stuck_out_tongue"></i>
+                    </div>
+                </div>
+                <button style="padding: 5px 20px;
+                                bottom: 2px;
+                                position: absolute;
+                                right: 0;
+                                background: none;" type="submit">
+                    <i style="color: #535758;" class="fas fa-paper-plane"></i>
+                </button>
+            </form>
         </div>
         <div v-if="editerComment" class="edit_comment-form">
             <form style="position: relative;" @submit.prevent="EditComment(comment.id)" method="post">
@@ -60,16 +149,16 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                     <div v-if="comment.url != null" class="uploadimage">
                         <i :class="{ 'no-click': !isFileDelete || fileUrls.length >= 2 }" class="fa fa-image"></i>
                         <label class="fileContainer">
-                            <input :disabled="!isFileDelete || fileUrls.length >= 2" :ref="'fieldMedia' + comment.id" type="file" class="hidden"
-                                :id="'fileCommentEdit' + comment.id" accept="image/*,video/*"
+                            <input :disabled="!isFileDelete || fileUrls.length >= 2" :ref="'fieldMedia' + comment.id"
+                                type="file" class="hidden" :id="'fileCommentEdit' + comment.id" accept="image/*,video/*"
                                 @input="handleFileChange($event)">
                         </label>
                     </div>
                     <div v-else class="uploadimage">
-                        <i :class="{ 'no-click':fileUrls.length >= 2 }" class="fa fa-image"></i>
+                        <i :class="{ 'no-click': fileUrls.length >= 2 }" class="fa fa-image"></i>
                         <label class="fileContainer">
-                            <input :disabled="fileUrls.length >= 2" :ref="'fieldMedia' + comment.id" type="file" class="hidden"
-                                :id="'fileCommentEdit' + comment.id" accept="image/*,video/*"
+                            <input :disabled="fileUrls.length >= 2" :ref="'fieldMedia' + comment.id" type="file"
+                                class="hidden" :id="'fileCommentEdit' + comment.id" accept="image/*,video/*"
                                 @input="handleFileChange($event)">
                         </label>
                     </div>
@@ -478,21 +567,23 @@ export default {
         },
         toggleRepComments() {
             this.showAllRepComments = !this.showAllRepComments;
+            this.boxRepComment = false;
         },
         clearImageRepComment(commentId) {
             this.formMediarepComment = {}
             const input = document.getElementById(`fieldMediaRepCM_${commentId}`);
             if (input) {
                 console.log(input.value);
+                input.value = null
             }
         },
-        clickRepComment(refName) {
+        clickRepComment(commentId) {
             this.boxRepComment = true
             this.isRepComment = true
             this.istag = false
-            console.log(this.isRepComment);
             this.formRepComment.content = '@' + this.comment.user.user_name + ' ';
-            this.$refs[refName].focus();
+            this.focusInput(commentId);
+
         },
         focusInput(commentId) {
             this.$refs['repcomment' + commentId].focus();
