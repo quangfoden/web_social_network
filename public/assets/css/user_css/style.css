@@ -78,6 +78,15 @@ button:focus {
     border: 2px solid rgba(255, 255, 255, .8);
 }
 
+.no-click-event {
+    cursor: not-allowed !important;
+    filter: opacity(0.5);
+    pointer-events: none;
+}
+.no-click{
+    cursor: not-allowed !important;
+    filter: opacity(0.5);
+}
 @keyframes ripple-animation {
     to {
         transform: scale(4);
@@ -85,6 +94,9 @@ button:focus {
     }
 }
 
+.z-1000 {
+    z-index: 1000;
+}
 
 img {
     height: auto;
@@ -743,7 +755,7 @@ header.sticky {
     height: 66px;
     padding: 0 16px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
-    z-index: 99999;
+    z-index: 1000;
     position: fixed;
     width: 100%;
 }
@@ -1649,7 +1661,7 @@ header.sticky {
 }
 
 .newpst-input .cus-img-dis {
-    max-height: 200px;
+    max-height: 130px;
     overflow: auto;
     display: flex;
     flex-wrap: wrap;
@@ -2126,6 +2138,7 @@ a.learnmore:hover {
     position: relative;
     width: 100%;
     z-index: 0;
+    border-bottom: 1px solid #ede9e9;
 }
 
 .we-video-info>ul {
@@ -2228,6 +2241,7 @@ a.learnmore:hover {
     visibility: hidden;
     transition: opacity 0.5s, visibility 0.5s;
 }
+
 .list-user-like.active {
     opacity: 1;
     visibility: visible;
@@ -2692,6 +2706,52 @@ for some reason nth-child(1) is always busy and elements starting from 2 */
     margin-top: 0;
 }
 
+.edit-coment {}
+
+.edit-coment ul {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s, visibility 0.5s;
+    z-index: 1;
+}
+
+.edit-coment:hover>ul {
+    opacity: 1;
+    visibility: visible;
+}
+
+.edit-coment ul li:hover {
+    color: rgb(250, 99, 66);
+}
+
+.edit_comment-form {
+    display: inline-block;
+    padding-left: 15px;
+    position: relative;
+    width: 92%;
+}
+
+.edit_comment-form form textarea {
+    background: #edf2f6 none repeat scroll 0 0;
+    border-color: transparent;
+    border-radius: 5px;
+    color: inherit;
+    font-size: 13px;
+    min-height: 80px;
+    line-height: 16px;
+    padding: 10px 70px 10px 20px;
+    resize: none;
+}
+
+.edit_comment-form form button {
+    padding: 5px 20px;
+    position: absolute;
+    bottom: 2px;
+    position: absolute;
+    right: 0;
+    background: none;
+}
+
 .inline-itms>a,
 .inline-itms>span {
     display: inline-block;
@@ -2727,8 +2787,9 @@ li.post-comment .comet-avatar {
     border-radius: 5px;
     color: inherit;
     font-size: 13px;
-    height: 80px;
+    min-height: 80px;
     line-height: 16px;
+    padding: 10px 70px 10px 20px;
 }
 
 .post-comt-box form textarea:focus {
@@ -2737,7 +2798,7 @@ li.post-comment .comet-avatar {
 
 .add-smiles {
     position: absolute;
-    right: 10px;
+    right: 20px;
     top: 50%;
     transform: translateY(-50%);
     width: auto;
@@ -2746,6 +2807,10 @@ li.post-comment .comet-avatar {
 
 .add-smiles>span {
     font-size: 12px;
+    cursor: pointer;
+}
+
+.add-smiles .uploadimage i {
     cursor: pointer;
 }
 
@@ -11409,6 +11474,44 @@ span.ttl {
     margin-top: 20px;
 }
 
+/* modal post overlay  */
+
+#ModalPostOverLay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    /* Hiệu ứng nền mờ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    z-index: 1000;
+    /* Đảm bảo modal hiển thị phía trên các phần tử khác */
+}
+
+#ModalPostOverLay .central-meta.item {
+    max-height: 500px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+}
+
+#ModalPostOverLay .central-meta.item::-webkit-scrollbar {
+    width: 8px;
+}
+
+#ModalPostOverLay .central-meta.item::-webkit-scrollbar-thumb {
+    background-color: rgb(250, 99, 66);
+    border-radius: 10px;
+}
+
 /*--- comments popup ---*/
 
 .pit-comet-wraper {
@@ -19672,7 +19775,7 @@ nav .main-btn {
 }
 
 .modal-body .post-comt-box form textarea {
-    height: 50px;
+    min-height: 50px;
 }
 
 .modal-body .we-comet {
