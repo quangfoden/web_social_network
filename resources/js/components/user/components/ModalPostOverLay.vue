@@ -5,258 +5,251 @@ import Send from 'vue-material-design-icons/Send.vue';
 
 </script>
 <template>
-    <div id="ModalPostOverLay">
-        <div class="wrapper-post-overlay">
-            <div class="cus_postoverlay">
-                <div class="border-bottom-cus d-flex align-items-center position-relative py-2 px-3">
-                    <div class="w-100 text-center primary-text fw-bold fs-5">Bài viết của {{ isPost.user.user_name }}
+    <div @click="closeModaPostOverlay" id="ModalPostOverLay">
+        <div class="central-meta item"@click.stop>
+            <div class="user-post">
+                <div class="friend-info">
+                    <figure>
+                        <img :src="isPost.user.avatar" alt="">
+                    </figure>
+                    <div class="friend-name">
+                        <ins><a href="time-line.html" title="">{{ isPost.user.user_name }}</a></ins>
+                        <span>
+                            <i v-if="isPost.privacy === 'public'" class="mx-2 fas fa-globe"></i>
+                            <i v-if="isPost.privacy === 'friends'" class="mx-2 fas fa-user-friends"></i>
+                            <i v-if="isPost.privacy === 'only_me'" class="mx-2 fas fa-lock"></i>
+                            {{ isPost.created_at_formatted }}
+                        </span>
                     </div>
-                    <div class="close p-2 rounded-full bg-input custom-cursor-pointer" @click="closeModaPostOverlay">
-                        <Close :size="20" fillColor="#5E6771" />
-                    </div>
-                </div>
-                <div id="postOVerLay" class="p-2">
-                    <div class="p-2">
-                        <div class="d-flex justify-content-between py-2">
-                            <div class="d-flex gap-2 align-items-center">
-                                <a href="">
-                                    <img class="custom" :src="isPost.user.avatar" alt="">
-                                </a>
-                                <div>
-                                    <a href="" class="primary-text fw-bold custom-cursor-pointer">{{
-                                        isPost.user.user_name }}</a>
-                                    <div class="d-flex align-items-center text-xs text-gray-600">
-                                        {{ isPost.created_at_formatted }}
-                                        <i v-if="isPost.privacy === 'public'" class="mx-2 fas fa-globe"></i>
-                                        <i v-if="isPost.privacy === 'friends'" class="mx-2 fas fa-user-friends"></i>
-                                        <i v-if="isPost.privacy === 'only_me'" class="mx-2 fas fa-lock"></i>
+                    <div class="post-meta">
+                        <p>
+                            {{ isPost.content }}
+                        </p>
+                        <figure>
+                            <div class="img-bunch">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div
+                                            :class="{ 'one-media': medias.length === 1, 'multiple-medias': medias.length > 1 }">
+                                            <figure v-for=" media in medias.slice(0, 3)" :key="media.id">
+                                                <a target="_blank" v-if="media.type.includes('image')" class="strip"
+                                                    :href="media.url" title="" data-strip-group="mygroup"
+                                                    data-strip-group-options="loop: false">
+                                                    <img :src="media.url" alt="">
+                                                </a>
+                                                <a target="_blank" v-else-if="media.type.includes('video')"
+                                                    class="strip" :href="media.url" title="" data-strip-group="mygroup"
+                                                    data-strip-group-options="loop: false">
+                                                    <video :src="media.url" class="" autoplay controls muted>
+                                                    </video>
+                                                </a>
+                                            </figure>
+
+                                            <figure style="overflow: hidden;" v-if="medias.length >= 5">
+                                                <a target="_blank" v-if="medias[3].type.includes('image')" class="strip"
+                                                    :href="medias[3].url" title="" data-strip-group="mygroup"
+                                                    data-strip-group-options="loop: false">
+                                                    <img :src="medias[3].url" alt="">
+                                                </a>
+                                                <a target="_blank" v-else-if="medias[3].type.includes('video')"
+                                                    class="strip" :href="medias[3].url" title=""
+                                                    data-strip-group="mygroup" data-strip-group-options="loop: false">
+                                                    <video :src="medias[3].url" class="" autoplay controls muted>
+                                                    </video>
+                                                </a>
+                                                <div class="more-photos">
+                                                    <span>+{{ medias.length - 3 }}</span>
+                                                </div>
+                                            </figure>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="px-1 p-2  primary-text text-cus-pos">{{ isPost.content }}</div>
-                    </div>
-                    <div class="cus-post-media">
-                        <div class="list_item_media" v-for=" media in medias " :key="media.id">
-                            <div v-if="media.type.includes('image')">
-                                <img @click="convertImageUrl(media)" :src="media.url" loading="lazy" alt="Image"
-                                    class="mx-auto custom-cursor-pointer w-100">
-                            </div>
-                            <div class="" v-else-if="media.type.includes('video')">
-                                <video @click="isFileDisplay = media.url" :src="media.url"
-                                    class="mx-auto custom-cursor-pointer w-100" autoplay controls muted>
-                                </video>
-                            </div>
-                            <div v-else>
-                                <a :href="media.url" target="_blank">
-                                    {{ media.url }}</a>
-                                <div class="iframePost">
-                                    <iframe :src="media.url" width="100%" height="200px"></iframe>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="count-comment-like-share">
-                        <div class="count-like fs-5 mb-2">
-                            <span class="like-icon type-like" v-if="hasLike">
-                                <i class="fas fa-thumbs-up blue-color"></i>
-                                <div class="list-user-like-type-like">
-                                    <ul style="list-style: none;" class="m-0 p-2">
-                                        <li v-for="like in likes" :key="like.id" class="secondary-text type-like">
-                                            <router-link v-if="like.type === 'Like'"
-                                                :to="{ name: 'Profile User', params: { id: like.user.user_id } }">
-                                                {{ like.user.id !== authUser.id ? like.user.user_name : "Bạn" }}
-                                            </router-link>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </span>
-                            <span class="like-icon type-heart" v-if="hasHeart">❤
-                                <div class="list-user-like-type-heart">
-                                    <ul style="list-style: none;" class="m-0 p-2">
-                                        <li v-for="like in likes" :key="like.id" class="secondary-text type-like">
-                                            <router-link v-if="like.type === 'Heart'"
-                                                :to="{ name: 'Profile User', params: { id: like.user.user_id } }">
-                                                {{ like.user.id !== authUser.id ? like.user.user_name : "Bạn" }}
-                                            </router-link>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </span>
-                            <span class="like-icon type-laugh" v-if="hasLaugh">😂
-                                <div class="list-user-like-type-laugh">
-                                    <ul style="list-style: none;" class="m-0 p-2">
-                                        <li v-for="like in likes" :key="like.id" class="secondary-text type-like">
-                                            <router-link v-if="like.type === 'Laugh'"
-                                                :to="{ name: 'Profile User', params: { id: like.user.user_id } }">
-                                                {{ like.user.id !== authUser.id ? like.user.user_name : "Bạn" }}
-                                            </router-link>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </span>
-                            <span class="like-icon type-sad" v-if="hasSad">😥
-                                <div class="list-user-like-type-sad">
-                                    <ul style="list-style: none;" class="m-0 p-2">
-                                        <li v-for="like in likes" :key="like.id" class="secondary-text type-like">
-                                            <router-link v-if="like.type === 'Sad'"
-                                                :to="{ name: 'Profile User', params: { id: like.user.user_id } }">
-                                                {{ like.user.id !== authUser.id ? like.user.user_name : "Bạn" }}
-                                            </router-link>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </span>
-                            <span class="like-icon type-infuriating" v-if="hasInfuriating">😡
-                                <div class="list-user-like-type-infuriating">
-                                    <ul style="list-style: none;" class="m-0 p-2">
-                                        <li v-for="like in likes" :key="like.id" class="secondary-text type-like">
-                                            <router-link v-if="like.type === 'Infuriating'"
-                                                :to="{ name: 'Profile User', params: { id: like.user.user_id } }">
-                                                {{ like.user.id !== authUser.id ? like.user.user_name : "Bạn" }}
-                                            </router-link>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </span>
-                            <span v-if="like_count != 0" class="count secondary-text">{{ like_count }}
-                                <div class="list-user-like">
-                                    <ul style="list-style: none;" class="m-0 p-2">
-                                        <li v-for="like in likes" :key="like.id" class="secondary-text">
-                                            <router-link
-                                                :to="{ name: 'Profile User', params: { id: like.user.user_id } }">
-                                                {{ like.user.id !== authUser.id ? like.user.user_name : "Bạn" }}
-                                            </router-link>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </span>
-                        </div>
-                        <div class="count-comment"></div>
-                        <div class="count-share"></div>
-                    </div>
-                    <div class="border-top-cus like_share_comment-tx secondary-text">
-                        <div class="d-flex align-items-center justify-content-around border-bottom-cus p-1">
-                            <div class="like-tx rounded d-flex gap-1 align-item-center custom-cursor-pointer">
-                                <div v-if="!hasLiked" @click="createLike(typeLike, isPost.id)"
-                                    :class="{ 'p-2': !hasLiked }"
-                                    class="rounded d-flex gap-1 align-item-center custom-cursor-pointer">
-                                    <span><i class="fas fa-thumbs-up secondary-text"></i></span>
-                                    <span class="secondary-text">Thích</span>
-                                </div>
-                                <div v-if="hasLiked" v-for="like in likes" :key="like.id">
-                                    <div v-if="like.user_id === authUser.id">
-                                        <span class="p-2 hover-span" style="color: rgb(8, 102, 255);"
-                                            @click="unLike(isPost.id)" v-if="like.type === 'Like'">
-                                            <i class="fas fa-thumbs-up"></i>
-                                            Thích
+                        </figure>
+                        <div class="we-video-info">
+                            <ul>
+                                <span class="likes-items">
+                                    <li v-if="!hasLiked" @click="createLike(typeLike, isPost.id)"
+                                        :class="{ 'p-2': !hasLiked }" class="custom-cursor-pointer ">
+                                        <span><i class="fas fa-thumbs-up secondary-text"></i></span>
+                                    </li>
+                                    <li class="p-2 custom-cursor-pointer k" v-if="hasLiked">
+                                        <div v-for="like in likes" :key="like.id">
+                                            <div v-if="like.user_id === authUser.id">
+                                                <span class="hover-span" style="color: #fa6342;"
+                                                    @click="unLike(isPost.id)" v-if="like.type === 'Like'">
+                                                    <i class="fas fa-thumbs-up"></i>
+
+                                                </span>
+                                                <span class="hover-span" style="color: rgb(243, 62, 88);"
+                                                    @click="unLike(isPost.id)" v-if="like.type === 'Heart'"><i
+                                                        class="em em-heart"></i></span>
+                                                <span class="hover-span" style="color: rgb(247, 177, 37);"
+                                                    @click="unLike(isPost.id)" v-if="like.type === 'Laugh'"><i
+                                                        class="em em-laughing"></i></span>
+                                                <span class="hover-span" style="color: rgb(247, 177, 37);"
+                                                    @click="unLike(isPost.id)" v-if="like.type === 'Sad'"><i
+                                                        class="em em-cry"></i></span>
+                                                <span class="hover-span" style="color: rgb(247, 177, 37);"
+                                                    @click="unLike(isPost.id)" v-if="like.type === 'Infuriating'"><i
+                                                        class="em em-rage"></i></span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <ins @mouseover="showListUserLike = true" @mouseleave="showListUserLike = false"
+                                        style="position: absolute; top: 30px;left: 35px;cursor: pointer;"
+                                        v-if="like_count != 0">{{ like_count }}</ins>
+                                    <div @mouseover="showListUserLike = true" @mouseleave="showListUserLike = false"
+                                        v-if="like_count != 0" :class="{ 'active': showListUserLike }"
+                                        class="list-user-like">
+                                        <ul style="list-style: none;" class="m-0 p-2">
+                                            <li v-for="like in likes" :key="like.id" class="secondary-text">
+                                                <router-link
+                                                    :to="{ name: 'Profile User', params: { id: like.user.user_id } }">
+                                                    {{ like.user.id !== authUser.id ?
+                                                        like.user.user_name : "Bạn" }}
+                                                </router-link>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div v-show="!showListUserLike" class="icon-like" style="position: absolute;">
+                                        <span class="custom-cursor-pointer" style="color: rgb(250, 99, 66);"
+                                            @click="createLike(typeLike, isPost.id)"><i
+                                                class="fas fa-thumbs-up blue-color"></i></span>
+                                        <span class="custom-cursor-pointer" @click="createLike(typeHeart, isPost.id)"><i
+                                                class="em em-heart"></i></span>
+                                        <span class="custom-cursor-pointer" @click="createLike(typeLaugh, isPost.id)">
+                                            <i class="em em-laughing"></i>
                                         </span>
-                                        <span class="p-2 hover-span" style="color: rgb(243, 62, 88);"
-                                            @click="unLike(isPost.id)" v-if="like.type === 'Heart'">❤ Yêu thích</span>
-                                        <span class="p-2 hover-span" style="color: rgb(247, 177, 37);"
-                                            @click="unLike(isPost.id)" v-if="like.type === 'Laugh'">😂 Haha</span>
-                                        <span class="p-2 hover-span" style="color: rgb(247, 177, 37);"
-                                            @click="unLike(isPost.id)" v-if="like.type === 'Sad'">😥 Buồn</span>
-                                        <span class="p-2 hover-span" style="color: rgb(247, 177, 37);"
-                                            @click="unLike(isPost.id)" v-if="like.type === 'Infuriating'">😡 Phẫn
-                                            nộ</span>
+                                        <span class="custom-cursor-pointer" @click="createLike(typeSad, isPost.id)">
+                                            <i class="em em-cry"></i>
+                                        </span>
+                                        <span class="custom-cursor-pointer"
+                                            @click="createLike(typeInfuriating, isPost.id)">
+                                            <i class="em em-rage"></i> </span>
                                     </div>
-                                </div>
-                                <div class="icon-like">
-                                    <span @click="createLike(typeLike, isPost.id)"><i
-                                            class="fas fa-thumbs-up blue-color"></i></span>
-                                    <span @click="createLike(typeHeart, isPost.id)">❤</span>
-                                    <span @click="createLike(typeLaugh, isPost.id)">😂</span>
-                                    <span @click="createLike(typeSad, isPost.id)">😥</span>
-                                    <span @click="createLike(typeInfuriating, isPost.id)">😡</span>
-                                </div>
-                            </div>
-                            <div @click="FocusEvent(isPost.id)"
-                                class="comment-tx rounded d-flex gap-1 align-item-center custom-cursor-pointer p-2">
-                                <span><i class="fas fa-comment secondary-text"></i></span><span
-                                    class="secondary-text">Bình
-                                    luận</span>
-                            </div>
-                            <div class="share-tx rounded d-flex gap-1 align-item-center custom-cursor-pointer p-2">
-                                <span><i class="fas fa-share secondary-text"></i></span><span
-                                    class="secondary-text">Chia
-                                    sẽ</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="comment-post-ovelay p-3">
-                        <div>
-                            <div class="list-comments">
-                                <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">
-                                    <Comment :comment="comment" :repcomment_count="comment.repcomment_count"
-                                        @comment-updated="handleCommentOverlayUpdated"
-                                        @comment-deleted="handleCommentoVerLayDeleted"
-                                        @repcomment-created="handleRepCommentCreated(comment.id)" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="">
-                    <form @submit.prevent="CreateOverlayComment(isPost.id)"
-                        class="p-3 d-flex align-items-center gap-2 pt-2 justify-content-between w-100">
-                        <a href="/" class="">
-                            <img class="rounded-full ml-1 custom" src="/images/avatar.gif" loading="lazy" alt="">
-                        </a>
-                        <div class="position-relative d-flex align-items-center bg-input rounded w-100  px-2">
-                            <textarea @input="onInput(isPost.id, $event)" v-model="formComment.content" type="text"
-                                :placeholder="`Viết bình luận với vai trò ${authUser.user_name} ...`"
-                                :ref="'textAreaComment' + isPost.id"
-                                class="primary-text custom-input w-100 focus-0 border-0 mx-1 border-none p-0 pt-2 text-sm bg-input placeholder-[#64676B] ring-0 focus:ring-0">
-                                </textarea>
-                            <ul v-show="showSuggestions && filteredFriends.length >= 1"
-                                class="suggestions rounded  position-absolute" style="top: -150px;">
-                                <li v-for="friend in filteredFriends" :key="friend.user.id" class="rounded"
-                                    @click="selectFriend(friend.user, isPost.id)">
-                                    <div class="d-flex gap-2 align-items-center">
-                                        <img class="rounded-full ml-1 custom" :src="friend.user.avatar" alt="">
-                                        <p class="primary-text fw-bold mb-0">{{ friend.user.user_name }}</p>
-                                    </div>
+                                </span>
+                                <li>
+                                    <span class="comment" title="Comments">
+                                        <i class="fa fa-commenting"></i>
+                                        <ins v-if="comment_count && comment_count != 0">{{ comment_count }}</ins>
+                                    </span>
+                                </li>
+
+                                <li>
+                                    <span>
+                                        <a class="share-pst" href="#" title="Share">
+                                            <i class="fa fa-share-alt"></i>
+                                        </a>
+                                        <ins>20</ins>
+                                    </span>
                                 </li>
                             </ul>
-                            <label v-if="!isSendLoading" class="hover-200 rounded-full p-2 custom-cursor-pointer"
-                                :for="'fileCommentOverlay' + isPost.id">
-                                <Image :size="27" fillColor="#43BE62" />
-                            </label>
-                            <input :ref="'fieldMedia' + isPost.id" type="file" class="hidden"
-                                :id="'fileCommentOverlay' + isPost.id" accept="image/*,video/*"
-                                @input="getUploadedCommentFile($event)">
-                            <button v-if="!isSendLoading" :disabled="isSubmitDisabled"
-                                :class="{ 'no-click': isSubmitDisabled }" type="submit"
-                                class="d-flex border-0 bg-transparent align-items-center text-sm px-3 rounded-full hover:bg-blue-600 text-white font-bold">
-                                <Send :size="27" fillColor="#4299e1" />
-                            </button>
-                            <button v-if="isSendLoading" class="btn btn-sm btn-secondary" type="button" disabled>
-                                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                                <span class="visually-hidden" role="status">Loading...</span>
-                            </button>
+                            <div class="users-thumb-list">
+                                <a data-toggle="tooltip" title="Anderw" href="#">
+                                    <img alt="" src="images/resources/userlist-1.jpg">
+                                </a>
+                                <a data-toggle="tooltip" title="frank" href="#">
+                                    <img alt="" src="images/resources/userlist-2.jpg">
+                                </a>
+                                <a data-toggle="tooltip" title="Sara" href="#">
+                                    <img alt="" src="images/resources/userlist-3.jpg">
+                                </a>
+                                <a data-toggle="tooltip" title="Amy" href="#">
+                                    <img alt="" src="images/resources/userlist-4.jpg">
+                                </a>
+                                <a data-toggle="tooltip" title="Ema" href="#">
+                                    <img alt="" src="images/resources/userlist-5.jpg">
+                                </a>
+                                <span><strong>You</strong>, <b>Sarah</b> and <a href="#" title="">24+ more</a>
+                                    liked</span>
+                            </div>
                         </div>
-                    </form>
-                </div>
-                <div v-if="formMediaComment.url" style="margin-left:60px ;" class="p-2 position-relative cus-img-dis">
-                    <Close @click="clearFile(isPost.id)"
-                        class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
-                        :size="22" fillColor="#5E6771" />
-                    <div v-if="formMediaComment.type === 'image'"><img width="200" class="rounded-lg mx-auto"
-                            :src="formMediaComment.url" loading="lazy" alt=""></div>
-                    <div v-else-if="formMediaComment.type === 'video'">
-                        <video width="200" class="rounded-lg mx-auto" controls>
-                            <source :src="formMediaComment.url" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
                     </div>
-                    <div v-else>
-                        <a href="formMediaComment.url">{{ formMediaComment.url }}</a>
+                    <div class="coment-area" style="display: block;">
+                        <ul class="we-comet">
+                            <div class="my-1 comment_list" v-for="(comment, index) in comments" :key="comment.id">
+                                <Comment :comment="comment" :repcomment_count="comment.repcomment_count"
+                                    @comment-updated="handleCommentOverlayUpdated"
+                                    @comment-deleted="handleCommentoVerLayDeleted"
+                                    @repcomment-created="handleRepCommentCreated(comment.id)" />
+                            </div>
+                            <li class="post-comment">
+                                <div class="comet-avatar">
+                                    <img :src="authUser.avatar" alt="">
+                                </div>
+                                <div class="post-comt-box">
+                                    <div v-if="formMediaComment.url" class="mb-2 cus-img-dis">
+                                        <span
+                                            class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
+                                            @click="clearFile(isPost.id)"><i class="fas fa-close"></i></span>
+                                        <div v-if="formMediaComment.type === 'image'"><img width="150"
+                                                class="rounded-lg mx-auto" :src="formMediaComment.url" loading="lazy"
+                                                alt=""></div>
+                                        <div v-else-if="formMediaComment.type === 'video'">
+                                            <video width="150" class="rounded-lg mx-auto" controls>
+                                                <source :src="formMediaComment.url" type="video/mp4">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        </div>
+                                        <div v-else>
+                                            <a href="formMediaComment.url">{{ formMediaComment.url }}</a>
+                                        </div>
+                                    </div>
+                                    <form style="position: relative;" @submit.prevent="CreateOverlayComment(isPost.id)"
+                                        method="post">
+                                        <textarea style="resize: none;"
+                                            :placeholder="`Viết bình luận với vai trò ${authUser.user_name} ...`"
+                                            :ref="'textAreaComment' + isPost.id" @input="onInput(isPost.id, $event)"
+                                            v-model="formComment.content"></textarea>
+                                        <!-- <ul v-show="showSuggestions && filteredFriends.length >= 1"
+                                            class="suggestions rounded  position-absolute">
+                                            <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
+                                                @click="selectFriend(friend.user, post.id)">
+                                                <div class="d-flex gap-2 align-items-center">
+                                                    <img class="rounded-full ml-1 img-cus" :src="friend.user.avatar"
+                                                        alt="">
+                                                    <p class="primary-text fw-bold mb-0">{{ friend.user.user_name }}</p>
+                                                </div>
+                                            </li>
+                                        </ul> -->
+                                        <div class="add-smiles">
+                                            <div class="uploadimage">
+                                                <i class="fa fa-image"></i>
+                                                <label :for="'fileCommentOverlay' + isPost.id" class="fileContainer">
+                                                    <input :ref="'fieldMedia' + isPost.id" type="file" class="hidden"
+                                                        :id="'fileCommentOverlay' + isPost.id" accept="image/*,video/*"
+                                                        @input="getUploadedCommentFile($event)">
+                                                </label>
+                                            </div>
+                                            <span class="em em-expressionless" title="add icon"></span>
+                                            <div class="smiles-bunch active">
+                                                <i class="em em---1"></i>
+                                                <i class="em em-smiley"></i>
+                                                <i class="em em-anguished"></i>
+                                                <i class="em em-laughing"></i>
+                                                <i class="em em-angry"></i>
+                                                <i class="em em-astonished"></i>
+                                                <i class="em em-blush"></i>
+                                                <i class="em em-disappointed"></i>
+                                                <i class="em em-worried"></i>
+                                                <i class="em em-kissing_heart"></i>
+                                                <i class="em em-rage"></i>
+                                                <i class="em em-stuck_out_tongue"></i>
+                                            </div>
+                                        </div>
+                                        <button style="padding: 5px 20px;" type="submit">
+                                            <i style="color: #535758;" class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </div>
 
-        </div>
+            </div>
+        </div><!-- album post -->
     </div>
 </template>
 <script>
@@ -280,6 +273,10 @@ export default {
         },
         comments: {
             type: Object,
+            required: true,
+        },
+        comment_count: {
+            type: Number,
             required: true,
         },
         likes: {

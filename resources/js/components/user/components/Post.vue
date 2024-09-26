@@ -120,11 +120,12 @@
                                             </div>
                                         </div>
                                     </li>
-                                    <ins @mouseover="showListUserLike=true" @mouseleave="showListUserLike=false" style="position: absolute; top: 30px;left: 35px;cursor: pointer;"
+                                    <ins @mouseover="showListUserLike = true" @mouseleave="showListUserLike = false"
+                                        style="position: absolute; top: 30px;left: 35px;cursor: pointer;"
                                         v-if="like_count != 0">{{ like_count }}</ins>
-                                    <div 
-                                    @mouseover="showListUserLike=true" @mouseleave="showListUserLike=false"
-                                    v-if="like_count != 0" :class="{ 'active': showListUserLike }" class="list-user-like">
+                                    <div @mouseover="showListUserLike = true" @mouseleave="showListUserLike = false"
+                                        v-if="like_count != 0" :class="{ 'active': showListUserLike }"
+                                        class="list-user-like">
                                         <ul style="list-style: none;" class="m-0 p-2">
                                             <li v-for="like in likes" :key="like.id" class="secondary-text">
                                                 <router-link
@@ -152,10 +153,10 @@
                                             <i class="em em-rage"></i> </span>
                                     </div>
                                 </span>
-                                <li>
+                                <li @click="showModalpost(post.id)">
                                     <span class="comment" title="Comments">
                                         <i class="fa fa-commenting"></i>
-                                        <ins>52</ins>
+                                        <ins v-if="comment_count && comment_count != 0">{{ comment_count }}</ins>
                                     </span>
                                 </li>
 
@@ -191,54 +192,61 @@
                     </div>
                     <div class="coment-area" style="display: block;">
                         <ul class="we-comet">
+                            <Comment v-if="comments.length > 0 && !isPostOverLay" :comment="comments[0]"
+                                :repcomment_count="comments[0].repcomment_count" @comment-updated="handleCommentUpdated"
+                                @repcomment-created="handleRepCommentCreated(comments[0].id)"
+                                @comment-deleted="handleCommentDeleted"
+                                @repcomment-deleted="handleRepCommentDeleted(comments[0].id)" />
                             <li>
-                                <div class="comet-avatar">
-                                    <img src="images/resources/nearly3.jpg" alt="">
-                                </div>
-                                <div class="we-comment">
-                                    <h5><a href="time-line.html" title="">Jason borne</a></h5>
-                                    <p>we are working for the dance and sing songs. this video is very awesome for the
-                                        youngster. please vote this video and like our channel</p>
-                                    <div class="inline-itms">
-                                        <span>1 year ago</span>
-                                        <a class="we-reply" href="#" title="Reply"><i class="fa fa-reply"></i></a>
-                                        <a href="#" title=""><i class="fa fa-heart"></i><span>20</span></a>
-                                    </div>
-                                </div>
-
-                            </li>
-                            <li>
-                                <div class="comet-avatar">
-                                    <img src="images/resources/comet-4.jpg" alt="">
-                                </div>
-                                <div class="we-comment">
-                                    <h5><a href="time-line.html" title="">Sophia</a></h5>
-                                    <p>we are working for the dance and sing songs. this video is very awesome for the
-                                        youngster.
-                                        <i class="em em-smiley"></i>
-                                    </p>
-                                    <div class="inline-itms">
-                                        <span>1 year ago</span>
-                                        <a class="we-reply" href="#" title="Reply"><i class="fa fa-reply"></i></a>
-                                        <a href="#" title=""><i class="fa fa-heart"></i><span>20</span></a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <a href="#" title="" class="showmore underline">more comments+</a>
+                                <a v-if="comments.length > 1" @click.prevent="showModalpost(post.id)" href="#" title=""
+                                    class="showmore underline">Xem tất cả {{ comment_count }} bình luận</a>
                             </li>
                             <li class="post-comment">
                                 <div class="comet-avatar">
-                                    <img src="images/resources/nearly1.jpg" alt="">
+                                    <img :src="authUser.avatar" alt="">
                                 </div>
                                 <div class="post-comt-box">
-                                    <form method="post">
-                                        <textarea placeholder="Post your comment"></textarea>
+                                    <div v-if="formMediaComment.url" class="mb-2 cus-img-dis">
+                                        <span
+                                            class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
+                                            @click="clearFile(post.id)"><i class="fas fa-close"></i></span>
+                                        <div v-if="formMediaComment.type === 'image'"><img width="150"
+                                                class="rounded-lg mx-auto" :src="formMediaComment.url" loading="lazy"
+                                                alt=""></div>
+                                        <div v-else-if="formMediaComment.type === 'video'">
+                                            <video width="150" class="rounded-lg mx-auto" controls>
+                                                <source :src="formMediaComment.url" type="video/mp4">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        </div>
+                                        <div v-else>
+                                            <a href="formMediaComment.url">{{ formMediaComment.url }}</a>
+                                        </div>
+                                    </div>
+                                    <form style="position: relative;" @submit.prevent="CreateComment(post.id)"
+                                        method="post">
+                                        <textarea style="resize: none;"
+                                            :placeholder="`Viết bình luận với vai trò ${authUser.user_name} ...`"
+                                            :ref="'textAreaComment' + post.id" @input="onInput(post.id, $event)"
+                                            v-model="formComment.content"></textarea>
+                                        <ul v-show="showSuggestions && filteredFriends.length >= 1"
+                                            class="suggestions rounded  position-absolute">
+                                            <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
+                                                @click="selectFriend(friend.user, post.id)">
+                                                <div class="d-flex gap-2 align-items-center">
+                                                    <img class="rounded-full ml-1 img-cus" :src="friend.user.avatar"
+                                                        alt="">
+                                                    <p class="primary-text fw-bold mb-0">{{ friend.user.user_name }}</p>
+                                                </div>
+                                            </li>
+                                        </ul>
                                         <div class="add-smiles">
                                             <div class="uploadimage">
                                                 <i class="fa fa-image"></i>
                                                 <label class="fileContainer">
-                                                    <input type="file">
+                                                    <input :ref="'fieldMedia' + post.id" type="file" class="hidden"
+                                                        :id="'fileComment' + post.id" accept="image/*,video/*"
+                                                        @input="getUploadedCommentFile($event)">
                                                 </label>
                                             </div>
                                             <span class="em em-expressionless" title="add icon"></span>
@@ -257,8 +265,9 @@
                                                 <i class="em em-stuck_out_tongue"></i>
                                             </div>
                                         </div>
-
-                                        <button type="submit"></button>
+                                        <button style="padding: 5px 20px;" type="submit">
+                                            <i style="color: #535758;" class="fas fa-paper-plane"></i>
+                                        </button>
                                     </form>
                                 </div>
                             </li>
@@ -272,6 +281,12 @@
     <EditPostOverlay :postEdit="postBeingEdited" :medias="postBeingEdited.media"
         v-if="isEditPostOverlay && postBeingEdited && postBeingEdited.id == post.id"
         @close-modalEditPost="closeEditModalEditPost" />
+
+    <ModalPostOverLay :isPost="post" :medias="post.media" :comments="post.comments" :comment_count="comment_count" v-if="isPostOverLay"
+        :likes="post.likes" :like_count="post.like_count" @close-modal-post="closeModalPost"
+        @comment_overlay-created="handleCommentOverLayCreated" @repcomment-created="handleRepCommentCreated(comment.id)"
+        @comment_overlay-deleted="handleCommentoVerLayDeleted" @updated_like="handleUpdatedLike(post.id)"
+        @deleted_like="handleLikedeleted(post.id)" />
 </template>
 <script>
 import diacritics from 'diacritics';
@@ -345,7 +360,7 @@ export default {
             }),
             formMediaComment: ref({
             }),
-            showListUserLike:false,
+            showListUserLike: false,
             showAllComments: false,
             showSuggestions: false,
             filteredFriends: [],
@@ -476,10 +491,10 @@ export default {
                         if (fieldMediaCMRef.value) {
                             fieldMediaCMRef.value = ''
                         }
-                        this.isPostOverLay = true
+
                     } else {
                         this.selectedFriend = null
-                        this.isPostOverLay = true
+
                         this.$swal.fire({
                             position: "top-end",
                             icon: "error",
@@ -496,7 +511,6 @@ export default {
                 })
                 .catch(error => {
                     this.isSendLoading = false
-                    this.isPostOverLay = true
                     this.selectedFriend = null
                     this.$swal.fire({
                         position: "top-end",
