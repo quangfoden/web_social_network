@@ -6,114 +6,97 @@ import Close from 'vue-material-design-icons/Close.vue'
 
 </script>
 <template>
-    <div v-if="!editerRepComment" class="position-relative">
-        <div class="d-flex gap-2 align-items-start w-100 mb-1">
-            <router-link :to="{ name: 'Profile User', params: { id: repcomment.user.user_id } }" class="mr-2">
-                <img class="rounded-full ml-1 custom" :src="repcomment.user.avatar" alt="">
-            </router-link>
-            <div class="bg-input p-2 rounded-lg position-relative" style="max-width: 50%;">
-                <div class="d-flex gap-2 justify-content-between align-items-center">
-                    <router-link :to="{ name: 'Profile User', params: { id: repcomment.user.user_id } }"
-                        class="m-0 primary-text" style="word-break: break-all;">{{
-                            repcomment.user.user_name }}</router-link>
-
-                </div>
-                <div class="primary-text d-flex align-items-center text-xs rounded-lg w-100">
-                    <span style="word-break: break-all;" class="content_repcomment" @click.prevent="CusRedirect"
-                        v-html="contentRepComment"></span>
-                </div>
-            </div>
-            <span @click="toggleEditRepComment(repcomment.id, repcomment.url)" v-if="repcomment.user.id === authUser.id"
-                class="ellipsis px-2" style="font-size: 1.5rem;"><i
-                    class="secondary-text fa-solid fa-ellipsis fs-5"></i></span>
-            <div v-if="repcomment.user.id === authUser.id && showmodelEditRepComment" class="edit_repcomment">
-                <ul @click="toggleEditRepComment(repcomment.id, repcomment.url)">
-                    <li @click="editerRepComment = !editerRepComment">chỉnh sửa</li>
-                    <li @click="confirmDeleteRepComment(repcomment.id)">xoá</li>
+    <li>
+        <div class="comet-avatar">
+            <img :src="repcomment.user.avatar" alt="">
+        </div>
+        <div v-if="!editerRepComment" style="width: 85%;" class="we-comment">
+            <h5><a style="color: #fa6342;text-decoration: none; cursor: pointer;" href="time-line.html" title="">{{
+                repcomment.user.user_name }}</a></h5>
+            <p v-html="contentRepComment"></p>
+            <span v-if="repcomment.user.id === authUser.id" class="edit-coment"
+                style="position: relative; margin-left: 50px; cursor: pointer;">
+                <i class="fa-solid fa-ellipsis"></i>
+                <ul class="edit-options"
+                    style="margin: 0;border: none; position: absolute;left: 0;padding: 0;width: 100px; list-style: none;">
+                    <li @click="editerRepComment = !editerRepComment" style="cursor: pointer;" class="mb-1">chỉnh sửa
+                    </li>
+                    <li @click="confirmDeleteRepComment(repcomment.id)" style="cursor: pointer">xoá</li>
                 </ul>
+            </span>
+            <div class="w-100 mt-2 position-relative">
+                <img width="150" @click="isFileDisplay = repcomment.url"
+                    v-if="repcomment.type != null && repcomment.type.includes('image')" :src="repcomment.url"
+                    alt="Image">
+                <video width="150" @click="isFileDisplay = repcomment.url"
+                    v-else-if="repcomment.type != null && repcomment.type.includes('video')" :src="repcomment.url"
+                    controls autoplay muted></video>
+            </div>
+            <div class="inline-itms">
+                <span>{{ repcomment.created_at_formatted }}</span>
+                <a @click.prevent="clickRepComment2" class="we-reply" href="#" title="Reply"><i
+                        class="fa fa-reply"></i></a>
+                <p v-if="repcomment.created_at != repcomment.updated_at" class="mx-2 d-inline secondary-text"
+                    style="font-size: 10px;">
+                    đã chỉnh sửa</p>
             </div>
         </div>
-        <div class="w-100 position-relative" style="margin-left: 50px;">
-            <img width="150" v-if="repcomment.type != null && repcomment.type.includes('image')"
-                @click="isFileDisplay = repcomment.url" :src="repcomment.url" alt="Image">
-            <video width="150" v-else-if="repcomment.type != null && repcomment.type.includes('video')"
-                @click="isFileDisplay = repcomment.url" :src="repcomment.url" controls autoplay muted></video>
-        </div>
-        <div id="bottom-cus">
-            <p class="custom-cursor-pointer secondary-text">{{ repcomment.created_at_formatted }}</p>
-            <p class="custom-cursor-pointer secondary-text">like</p>
-            <p @click="clickRepComment2()" class="custom-cursor-pointer secondary-text">
-                Phản
-                hồi
-            </p>
-            <p v-if="repcomment.created_at != repcomment.updated_at" class="mx-2 secondary-text"
-                style="font-size: 10px;">đã chỉnh sửa</p>
-
-        </div>
-
-    </div>
-    <div v-if="editerRepComment" class="mb-4">
-        <div id="EditRepComment" class="">
-            <form @submit.prevent="EditRepComment(repcomment.id)"
-                class="d-flex gap-2 align-items-center pt-2 justify-content-between w-100">
-                <a href="/" class="mr-2">
-                    <img class="rounded-full ml-1 custom" :src="repcomment.user.avatar" loading="lazy" alt="">
-                </a>
-                <div class="position-relative d-flex align-items-center bg-input w-100 rounded px-2">
-                    <textarea style="min-height: 100px;" @input="onInput(repcomment.id, $event)"
-                        :ref="'textarea' + repcomment.id" v-model="editContentRepComment" type="text"
-                        placeholder="Viết bình luận ..."
-                        class="primary-text custom-input w-100 focus-0 border-0 mx-1 border-none p-0 text-sm bg-input placeholder-[#64676B] ring-0 focus:ring-0">
-                                </textarea>
-                    <ul v-show="showSuggestions && filteredFriends.length >= 1"
-                        class="suggestions rounded  position-absolute" style="top: 105px;left: 0;">
-                        <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
-                            @click="selectFriend(friend, repcomment.id)">
-                            <div class="d-flex gap-2 align-items-center">
-                                <img class="rounded-full ml-1 custom" :src="friend.avatar" alt="">
-                                <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
-                            </div>
-                        </li>
-                    </ul>
-                    <div classs="px-3" style="width: 100px;">
-                        <div class="position-absolute" style="right:50px ;bottom: 0;" v-if="repcomment.url != null">
-                            <label v-if="!isSendLoading"
-                                :class="{ 'no-click opacity-50': !isFileRepDelete || FileRepUrl.length >= 2 }"
-                                class="hover-200 rounded-full p-2 custom-cursor-pointer"
-                                :for="'fileRepCommentEdit' + repcomment.id">
-                                <Image :size="27" fillColor="#43BE62" />
-                            </label>
-                            <input :ref="'fieldMedia' + repcomment.id" type="file" class="hidden"
-                                :id="'fileRepCommentEdit' + repcomment.id" accept="image/*,video/*"
-                                @input="handleFileRepChange($event)">
+        <div v-if="editerRepComment" class="edit_comment-form">
+            <form style="position: relative;" @submit.prevent="EditRepComment(repcomment.id)" method="post">
+                <textarea style="resize: none;" :placeholder="`Viết bình luận với vai trò ${authUser.user_name} ...`"
+                :ref="'textarea' + repcomment.id" v-model="editContentRepComment" @input="onInput(repcomment.id, $event)"></textarea>
+                <ul v-show="showSuggestions && filteredFriends.length >= 1"
+                    class="suggestions rounded  position-absolute">
+                    <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
+                        @click="selectFriend(friend.user, post.id)">
+                        <div class="d-flex gap-2 align-items-center">
+                            <img class="rounded-full ml-1 img-cus" :src="friend.user.avatar" alt="">
+                            <p class="primary-text fw-bold mb-0">{{ friend.user.user_name }}</p>
                         </div>
-                        <div style="right: 50px; bottom: 0;" class="position-absolute" v-else>
-                            <label v-if="!isSendLoading" :class="{ 'no-click opacity-50': !isFileRepDelete }"
-                                class="hover-200 rounded-full p-2 custom-cursor-pointer"
-                                :for="'fileRepCommentEdit' + repcomment.id">
-                                <Image :size="27" fillColor="#43BE62" />
-                            </label>
-                            <input :ref="'fieldMedia' + repcomment.id" type="file" class="hidden"
-                                :id="'fileRepCommentEdit' + repcomment.id" accept="image/*,video/*"
+                    </li>
+                </ul>
+                <div class="add-smiles">
+                    <div v-if="repcomment.url != null" class="uploadimage">
+                        <i :class="{ 'no-click': !isFileRepDelete || FileRepUrl.length >= 2 }" class="fa fa-image"></i>
+                        <label class="fileContainer" :for="'fileRepCommentEdit' + repcomment.id">
+                            <input :ref="'fieldMedia' + repcomment.id" :disabled="!isFileRepDelete || FileRepUrl.length >= 2" 
+                                type="file" class="hidden" :id="'fileRepCommentEdit' + repcomment.id" accept="image/*,video/*"
                                 @input="handleFileRepChange($event)">
-                        </div>
-                        <button v-if="!isSendLoading" style="right: 0; bottom: 0;" type="submit"
-                            class="position-absolute d-flex border-0 align-items-center bg-transparent text-sm p-2 rounded-full text-white font-bold">
-                            <Send :size="27" fillColor="#4299e1" />
-                        </button>
-                        <button v-if="isSendLoading" style="right: 0; bottom: 0;" class="position-absolute btn btn-sm btn-secondary"
-                            type="button" disabled>
-                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                            <span class="visually-hidden" role="status">Loading...</span>
-                        </button>
+                        </label>
+                    </div>
+                    <div v-else class="uploadimage">
+                        <i :class="{ 'no-click': FileRepUrl.length >= 2 }" class="fa fa-image"></i>
+                        <label class="fileContainer" :for="'fileRepCommentEdit' + repcomment.id">
+                            <input :disabled="FileRepUrl.length >= 2" :ref="'fieldMedia' + repcomment.id" type="file"
+                                class="hidden" :id="'fileRepCommentEdit' + repcomment.id" accept="image/*,video/*"
+                                @input="handleFileRepChange($event)">
+                        </label>
+                    </div>
+                    <span class="em em-expressionless" title="add icon"></span>
+                    <div class="smiles-bunch active">
+                        <i class="em em---1"></i>
+                        <i class="em em-smiley"></i>
+                        <i class="em em-anguished"></i>
+                        <i class="em em-laughing"></i>
+                        <i class="em em-angry"></i>
+                        <i class="em em-astonished"></i>
+                        <i class="em em-blush"></i>
+                        <i class="em em-disappointed"></i>
+                        <i class="em em-worried"></i>
+                        <i class="em em-kissing_heart"></i>
+                        <i class="em em-rage"></i>
+                        <i class="em em-stuck_out_tongue"></i>
                     </div>
                 </div>
+                <button style="padding: 5px 20px;" type="submit">
+                    <i style="color: #535758;" class="fas fa-paper-plane"></i>
+                </button>
             </form>
-            <div v-if="FileRepUrl" class="pt-2 position-relative cus-img-dis" style="margin-left: 55px;">
-                <div v-for="fileUrl in FileRepUrl" :key=index>
+            <div v-if="FileRepUrl" class="pt-2 position-relative cus-img-dis">
+                <div class="mb-1" v-for="fileUrl in FileRepUrl" :key=index>
                     <div v-if="fileUrl.url && fileUrl.url != null">
-                        <Undo :class="{ 'no-click': fileUrl.isnew }" v-show="fileUrl.deleted"
-                            @click="revertFileRep(fileUrl)"
+                        <Undo :class="{ 'no-click-event': FileRepUrl.length >= 2 && fileUrl.deleted }"
+                            v-show="fileUrl.deleted" @click="revertFileRep(fileUrl)"
                             class="position-absolute bg-white p-1 m-2 z-1000 right-2 rounded-full border custom-cursor-pointer"
                             :size="22" fillColor="#5E6771" />
                         <div :class="{ 'opacity-50': fileUrl.deleted }">
@@ -136,10 +119,10 @@ import Close from 'vue-material-design-icons/Close.vue'
                     </div>
                 </div>
             </div>
-            <p style="text-decoration: underline; display: inline; margin-left: 60px; color: blue; cursor: pointer;"
-                v-if="editerRepComment" @click="CancleEditRepComment()">Huỷ</p>
+            <p style="text-decoration: underline; display: inline;color: blue; cursor: pointer;" v-if="editerRepComment"
+                @click="CancleEditRepComment()">Huỷ</p>
         </div>
-    </div>
+    </li>
 </template>
 <script>
 import { ref } from "vue";
