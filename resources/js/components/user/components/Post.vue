@@ -1,6 +1,9 @@
 <template>
     <div @click="closeEditModalEditPost" v-show="isEditPostOverlay" class="posteditoverlay"></div>
     <div class="loadMore">
+        <p class="d-inline pb-2 border-bottom m-0 secondary-text " v-if="pinned === 1 || pinned === true"> Bài viết đã ghim
+        </p>
+        <i v-if="pinned === 1 || pinned === true" class="fas fa-thumbtack"></i>
         <div class="central-meta item">
             <div class="user-post">
                 <div class="friend-info">
@@ -11,6 +14,12 @@
                         <div class="more">
                             <div class="more-post-optns"><i class="fa-solid fa-ellipsis"></i>
                                 <ul v-if="post.user_id === authUser.id">
+                                    <li v-if="pinned === 0 || pinned === false" @click="togglePin(post.id)">
+                                        <i class="fas fa-thumbtack"></i> Ghim bài viết
+                                    </li>
+                                    <li v-if="pinned === 1 || pinned === true" @click="togglePin(post.id)">
+                                        <i class="fas fa-times"></i> Bỏ ghim
+                                    </li>
                                     <li @click="showBoxPostEdit(post)"><i class="fa fa-pencil-square-o"></i>Chỉnh sửa
                                         bài viết
                                     </li>
@@ -18,6 +27,7 @@
                                         rác</li>
                                     <li v-if="!status" @click="trashPost(post.id)"><i class="fa fa-undo"></i>Khôi phục
                                     </li>
+
                                     <!-- <li class="bad-report"><i class="fa fa-flag"></i>Report Post</li>
                                     <li><i class="fa fa-address-card-o"></i>Boost This Post</li>
                                     <li><i class="fa fa-clock-o"></i>Schedule Post</li>
@@ -37,7 +47,8 @@
                                 </ul>
                             </div>
                         </div>
-                        <ins><a href="time-line.html" title="">{{ user.user_name }}</a></ins>
+                        <ins><router-link :to="{ name: 'Profile User', params: { id: user.user_id } }" title="">{{
+                            user.user_name }}</router-link></ins>
                         <span>
                             <i v-if="post.privacy === 'public'" class="fas fa-globe"></i>
                             <i v-if="post.privacy === 'friends'" class="fas fa-user-friends"></i>
@@ -199,7 +210,7 @@
                                 @repcomment-deleted="handleRepCommentDeleted(comments[0].id)" />
                             <li>
                                 <a v-if="comments.length > 1" @click.prevent="showModalpost(post.id)" href="#" title=""
-                                    class="showmore underline" style="margin: 0">Xem tất cả {{ comment_count  }} bình
+                                    class="showmore underline" style="margin: 0">Xem tất cả {{ comment_count }} bình
                                     luận</a>
                             </li>
                             <li class="post-comment">
@@ -435,7 +446,6 @@ export default {
             this.isPostOverLay = false;
         },
         closeEditModalEditPost() {
-
             this.postBeingEdited = null
             console.log(this.postBeingEdited);
             this.isEditPostOverlay = false

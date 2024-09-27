@@ -89,6 +89,22 @@ class PostsController extends Controller
             'data' => $posts
         ]);
     }
+
+    public function allPostsAboutProfile($userId)
+    {
+        $user = User::where('user_id', $userId)->first();
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        $posts = $this->postRepo->getAllPostAboutProfile($user->id);
+        return response()->json([
+            'status' => 200,
+            'success' => true,
+            'message' => 'success',
+            'data' => $posts
+        ]);
+    }
+
     public function allposts_deleted()
     {
         $userId = Auth::id();

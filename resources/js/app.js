@@ -25,3 +25,24 @@ app.use(store, Vuex, axios, VueAxios);
 app.use(pinia);
 app.directive('ripple', rippleDirective);
 app.use(router).mount('#app');
+
+import Echo from 'laravel-echo';
+// import Pusher from 'pusher-js';
+
+// // Khởi tạo Pusher
+// window.Pusher = Pusher;
+window.Pusher = require('pusher-js');
+
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: process.env.MIX_PUSHER_APP_KEY, 
+    cluster: process.env.MIX_PUSHER_APP_CLUSTER, 
+    forceTLS: true,
+    encrypted: true,
+    authEndpoint:'/broadcasting/auth',
+    auth: {
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        }
+    }
+});

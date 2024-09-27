@@ -1,13 +1,13 @@
 <template>
     <div class="col-12 col-lg-4 col-xl-3 order-2 order-lg-1">
-        <div class="card mb-3 mt-3">
+        <div class="card mb-3">
             <div id="CoverImage">
                 <img src="../../../../assets/images/bgaccount2.jpg" alt="">
             </div>
             <div class="card-body border-bottom-cus text-center" style="margin-top: -100px;">
                 <img :src="authUser.avatar" alt="Jassa Jas" class="img-fluid rounded-circle mb-2" width="128"
                     height="128">
-                <h4 class="card-title mb-2">{{ inUser.user_name }}</h4>
+                <h4 style="color: #fa6342;" class="card-title mb-2">{{ inUser.user_name }}</h4>
                 <div v-if="!isAuthUser" class="dropdown show">
                     <button v-if="loading" class="btn btn-primary btn-sm" type="button" disabled>
                         <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
@@ -36,7 +36,7 @@
                 </div>
                 <div v-if="isAuthUser">
                     <a class="btn btn-primary btn-sm"><i class="fa-solid fa-plus mx-1"></i>Thêm vào tin</a>
-                    <a style="" class="btn btn-secondary btn-sm dropdown show" data-bs-toggle="dropdown"
+                    <a style="" class="btn btn-secondary btn-sm dropdown show m-0" data-bs-toggle="dropdown"
                         data-bs-display="static">
                         <i class="fa-solid fa-pen-to-square mx-1"></i>xem thêm</a>
                     <div class="dropdown-menu position-absolute dropdown-menu-right">

@@ -34,6 +34,10 @@ import PageUserParent from '../components/user/PageUserParent.vue'
 import LayoutUserParent from '../components/user/layouts/LayoutsUserParent.vue'
 import HomeView from '../components/user/homeSection/HomeView.vue'
 import ProfileParentUser from '../components/user/profile/ProfileParent.vue';
+import TimeLine from '../components/user/profile/TimeLineView.vue';
+import AboutView from '../components/user/profile/AboutView.vue';
+import EditProfile from '../components/user/profile/EditProfileView.vue';
+
 import RepositoryParent from '../components/user/profile/RepositoryParent.vue';
 import Trash from '../components/user/profile/Trash.vue';
 
@@ -179,8 +183,23 @@ export const routes = [
                 path: 'profile/:id',
                 name: 'Profile User',
                 component: ProfileParentUser,
+                redirect: { name: 'TimeLine User' },
                 children: [
-
+                    {
+                        path: '',
+                        name: 'TimeLine User',
+                        component: TimeLine
+                    },
+                    {
+                        path: 'about',
+                        name: 'About User',
+                        component: AboutView,
+                    },
+                    {
+                        path: 'edit-profile',
+                        name: 'Edit Profile',
+                        component: EditProfile,
+                    },
                 ]
             },
             {

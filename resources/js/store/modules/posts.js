@@ -6,6 +6,7 @@ const state = {
     user: [],
     posts: [],
     postsByUser: [],
+    postsInAboutProfile:[],
     postsDeleted: [],
     page: 1,
     page2: 1,
@@ -56,6 +57,9 @@ const mutations = {
     },
     allPostsByUser(state, posts) {
         state.postsByUser.push(...posts)
+    },
+    allpostsInAboutProfile(state, posts) {
+        state.postsInAboutProfile=posts
     },
     allPostsDeleted(state, posts) {
         state.postsDeleted.push(...posts)
@@ -111,20 +115,15 @@ const mutations = {
             const post = state.postsByUser[index];
             post.pinned = !post.pinned;
             if (post.pinned) {
-                // Lưu trữ vị trí ban đầu nếu chưa lưu
                 if (post.originalIndex === undefined) {
                     post.originalIndex = index;
                 }
-                // Di chuyển bài viết được ghim lên đầu
                 const pinnedPost = state.postsByUser.splice(index, 1)[0];
                 state.postsByUser.unshift(pinnedPost);
             } else {
-                // Lấy vị trí ban đầu của bài viết
                 const originalIndex = post.originalIndex;
                 if (originalIndex !== undefined) {
-                    // Xóa bài viết từ vị trí hiện tại
                     const unpinnedPost = state.postsByUser.splice(index, 1)[0];
-                    // Chèn lại bài viết vào vị trí ban đầu
                     state.postsByUser.splice(originalIndex, 0, unpinnedPost);
                 }
             }
@@ -171,6 +170,18 @@ const actions = {
             })
             .catch(error => {
                 console.log("Error fetching posts:", error);
+            });
+    },
+    fetchPostsInAboutProfile({ commit },userId) {
+        commit('SET_LOADING', true);
+        axios.get(`/api/user/post/${userId}/all_posts_about_profile`)
+            .then(({ data }) => {
+                commit('allpostsInAboutProfile', data.data);
+                commit('SET_LOADING', false);
+            })
+            .catch(error => {
+                console.log("Error fetching posts:", error);
+                commit('SET_LOADING', false);
             });
     },
     fetchPostsDeleted({ commit }) {
