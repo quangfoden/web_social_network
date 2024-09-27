@@ -27,7 +27,7 @@
 										@updated-like-overlay="handleUpdatedLike(post.id)"
 										@deleted-like-overlay="handleLikedeleted(post.id)" />
 								</div>
-								<button class="btn-view btn-load-more">Load More</button>
+								<button @click="loadMorePost" class="btn-view btn-load-more">Load More</button>
 							</div>
 						</div>
 					</div>
@@ -37,6 +37,7 @@
 	</section>
 </template>
 <script>
+import { debounce } from 'lodash';
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { ref } from 'vue';
 import CreatePostBox from '../Components/CreatePostBox.vue'
@@ -66,19 +67,19 @@ export default {
 	},
 	methods: {
 		...mapActions('post', ['fetchPosts']),
-		handleScroll() {
-			if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-				if (!this.loading) {
-					this.loading = true;
-					setTimeout(() => {
-						this.$store.dispatch('post/fetchPosts')
-							.then(() => {
-								this.loading = false;
-							})
-					}, 3000);
-				}
-			}
-		},
+		loadMorePost: debounce(function () {
+			if (this.loading) return;
+			this.loading = true;
+			this.$store.dispatch('post/fetchPosts')
+				.then(() => {
+					this.loading = false;
+				})
+				.catch(error => {
+					console.error("Error fetching posts:", error);
+					this.loading = false;
+				});
+		}, 1000),
+
 		handleCommentCreated(postId) {
 			const post = this.posts.find(p => p.id === postId);
 			if (post) {
@@ -107,12 +108,6 @@ export default {
 	},
 	created() {
 		this.fetchPosts();
-	},
-	mounted() {
-		window.addEventListener('scroll', this.handleScroll);
-	},
-	destroyed() {
-		window.removeEventListener('scroll', this.handleScroll);
 	},
 }
 </script>

@@ -94,6 +94,36 @@ class PostRepository
 
         return $posts;
     }
+
+    public function getAllPostAboutProfile(int $userId)
+    {
+        $posts = $this->model->query()
+            ->where('status', 1)
+            ->where('user_id', $userId)
+            ->with('user', 'media', 'comments.user', 'likes', 'likes.user', 'comments.repcomments.user')
+            ->orderByRaw('CASE WHEN pinned = 1 THEN 0 ELSE 1 END')
+            ->orderBy('created_at', 'desc')
+            ->get(); 
+
+        $posts->transform(function ($post) {
+            $post->created_at_formatted = $this->postService->formatTimeAgo($post->created_at);
+            $post->comment_count = $post->comments->count();
+            $post->like_count =  $post->likes->count();
+            $post->comments->each(function ($comment) {
+                $comment->repcomment_count = $comment->repcomments->count();
+                $comment->created_at_formatted = $this->postService->formatTimeAgo($comment->created_at);
+                if ($comment->repcomments) {
+                    foreach ($comment->repcomments as $repcomment) {
+                        $repcomment->created_at_formatted = $this->postService->formatTimeAgo($repcomment->created_at);
+                    }
+                }
+            });
+            return $post;
+        });
+
+        return $posts;
+    }
+    
     public function getAllByUserIdDeleted(int $userId): LengthAwarePaginator
     {
         $query = $this->model->query()

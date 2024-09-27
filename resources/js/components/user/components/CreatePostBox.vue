@@ -48,7 +48,7 @@
                             <li>
                                 <i class="fas fa-photo-video"></i>
                                 <label for="image-video" class="fileContainer">
-                                    <input @input="onFileChange($event)" title="Ảnh/Video" id="image-video"
+                                    <input ref="fileInput"  @input="onFileChange($event)" title="Ảnh/Video" id="image-video"
                                         accept="image/*,video/*" multiple type="file">
                                 </label>
                             </li>
@@ -122,6 +122,9 @@ export default {
                     this.form.content = '';
                     this.form.media = [];
                     formData.values = ''
+                    this.imageUrls=[]
+                    this.files=[]
+                    this.$refs.fileInput.value = null;
                     this.isPostOverlay = false
                 })
                 .catch(error => {
@@ -129,6 +132,9 @@ export default {
                     this.form.content = '';
                     this.form.media = [];
                     formData.values = ''
+                    this.imageUrls=[]
+                    this.files=[]
+                    this.$refs.fileInput.value = null;
                     this.isPostOverlay = false
                 });
         },

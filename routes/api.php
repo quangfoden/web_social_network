@@ -54,6 +54,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('change-password', [UserController::class, 'change_password']);
     Route::post('create-post', [PostsController::class, 'create_post']);
     Route::get('allposts', [PostsController::class, 'all_post']);
+    Route::get('post/{userId}/all_posts_about_profile', [PostsController::class, 'allPostsAboutProfile']);
     Route::get('post/{userId}/allposts_byuser', [PostsController::class, 'all_PostByUserId']);
     Route::get('post/allposts_deleted', [PostsController::class, 'allposts_deleted']);
     Route::post('post/{postId}/editPost', [PostsController::class, 'updatePost']);
@@ -71,6 +72,17 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('/comments/repcomment/{repCommentId}', [CommentController::class, 'updateRepComment']);
     Route::post('/deleterepcomment/repcomment/{repCommentId}', [CommentController::class, 'delete_repcomment']);
     //    Friends
+    Route::post('/friends/request', [FriendController::class, 'sendRequest']);
+    Route::post('/friends/cancel-request', [FriendController::class, 'cancelRequest']);
+    Route::delete('/friends/cancel/{friendId}', [FriendController::class, 'cancelFriendRequest']);
+    Route::post('/friends/accept/{id}', [FriendController::class, 'acceptRequest']);
+    Route::post('friends/decline/{id}', [FriendController::class, 'declineRequest']);
+    Route::delete('friends/unfriend/{friendId}', [FriendController::class, 'unfriend']);
+    Route::get('friends/status/{friendId}', [FriendController::class, 'getFriendshipStatus']);
+    // Route trong web.php hoặc api.php
+    Route::get('/friends/{userId}', [FriendController::class, 'getFriendsByUserId']);
+
+
     Route::get('/allfriends', [FriendController::class, 'index']);
     Route::get('/mutual-friends', [FriendController::class, 'mutual_friends']);
     //friend-requst

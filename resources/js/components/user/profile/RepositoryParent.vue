@@ -1,6 +1,6 @@
 <template>
     <TopBar />
-    <div id="RepoParent">
+    <div id="RepoParent" class="gap2">
         <div class="container-fluid">
             <div class="row">
                 <RepositoryLeft />

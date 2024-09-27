@@ -2,7 +2,8 @@
     <!-- topbar -->
     <div class="topbar stick">
         <div class="logo">
-            <a title="" href="newsfeed.html"><img src="/images/logo/logo2.png" alt=""></a>
+            <router-link :to="{ name: 'Home Section' }" title="home"><img src="/images/logo/logo2.png"
+                    alt=""></router-link>
         </div>
         <div class="top-area">
             <div class="top-search">
@@ -12,8 +13,8 @@
                 </form>
             </div>
             <ul class="setting-area">
-                <li><a @click.prevent="clickHome" href="newsfeed.html" title="Home" v-ripple><i
-                            class="fa fa-home"></i></a></li>
+                <li @click="clickHome"><a @clcik.prevent :class="{ active: $route.path === '/' && !showNot }"
+                        title="Home" v-ripple><i class="fa fa-home"></i></a></li>
                 <li>
                     <a href="#" title="Friend Requests" v-ripple>
                         <i class="fa fa-user"></i><em class="bg-red">5</em>
@@ -105,90 +106,31 @@
                         <a href="friend-requests.html" title="" class="more-mesg">View All</a>
                     </div>
                 </li>
-                <li>
-                    <a href="#" title="Notification" v-ripple>
-                        <i class="fa fa-bell"></i><em class="bg-purple">7</em>
+                <li @click="showNot = !showNot" class=''>
+                    <a :class="{ 'active': showNot }" href="#" title="Notification" v-ripple>
+                        <i class="fa fa-bell"></i><em v-if="notificationCount > 0" class="bg-purple">{{
+                            notificationCount }}</em>
                     </a>
-                    <div class="dropdowns">
+                    <div class="dropdowns" :class="{ 'active': showNot }">
                         <span>4 New Notifications <a href="#" title="">Mark all as read</a></span>
                         <ul class="drops-menu">
-                            <li>
-                                <a href="notifications.html" title="">
+                            <li v-for="(notification, index) in notifications" :key="index">
+                                <router-link :to="{ name: 'Profile User', params: { id: notification.friendId2 } }" href="#"
+                                    title="">
                                     <figure>
-                                        <img src="/images/resources/thumb-1.jpg" alt="">
+                                        <img width="35" :src="notification.avatar" alt="">
                                         <span class="status f-online"></span>
                                     </figure>
                                     <div class="mesg-meta">
-                                        <h6>sarah Loren</h6>
-                                        <span>commented on your new profile status</span>
-                                        <i>2 min ago</i>
+                                        <h6>{{ notification.user_name }}</h6>
+                                        <span>{{ notification.type }}</span>
+                                        <i>{{ notification.time }}</i>
                                     </div>
-                                </a>
+                                </router-link>
                             </li>
-                            <li>
-                                <a href="notifications.html" title="">
-                                    <figure>
-                                        <img src="/images/resources/thumb-2.jpg" alt="">
-                                        <span class="status f-online"></span>
-                                    </figure>
-                                    <div class="mesg-meta">
-                                        <h6>Jhon doe</h6>
-                                        <span>Nicholas Grissom just became friends. Write on his wall.</span>
-                                        <i>4 hours ago</i>
-                                        <figure>
-                                            <span>Today is Marina Valentine’s Birthday! wish for celebrating</span>
-                                            <img src="images/birthday.png" alt="">
-                                        </figure>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="notifications.html" title="">
-                                    <figure>
-                                        <img src="/images/resources/thumb-3.jpg" alt="">
-                                        <span class="status f-online"></span>
-                                    </figure>
-                                    <div class="mesg-meta">
-                                        <h6>Andrew</h6>
-                                        <span>commented on your photo.</span>
-                                        <i>Sunday</i>
-                                        <figure>
-                                            <span>"Celebrity looks Beautiful in that outfit! We should see each"</span>
-                                            <img src="/images/resources/admin.jpg" alt="">
-                                        </figure>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="notifications.html" title="">
-                                    <figure>
-                                        <img src="/images/resources/thumb-4.jpg" alt="">
-                                        <span class="status f-online"></span>
-                                    </figure>
-                                    <div class="mesg-meta">
-                                        <h6>Tom cruse</h6>
-                                        <span>nvited you to attend to his event Goo in</span>
-                                        <i>May 19</i>
-                                    </div>
-                                </a>
-                                <span class="tag">New</span>
-                            </li>
-                            <li>
-                                <a href="notifications.html" title="">
-                                    <figure>
-                                        <img src="/images/resources/thumb-5.jpg" alt="">
-                                        <span class="status f-online"></span>
-                                    </figure>
-                                    <div class="mesg-meta">
-                                        <h6>Amy</h6>
-                                        <span>Andrew Changed his profile picture. </span>
-                                        <i>dec 18</i>
-                                    </div>
-                                </a>
-                                <span class="tag">New</span>
-                            </li>
+
                         </ul>
-                        <a href="notifications.html" title="" class="more-mesg">View All</a>
+                        <a href="#" title="" class="more-mesg">View All</a>
                     </div>
                 </li>
                 <li>
@@ -277,7 +219,9 @@
                 <span class="status f-online"></span>
                 <div class="user-setting" :class="{ 'active': showMenu }">
                     <ul class="log-out">
-                        <li v-ripple><a href="#" title=""><i class="fas fa-user"></i>Trang cá nhân</a></li>
+                        <li @click="lll" v-ripple><router-link
+                                :to="{ name: 'Profile User', params: { id: authUser.user_id } }" href="#" title=""><i
+                                    class="fas fa-user"></i>Trang cá nhân</router-link></li>
                         <li v-ripple><a href="#" title=""><i class="fas fa-pencil-alt"></i>Chỉnh sửa trang cá nhân</a>
                         </li>
                         <li v-ripple><a href="#" title=""><i class="fas fa-id-badge"></i>Đăng ký khuôn mặt</a></li>
@@ -303,7 +247,10 @@ import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import CropperModal from '../components/CropperModal.vue'
 import MediaDisplay from '../Components/mediaDisplay.vue'
-
+import EventBus from '../../../eventBus';
+import Echo from 'laravel-echo';
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
 export default {
     components: {
         CropperModal,
@@ -319,6 +266,10 @@ export default {
             isFileDisplay,
             isLoading: false,
             activeIndex: null,
+            notifications: [],
+            notificationCount: 0,
+            userId: null,
+            showNot: false
         }
     },
     computed: {
@@ -329,6 +280,33 @@ export default {
             return JSON.parse(localStorage.getItem('authUser'));
         },
     },
+    mounted() {
+        // EventBus.on('friend-request-sent', (payload) => {
+        //     this.userId = payload.userId;
+        // });
+        toastr.options = {};
+        window.Echo.private('user.' + this.authUser.id)
+            .listen('FriendRequestSent', (event) => {
+                console.log('Received event:', event);
+                const notification = {
+                    user_name: event.user_name,
+                    type: event.message,
+                    avatar: event.avatar || '',
+                    friendId2: event.friendId2,
+                    time: new Date().toLocaleTimeString(),
+                };
+                this.notifications.unshift(notification);
+                this.notificationCount++;
+                toastr.success(event.message, 'Thông báo', {
+                    positionClass: 'toast-bottom-left',
+                    backgroundColor: '#4CAF50',
+                    progressBar: true,
+                    closeButton: true,
+                    timeOut: 10000,
+                });
+            });
+    },
+
     methods: {
         ...mapActions(["logout"]),
         toggleActive(index) {
@@ -341,6 +319,7 @@ export default {
                 this.$store.dispatch('post/fetchPosts')
                     .then(response => {
                         this.isLoading = false;
+                        window.scrollTo(0, 0);
                     })
                     .catch(error => {
                         this.isLoading = false;
@@ -348,6 +327,7 @@ export default {
                     });
             } else {
                 console.log("Bạn không ở trang Home, không thực hiện tải lại bài viết.");
+                this.$router.push('/');
             }
         }
         ,
