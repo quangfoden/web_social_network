@@ -2,15 +2,15 @@
 import Image from 'vue-material-design-icons/Image.vue'
 </script>
 <template>
-    <div v-if="!isLoadingChatBox && friend" id="ChatBox">
-        <div class="chat-header">
+    <div v-if="friend" id="ChatBox">
+        <div style="background: #0000ff75;" class="chat-header">
             <div class="">
                 <div class="user-ifo d-flex gap-2">
-                    <img src="/images/avatar.gif" class="custom" alt="">
+                    <img :src="friend.avatar" class="custom" alt="">
                     <span class="dot-status" :class="{ 'online': friendStatus.state === 'online' }"></span>
                     <div>
                         <h3 class="user-name">{{ friend.user_name }}</h3>
-                        <small class="secondary-text">
+                        <small v-if="friendStatus.state" class="secondary-text">
                             {{ friendStatus.state === "online" ? "Đang hoạt động" :
                                 formatLastChanged(friendStatus.last_changed) }}
                         </small>
@@ -25,7 +25,8 @@ import Image from 'vue-material-design-icons/Image.vue'
             <div ref="messageContainer" v-for="message in listMessage" :key="message.id"
                 :class="{ 'left-user': message.sender.id != currentUser.id, 'right-user': message.sender.id == currentUser.id }">
                 <div class="user-ifo d-flex gap-2">
-                    <img src="/images/avatar.gif" class="custom" alt="">
+                    <img v-if="message.sender.id == currentUser.id" :src="authUser.avatar" class="custom" alt="">
+                    <img v-if="message.sender.id != currentUser.id" :src="friend.avatar" class="custom" alt="">
                     <div class="content-message custom-cursor-pointer">
                         <p v-if="message.text">{{ message.text }}</p>
                         <div v-if="message.fileURL" class="pb-3">
@@ -91,37 +92,7 @@ import Image from 'vue-material-design-icons/Image.vue'
             </form>
         </div>
     </div>
-    <div v-if="isLoadingChatBox" id="ChatBox">
-        <div class="chat-header">
-            <div class="">
-                <div class="user-ifo d-flex gap-2">
-                    <div>
-                        <h3 class="user-name"></h3>
-                        <small class="text-xs text-gray-600"></small>
-                    </div>
-                    <span @click="closeChatBox" class="close-mess">
-                        <i class="fas fa-close"></i>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="chat-body">
-            <div class="left-user">
-                <div class="user-ifo d-flex gap-2">
-                    <div class="">
-                        <p></p>
-                    </div>
-                </div>
-            </div>
-            <div class="right-user">
-                <div class="user-ifo d-flex gap-2">
-                    <div class="">
-                        <p></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
 </template>
 <script>
 
@@ -286,9 +257,10 @@ export default {
                 return 'other';
             }
         },
-        handleFileChange($event) {
-            this.filesMessUpload = $event.target.files[0];
-            $event.target.value = '';
+        handleFileChange(event) {
+            this.filesMessUpload = event.target.files[0]; // Lưu tệp được chọn vào biến
+            console.log(this.filesMessUpload); // Kiểm tra xem tệp đã được lưu chưa
+
             if (this.filesMessUpload) {
                 const fileType = this.filesMessUpload.type;
                 if (fileType.startsWith('image/')) {
@@ -298,12 +270,13 @@ export default {
                     this.filePreview = URL.createObjectURL(this.filesMessUpload);
                     this.fileType = 'video';
                 } else {
-                    this.filePreview = this.file.name;
+                    // Lấy tên tệp nếu không phải ảnh hoặc video
+                    this.filePreview = this.filesMessUpload.name;
                     this.fileType = 'other';
                 }
             }
-            console.log(this.filePreview);
 
+            console.log(this.filePreview); // In ra đường dẫn hoặc tên tệp
         },
         clearFileMess() {
             console.log('clear');
@@ -380,3 +353,266 @@ export default {
     },
 }
 </script>
+<style scoped>
+img.custom {
+    border-radius: 9999px;
+    margin-left: 0.25rem;
+    min-width: 40px;
+    max-height: 40px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+#ChatBox {
+    background: #fbfbfb none repeat scroll 0 0;
+    color: #fff;
+    z-index: 99999;
+    width: 350px;
+    max-width: 350px;
+    max-height: 450px;
+    min-height: 450px;
+    position: fixed;
+    bottom: 0;
+    right: 100px;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#ChatBox .custom-loading-mess .wrapper {
+    width: 20%;
+    height: 60px;
+    position: relative;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#ChatBox .custom-loading-mess .circles {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#ChatBox .custom-loading-mess .circle {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #fff;
+    transform-origin: 50%;
+    animation: circle 0.3s alternate infinite ease;
+}
+
+@keyframes circle {
+    0% {
+        top: 15px;
+        height: 5px;
+        border-radius: 50px 50px 25px 25px;
+        transform: scaleX(1.7);
+    }
+
+    40% {
+        height: 10px;
+        border-radius: 50%;
+        transform: scaleX(1);
+    }
+
+    100% {
+        top: 0%;
+    }
+}
+
+#ChatBox .custom-loading-mess .circle:nth-child(2) {
+    left: 45%;
+    animation-delay: 0.1s;
+}
+
+#ChatBox .custom-loading-mess .circle:nth-child(3) {
+    left: auto;
+    right: 15%;
+    animation-delay: 0.2s;
+}
+
+#ChatBox .custom-loading-mess .shadow {
+    width: 20px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 62px;
+    transform-origin: 50%;
+    z-index: -1;
+    left: 15%;
+    filter: blur(1px);
+    animation: shadow 0.5s alternate infinite ease;
+}
+
+@keyframes shadow {
+    0% {
+        transform: scaleX(1.5);
+    }
+
+    40% {
+        transform: scaleX(1);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scaleX(0.2);
+        opacity: 0.4;
+    }
+}
+
+#ChatBox .custom-loading-mess .shadow:nth-child(4) {
+    left: 45%;
+    animation-delay: 0.2s;
+}
+
+#ChatBox .custom-loading-mess .shadow:nth-child(5) {
+    left: auto;
+    right: 15%;
+    animation-delay: 0.3s;
+}
+
+#ChatBox .custom-loading-mess .wrapper span {
+    position: absolute;
+    top: 75px;
+    font-family: "Lato";
+    font-size: 20px;
+    letter-spacing: 12px;
+    color: #fff;
+    left: 15%;
+}
+
+#ChatBox .chat-header {
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border-collor);
+}
+
+#ChatBox .close-mess {
+    position: absolute;
+    font-size: 20px;
+    padding: 5px 10px;
+    border-radius: 50%;
+    right: 10px;
+}
+
+#ChatBox .close-mess:hover {
+    background: var(--bg-input);
+}
+
+#ChatBox .clear-file-mess {
+    position: absolute;
+    right: 0;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 50%;
+    top: 0;
+    z-index: 1000;
+    background-color: var(--bg-input);
+}
+
+#ChatBox .user-name {
+    font-size: 15px;
+    color: var(--primary-text);
+    font-weight: 800;
+    margin: 0;
+}
+
+#ChatBox .chat-body {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-inline: 5px;
+}
+
+#ChatBox .chat-body .left-user {
+    text-align: start;
+}
+
+#ChatBox .chat-body .left-user p {
+    width: auto;
+    word-wrap: break-word;
+    padding: 10px;
+    color: #fff;
+    background: #3333334d;
+    border-radius: 10px;
+}
+
+#ChatBox .chat-body .right-user .user-ifo {
+    flex-direction: row-reverse;
+}
+
+#ChatBox .chat-body .right-user .user-ifo p {
+    width: auto;
+    padding: 10px;
+    color: #fff;
+    background: #333;
+    border-radius: 10px;
+    float: right;
+    text-align: start;
+    word-wrap: break-word;
+}
+
+#ChatBox .chat-bottom {
+    padding-inline: 10px;
+    padding-block: 10px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    width: 100%;
+    margin-top: auto;
+}
+
+#ChatBox .chat-bottom .icon i {
+    font-size: 20px;
+    color: var(--bg-blue);
+}
+
+#ChatBox .chat-bottom form {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#ChatBox .chat-bottom form label.lmess {
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 5px;
+}
+
+#ChatBox .chat-bottom form label.lmess:hover {
+    background: var(--bg-item);
+}
+
+#ChatBox .chat-bottom form .input-icon {
+    width: 90%;
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+#ChatBox .chat-bottom form textarea {
+    width: 90%;
+    background: var(--bg-input);
+    padding: 10px;
+    padding-right: 60px;
+    word-break: break-all;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    resize: none;
+}
+
+#ChatBox .chat-bottom form button.sendmess {
+    padding: 5px;
+    border-radius: 50%;
+    color: gray;
+    background: none
+}
+</style>

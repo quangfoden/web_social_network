@@ -178,4 +178,7 @@ class UserController extends Controller
         $responseData = ['status' => 200, 'success' => true, 'message' => 'Cập nhật mật khẩu thành công !'];
         return response()->json($responseData);
     }
+
+
+    
 }

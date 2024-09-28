@@ -1,7 +1,8 @@
 <template>
     <div @click="closeEditModalEditPost" v-show="isEditPostOverlay" class="posteditoverlay"></div>
     <div class="loadMore">
-        <p class="d-inline pb-2 border-bottom m-0 secondary-text " v-if="pinned === 1 || pinned === true"> Bài viết đã ghim
+        <p class="d-inline pb-2 border-bottom m-0 secondary-text " v-if="pinned === 1 || pinned === true"> Bài viết đã
+            ghim
         </p>
         <i v-if="pinned === 1 || pinned === true" class="fas fa-thumbtack"></i>
         <div class="central-meta item">
@@ -71,6 +72,9 @@
                                                     :href="medias.url" title="" data-strip-group="mygroup"
                                                     data-strip-group-options="loop: false">
                                                     <img :src="medias.url" alt="">
+                                                    <i @click="handleIconClick($event, medias)"
+                                                        style="color:#fff; transform:translatey(-200px);padding:10px;"
+                                                        class="fa-regular fa-eye"></i>
                                                 </a>
                                                 <a target="_blank" v-else-if="medias.type.includes('video')"
                                                     class="strip" :href="medias.url" title="" data-strip-group="mygroup"
@@ -78,6 +82,13 @@
                                                     <video :src="medias.url" class="" autoplay controls muted>
                                                     </video>
                                                 </a>
+                                                <div style="width: 500px;padding-inline: 40px;"
+                                                    v-else-if="medias.type.includes('audio')">
+                                                    <audio class="rounded-lg mx-auto w-100" controls>
+                                                        <source :src="medias.url" type="audio/mpeg">
+                                                        Your browser does not support the audio element.
+                                                    </audio>
+                                                </div>
                                             </figure>
 
                                             <figure style="overflow: hidden;" v-if="media.length >= 5">
@@ -180,7 +191,7 @@
                                     </span>
                                 </li>
                             </ul>
-                            <div class="users-thumb-list">
+                            <!-- <div class="users-thumb-list">
                                 <a data-toggle="tooltip" title="Anderw" href="#">
                                     <img alt="" src="images/resources/userlist-1.jpg">
                                 </a>
@@ -198,7 +209,7 @@
                                 </a>
                                 <span><strong>You</strong>, <b>Sarah</b> and <a href="#" title="">24+ more</a>
                                     liked</span>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="coment-area" style="display: block;">
@@ -262,7 +273,7 @@
                                                 </label>
                                             </div>
                                             <span class="em em-expressionless" title="add icon"></span>
-                                            <div class="smiles-bunch active">
+                                            <div class="smiles-bunch">
                                                 <i class="em em---1"></i>
                                                 <i class="em em-smiley"></i>
                                                 <i class="em em-anguished"></i>
@@ -611,6 +622,12 @@ export default {
             this.isFileDisplay = media.url
             this.imageData = media.url
             this.showMorePost = false
+        },
+
+        handleIconClick(event, medias) {
+            event.stopPropagation();  // Ngăn chặn sự kiện click lan truyền
+            event.preventDefault();   // Ngăn chặn hành động mặc định (điều hướng)
+            this.convertImageUrl(medias);  // Gọi hàm xử lý của bạn
         },
         convertImageUrl(media) {
             let imageUrl = media.url;

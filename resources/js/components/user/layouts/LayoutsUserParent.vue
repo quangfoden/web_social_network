@@ -4,8 +4,6 @@
     <router-view></router-view>
     <SidebarRight />
     <SidebarLeft />
-
-    <!-- <ChatBox v-if="isChatBoxOverLay" /> -->
 </template>
 <script>
 import { useGeneralStore } from '../../../store/general';

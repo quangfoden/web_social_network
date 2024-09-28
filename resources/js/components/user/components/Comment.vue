@@ -106,7 +106,7 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                         </label>
                     </div>
                     <span class="em em-expressionless" title="add icon"></span>
-                    <div class="smiles-bunch active">
+                    <div class="smiles-bunch">
                         <i class="em em---1"></i>
                         <i class="em em-smiley"></i>
                         <i class="em em-anguished"></i>
@@ -163,7 +163,7 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                         </label>
                     </div>
                     <span class="em em-expressionless" title="add icon"></span>
-                    <div class="smiles-bunch active">
+                    <div class="smiles-bunch">
                         <i class="em em---1"></i>
                         <i class="em em-smiley"></i>
                         <i class="em em-anguished"></i>

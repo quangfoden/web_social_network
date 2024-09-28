@@ -1,6 +1,6 @@
 <template>
     <div class="central-meta postbox">
-    <span v-if="isLoading" class="loader"></span>
+        <span v-if="isLoading" class="loader"></span>
         <span class="create-post">Cập nhật trạng thái ?</span>
         <div class="new-postbox">
             <figure>
@@ -13,15 +13,17 @@
                         <option v-for="option in privacyOptions" :value="option.value">{{ option.name }}
                         </option>
                     </select>
-                    <textarea @focus="isPostOverlay = true" v-model="form.content" rows="2" :placeholder="placeholder"></textarea>
+                    <textarea @focus="isPostOverlay = true" v-model="form.content" rows="2"
+                        :placeholder="placeholder"></textarea>
                     <div v-if="imageUrls && isPostOverlay" class="p-2 position-relative cus-img-dis">
                         <div class="items" v-for="(image) in imageUrls" :key="index">
                             <!-- <Close @click="clearImage(image)"
                                 class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer"
                                 :size="22" fillColor="#5E6771" /> -->
-                                <span @click="clearImage(image)" style="z-index: 2000;" class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer">
-                                    <i class="fas fa-close"></i>
-                                </span>
+                            <span @click="clearImage(image)" style="z-index: 2000;"
+                                class="position-absolute bg-white p-1 m-2 right-2 z-1000 rounded-full border custom-cursor-pointer">
+                                <i class="fas fa-close"></i>
+                            </span>
                             <div v-if="image.fileType === 'image'">
                                 <img class="rounded-lg mx-auto w-100" :src="image.url" alt="">
                             </div>
@@ -30,6 +32,12 @@
                                     <source :src="image.url" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
+                            </div>
+                            <div style="width: 400px;padding-inline: 40px;" v-else-if="image.fileType === 'audio'">
+                                <audio class="rounded-lg mx-auto w-100" controls>
+                                    <source :src="image.url" type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
                             </div>
                             <div v-else class="createFile_" style="word-wrap: break-word;">
                                 <a :href="image.url" target="_blank">
@@ -42,19 +50,22 @@
                             <li>
                                 <i class="fa fa-music"></i>
                                 <label for="music" class="fileContainer">
-                                    <input id="music" title="Âm nhạc" type="file">
+                                    <input id="music" @input="onFileChange($event)" title="Âm nhạc" accept="audio/*"
+                                        type="file">
                                 </label>
                             </li>
                             <li>
                                 <i class="fas fa-photo-video"></i>
                                 <label for="image-video" class="fileContainer">
-                                    <input ref="fileInput"  @input="onFileChange($event)" title="Ảnh/Video" id="image-video"
-                                        accept="image/*,video/*" multiple type="file">
+                                    <input ref="fileInput" @input="onFileChange($event)" title="Ảnh/Video"
+                                        id="image-video" accept="image/*,video/*" multiple type="file">
                                 </label>
                             </li>
                         </ul>
-                        <button v-if="isPostOverlay && !isLoading" :disabled="isSubmitDisabled" class="post-btn" type="submit">Đăng</button>
-                        <button v-if="isPostOverlay && isLoading" disabled class="post-btn" type="submit">Đang tải...</button>
+                        <button v-if="isPostOverlay && !isLoading" :disabled="isSubmitDisabled" class="post-btn"
+                            type="submit">Đăng</button>
+                        <button v-if="isPostOverlay && isLoading" disabled class="post-btn" type="submit">Đang
+                            tải...</button>
                     </div>
                 </form>
             </div>
@@ -122,8 +133,8 @@ export default {
                     this.form.content = '';
                     this.form.media = [];
                     formData.values = ''
-                    this.imageUrls=[]
-                    this.files=[]
+                    this.imageUrls = []
+                    this.files = []
                     this.$refs.fileInput.value = null;
                     this.isPostOverlay = false
                 })
@@ -132,8 +143,8 @@ export default {
                     this.form.content = '';
                     this.form.media = [];
                     formData.values = ''
-                    this.imageUrls=[]
-                    this.files=[]
+                    this.imageUrls = []
+                    this.files = []
                     this.$refs.fileInput.value = null;
                     this.isPostOverlay = false
                 });
@@ -147,6 +158,10 @@ export default {
             const videoExtensions = ['mp4', 'avi', 'mov', 'mkv'];
             if (videoExtensions.includes(extension)) {
                 return 'video';
+            }
+            const audioExtensions = ['mp3', 'wav', 'ogg', 'flac', 'aac'];
+            if (audioExtensions.includes(extension)) {
+                return 'audio';
             }
             return null;
         },

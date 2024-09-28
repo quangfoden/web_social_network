@@ -6,13 +6,8 @@ import Close from 'vue-material-design-icons/Close.vue'
 <template>
     <div id="MediaDisplay">
         <Close @click="isFileDisplay = []" fillColor="#000000" :size="30" class="imagedisplay_close" />
-        <div class="media_display" v-if="isVideo(isFileDisplay) || fileType === 'video'">
-            <video class="displ" controls autoplay>
-                <source :src="isFileDisplay" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
-        <div v-if="isImage(isFileDisplay) || fileType === 'image'" class="media_display">
+        
+        <div class="media_display">
             <img class="displ" :src="isFileDisplay" alt="Image">
         </div>
 

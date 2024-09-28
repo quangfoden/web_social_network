@@ -7,10 +7,10 @@
           <div class="row">
             <div class="col-lg-8">
               <div class="big-ad">
-                <figure><img src="/images/logo/logo2.png" alt="logo"></figure>
-                <h1>Chào mừng bạn đến với Pitnik</h1>
+                <figure><h3>Imnotify</h3></figure>
+                <h1>Chào mừng bạn đến với Imnotify</h1>
                 <p>
-                  Pitnik là một mẫu giao diện mạng xã hội có thể được sử dụng để kết nối mọi người. Sử dụng mẫu này cho
+                  Imnotify là một mẫu giao diện mạng xã hội có thể được sử dụng để kết nối mọi người. Sử dụng mẫu này cho
                   nhiều mục đích xã hội như tìm việc, hẹn hò, đăng bài, viết blog và nhiều hơn thế nữa. Tham gia ngay
                   bây giờ và Kết Bạn Thú Vị trên toàn thế giới!!!
                 </p>

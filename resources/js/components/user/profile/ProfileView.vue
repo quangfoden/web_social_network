@@ -1,5 +1,25 @@
 <template>
     <div @click="isPostOverlay = false" v-show="isPostOverlay" class="postoverlay"></div>
+    <div v-if="showModal2" class="modal">
+        <div class="modal-content">
+            <h3>Ảnh đã chọn</h3>
+            <img :src="imageSrc" alt="Selected Image" class="selected-image" />
+            <div class="modal-buttons">
+                <button @click="saverImageCover">Lưu</button>
+                <button @click="closeModal2">Hủy</button>
+            </div>
+        </div>
+    </div>
+    <div v-if="showModal" class="modal">
+        <div class="modal-content">
+            <h3>Ảnh đã chọn</h3>
+            <img :src="imageSrc" alt="Selected Image" class="selected-image" />
+            <div class="modal-buttons">
+                <button @click="saveImage">Lưu</button>
+                <button @click="closeModal">Hủy</button>
+            </div>
+        </div>
+    </div>
     <skeleton-loader v-if="!myProfile" :count="3" />
     <div v-else class="gap2 gray-bg">
         <div class="container">
@@ -11,10 +31,11 @@
                                 <div class="edit-pp">
                                     <label class="fileContainer">
                                         <i class="fa fa-camera"></i>
-                                        <input type="file">
+                                        <input @change="onFileChange2" type="file">
                                     </label>
                                 </div>
-                                <img v-if="user.cover_photo" src="/images/resources/profile-image.jpg" alt="">
+
+                                <img v-if="user.cover_photo" :src="user.cover_photo" alt="">
                                 <ul v-if="user.user_id !== authUser.user_id" class="profile-controls">
                                     <li v-if="!isFriend && !isRequested && !isRequestedByThem"
                                         @click="sendFriendRequest(user.id)"><a @click.prevent class="text-white"
@@ -44,15 +65,14 @@
                                                 <div class="edit-dp">
                                                     <label class="fileContainer">
                                                         <i class="fa fa-camera"></i>
-                                                        <input type="file">
+                                                        <input @change="onFileChange" type="file">
                                                     </label>
                                                 </div>
                                             </div>
 
                                             <div class="author-content">
-                                                <a style="text-decoration: none" class="h4 author-name"
-                                                    href="about.html">{{ user.user_name }}</a>
-                                                <div class="country">Ontario, CA</div>
+                                                <a style="text-decoration: none" class="h4 author-name" href="#">{{
+                                                    user.user_name }}</a>
                                             </div>
                                         </div>
                                     </div>
@@ -68,7 +88,8 @@
                                                     thiệu</router-link>
                                             </li>
                                             <li v-if="user.user_id === authUser.user_id">
-                                                <router-link :to="{name:'Edit Profile'}" exact-active-class="active" class="" href="#">Chỉnh sửa trang cá nhân</router-link>
+                                                <router-link :to="{ name: 'Edit Profile' }" exact-active-class="active"
+                                                    class="" href="#">Chỉnh sửa trang cá nhân</router-link>
                                             </li>
                                         </ul>
                                     </div>
@@ -118,7 +139,12 @@ export default {
             isFriend: false,
             isRequested: false,
             isRequestedByThem: false,
-            showUnfriend: false
+            showUnfriend: false,
+            showModal: false,
+            imageSrc: '',
+            selectedFile: null,
+            selectedFileCover: null,
+            showModal2: false,
         }
     },
     components: {
@@ -360,6 +386,102 @@ export default {
             }
         },
 
+        onFileChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.selectedFile = file;
+                this.showModal = true; // Mở modal
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.imageSrc = e.target.result; // Set hình ảnh để hiển thị trong modal
+                };
+                reader.readAsDataURL(file);
+            }
+        },
+        onFileChange2(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.selectedFileCover = file;
+                this.showModal2 = true; // Mở modal
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.imageSrc = e.target.result; // Set hình ảnh để hiển thị trong modal
+                };
+                reader.readAsDataURL(file);
+            }
+        },
+        saveImage() {
+            if (this.selectedFile) {
+                const formData = new FormData();
+                formData.append('avatar', this.selectedFile);
+                // Gọi API để cập nhật thông tin người dùng
+                axios.post(`/api/user/update-profile/photo/${this.userId}`, formData)
+                    .then(response => {
+                        toastr.success('Cập nhật ảnh đại diện thành công !', 'Thông báo', {
+                            positionClass: 'toast-bottom-left',
+                            backgroundColor: '#4CAF50',
+                            progressBar: true,
+                            closeButton: true,
+                            timeOut: 10000,
+                        });
+                        localStorage.setItem('authUser', JSON.stringify(response.data.user));
+                        window.location.reload()
+                        console.log('Profile updated successfully:', response.data.user);
+                    })
+                    .catch(error => {
+                        toastr.error('Đã xảy ra lỗi vui lòng thử lại!', 'Thông báo', {
+                            positionClass: 'toast-bottom-left',
+                            backgroundColor: '#F44336',
+                            progressBar: true,
+                            closeButton: true,
+                            timeOut: 10000,
+                        });
+                        console.error('Error updating profile:', error.response.data);
+                    });
+            }
+            this.closeModal();
+        },
+
+        saverImageCover(){
+            if (this.selectedFileCover) {
+                const formData = new FormData();
+                formData.append('cover_photo', this.selectedFileCover);
+                // Gọi API để cập nhật thông tin người dùng
+                axios.post(`/api/user/update-profile/photo_cover/${this.userId}`, formData)
+                    .then(response => {
+                        toastr.success('Cập nhật ảnh bìa thành công !', 'Thông báo', {
+                            positionClass: 'toast-bottom-left',
+                            backgroundColor: '#4CAF50',
+                            progressBar: true,
+                            closeButton: true,
+                            timeOut: 10000,
+                        });
+                        localStorage.setItem('authUser', JSON.stringify(response.data.user));
+                        window.location.reload()
+                        console.log('Profile updated successfully:', response.data.user);
+                    })
+                    .catch(error => {
+                        toastr.error('Đã xảy ra lỗi vui lòng thử lại!', 'Thông báo', {
+                            positionClass: 'toast-bottom-left',
+                            backgroundColor: '#F44336',
+                            progressBar: true,
+                            closeButton: true,
+                            timeOut: 10000,
+                        });
+                        console.error('Error updating profile:', error.response.data);
+                    });
+            }
+            this.closeModal2();
+        },
+        closeModal() {
+            this.showModal = false;
+            this.imageSrc = '';
+        },
+
+        closeModal2() {
+            this.showModal2 = false;
+            this.imageSrc = '';
+        }
 
     },
     watch: {
@@ -378,3 +500,43 @@ export default {
 }
 
 </script>
+<style scoped>
+.modal {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 300px;
+    height: 300px;
+}
+
+.selected-image {
+    max-width: 150px;
+    max-height: 150px;
+    margin: auto;
+    border-radius: 100%;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.modal-buttons button {
+    border: none
+}
+</style>
