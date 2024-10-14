@@ -8,6 +8,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\FriendRequestController;
 use App\Http\Controllers\PostsController;
+use App\Http\Controllers\ShareController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,6 +53,14 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('admin-change-user-pass/{id}', [UserController::class, 'adminChangePasswordUser']);
     Route::post('update', [UserController::class, 'updateUser']);
     Route::post('change-password', [UserController::class, 'change_password']);
+    
+    Route::get('/search', [UsersController::class, 'search']);
+    //    update profile 
+    Route::post('/update-profile/{id}', [UsersController::class, 'update_profile']);
+    Route::post('/update-profile/photo/{id}', [UsersController::class, 'update_profile_photo']);
+    Route::post('/update-profile/photo_cover/{id}', [UsersController::class, 'update_profile_photo_cover']);
+
+
     Route::post('create-post', [PostsController::class, 'create_post']);
     Route::get('allposts', [PostsController::class, 'all_post']);
     Route::get('post/{userId}/all_posts_about_profile', [PostsController::class, 'allPostsAboutProfile']);
@@ -71,6 +80,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('deleteComment/{commentId}', [CommentController::class, 'delete_comment']);
     Route::post('/comments/repcomment/{repCommentId}', [CommentController::class, 'updateRepComment']);
     Route::post('/deleterepcomment/repcomment/{repCommentId}', [CommentController::class, 'delete_repcomment']);
+    Route::post('/share', [ShareController::class, 'sharePost']);
+
     //    Friends
     Route::post('/friends/request', [FriendController::class, 'sendRequest']);
     Route::post('/friends/cancel-request', [FriendController::class, 'cancelRequest']);

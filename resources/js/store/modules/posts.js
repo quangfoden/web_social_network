@@ -6,7 +6,7 @@ const state = {
     user: [],
     posts: [],
     postsByUser: [],
-    postsInAboutProfile:[],
+    postsInAboutProfile: [],
     postsDeleted: [],
     page: 1,
     page2: 1,
@@ -53,13 +53,13 @@ const mutations = {
         state.page2 = 1;
     },
     allPosts(state, posts) {
-        state.posts.push(...posts)
+        state.posts.push(...posts) 
     },
     allPostsByUser(state, posts) {
         state.postsByUser.push(...posts)
     },
     allpostsInAboutProfile(state, posts) {
-        state.postsInAboutProfile=posts
+        state.postsInAboutProfile = posts
     },
     allPostsDeleted(state, posts) {
         state.postsDeleted.push(...posts)
@@ -73,6 +73,8 @@ const mutations = {
     updatePost(state, { postId, newData }) {
         const updatedPostIndex = state.posts.findIndex(post => post.id === postId);
         if (updatedPostIndex !== -1) {
+            console.log(updatedPostIndex);
+            
             state.posts[updatedPostIndex] = newData;
         }
     },
@@ -162,6 +164,89 @@ const actions = {
                 commit('SET_LOADING', false);
             });
     },
+    // fetchPosts({ commit, state }) {
+    //     commit('SET_LOADING', true);
+    //     axios.get(`/api/user/allposts?page=${state.page}`)
+    //         .then(({ data }) => {
+    //             const allPosts = [];
+    //             console.log(data.data.data)
+    //             data.data.data.forEach(post => {
+    //                 // Thêm bài viết gốc
+    //                 allPosts.push({ ...post, type: 'post' });
+
+    //                 // Thêm các bài chia sẻ
+    //                 if (post.shares.length > 0) {
+    //                     post.shares.forEach(share => {
+    //                         allPosts.push({
+    //                             id: share.id,
+    //                             user_id: share.user_id,
+    //                             user_share: share.user,
+    //                             content: post.content, // Nội dung từ bài viết gốc
+    //                             user: post.user, // Thông tin người dùng từ bài viết gốc
+    //                             privacy_share: share.privacy,
+    //                             privacy: post.privacy,
+    //                             created_at: share.created_at,
+    //                             created_at_formatted: post.created_at_formatted,
+    //                             media:post.media,
+    //                             pinned:post.pinned,
+    //                             type: 'share' // Đánh dấu loại là 'share'
+    //                         });
+    //                     });
+    //                 }
+    //             });
+
+    //             // Sắp xếp theo thời gian
+    //             allPosts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    //             // Commit các bài viết đã được xử lý
+    //             commit('allPosts', allPosts);
+    //             console.log(allPosts);
+
+    //             commit('INCREMENT_PAGE');
+    //             commit('SET_LOADING', false);
+    //         })
+    //         .catch(error => {
+    //             console.log("Error fetching posts:", error);
+    //             commit('SET_LOADING', false);
+    //         });
+    // },
+
+    // fetchPostsByUser({ commit }, userId) {
+    //     axios.get(`/api/user/post/${userId}/allposts_byuser/?page=${state.page2}`)
+    //         .then(({ data }) => {
+    //             const allPosts = [];
+    //             data.data.data.forEach(post => {
+    //                 // Thêm bài viết gốc
+    //                 allPosts.push({ ...post, type: 'post' });
+
+    //                 // Thêm các bài chia sẻ
+    //                 if (post.shares.length > 0) {
+    //                     post.shares.forEach(share => {
+    //                         allPosts.push({
+    //                             id: share.id,
+    //                             user_id: share.user_id,
+    //                             user_share: share.user,
+    //                             content: post.content, // Nội dung từ bài viết gốc
+    //                             user: post.user, // Thông tin người dùng từ bài viết gốc
+    //                             privacy_share: share.privacy,
+    //                             privacy: post.privacy,
+    //                             created_at: share.created_at,
+    //                             created_at_formatted: post.created_at_formatted,
+    //                             media:post.media,
+    //                             pinned:post.pinned,
+    //                             type: 'share' // Đánh dấu loại là 'share'
+    //                         });
+    //                     });
+    //                 }
+    //             });
+    //             allPosts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    //             commit('allPostsByUser', allPosts);
+    //             commit('INCREMENT_PAGE2');
+    //         })
+    //         .catch(error => {
+    //             console.log("Error fetching posts:", error);
+    //         });
+    // },
     fetchPostsByUser({ commit }, userId) {
         axios.get(`/api/user/post/${userId}/allposts_byuser/?page=${state.page2}`)
             .then(({ data }) => {
@@ -172,7 +257,7 @@ const actions = {
                 console.log("Error fetching posts:", error);
             });
     },
-    fetchPostsInAboutProfile({ commit },userId) {
+    fetchPostsInAboutProfile({ commit }, userId) {
         commit('SET_LOADING', true);
         axios.get(`/api/user/post/${userId}/all_posts_about_profile`)
             .then(({ data }) => {
@@ -196,7 +281,7 @@ const actions = {
             });
     },
 
-    addNewPost({ commit }, formData) {
+     addNewPost({ commit }, formData) {
         return axios.post('/api/user/create-post', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -206,6 +291,7 @@ const actions = {
                 if (response.status === 200 && response.data.data.success === true) {
                     const newData = response.data.data.data
                     const newData2 = response.data.data.data
+                    console.log("Trước khi commit:", state.posts, state.postsByUser);
                     commit('setPosts', newData);
                     commit('setPostsbyUser', newData2);
                     Swal.fire({
@@ -239,9 +325,9 @@ const actions = {
                 }
             });
     },
-    editPost({ commit }, payload) {
+     editPost({ commit }, payload) {
         const { postId, formData } = payload;
-        return axios.post(`/api/user/post/${postId}/editPost`, formData, {
+        return  axios.post(`/api/user/post/${postId}/editPost`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },

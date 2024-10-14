@@ -17,11 +17,10 @@ class Friends extends Model
     ];
     public function user()
     {
-        return $this->belongsTo(User::class, 'friend_id', 'id');
+        return $this->belongsTo(User::class,'user_id', 'friend_id', 'id');
     }
-    public function friends()
+    public function friend()
     {
-        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
-            ->withTimestamps();
+        return $this->belongsTo(User::class, 'friend_id');
     }
 }

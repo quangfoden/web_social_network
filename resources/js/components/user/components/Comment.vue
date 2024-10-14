@@ -15,11 +15,11 @@ import Undo from 'vue-material-design-icons/Undo.vue'
             <img :src="comment.user.avatar" alt="">
         </div>
         <div v-if="!editerComment" class="we-comment">
-            <h5><a style="color: #fa6342;text-decoration: none; cursor: pointer;" href="time-line.html" title="">{{
-                comment.user.user_name }}</a></h5>
+            <h5><router-link :to="{ name: 'Profile User', params: { id: comment.user.user_id } }" style="color: #fa6342;text-decoration: none; cursor: pointer;" href="#" title="">{{
+                comment.user.user_name }}</router-link></h5>
             <p v-html="contentComment"></p>
             <span v-if="comment.user.id === authUser.id" class="edit-coment"
-                style="position: relative; margin-left: 50px; cursor: pointer;">
+                style="margin-left: 50px; cursor: pointer;">
                 <i class="fa-solid fa-ellipsis"></i>
                 <ul class="edit-options"
                     style="margin: 0;border: none; position: absolute;left: 0;padding: 0;width: 100px; list-style: none;">
@@ -89,10 +89,10 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                 <ul v-show="showSuggestions && filteredFriends.length >= 1"
                     class="suggestions rounded  position-absolute">
                     <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
-                        @click="selectFriend(friend.user, post.id)">
+                        @click="_selectFriend(friend,comment.id)">
                         <div class="d-flex gap-2 align-items-center">
-                            <img class="rounded-full ml-1 img-cus" :src="friend.user.avatar" alt="">
-                            <p class="primary-text fw-bold mb-0">{{ friend.user.user_name }}</p>
+                            <img width="40" class="rounded-full ml-1 img-cus" :src="friend.avatar" alt="">
+                            <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
                         </div>
                     </li>
                 </ul>
@@ -106,7 +106,7 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                         </label>
                     </div>
                     <span class="em em-expressionless" title="add icon"></span>
-                    <div class="smiles-bunch active">
+                    <div class="smiles-bunch">
                         <i class="em em---1"></i>
                         <i class="em em-smiley"></i>
                         <i class="em em-anguished"></i>
@@ -138,10 +138,10 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                 <ul v-show="showSuggestions && filteredFriends.length >= 1"
                     class="suggestions rounded  position-absolute">
                     <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
-                        @click="selectFriend(friend.user, post.id)">
+                        @click="selectFriend(friend,comment.id)">
                         <div class="d-flex gap-2 align-items-center">
-                            <img class="rounded-full ml-1 img-cus" :src="friend.user.avatar" alt="">
-                            <p class="primary-text fw-bold mb-0">{{ friend.user.user_name }}</p>
+                            <img width="40" class="rounded-full ml-1 img-cus" :src="friend.avatar" alt="">
+                            <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
                         </div>
                     </li>
                 </ul>
@@ -163,7 +163,7 @@ import Undo from 'vue-material-design-icons/Undo.vue'
                         </label>
                     </div>
                     <span class="em em-expressionless" title="add icon"></span>
-                    <div class="smiles-bunch active">
+                    <div class="smiles-bunch">
                         <i class="em em---1"></i>
                         <i class="em em-smiley"></i>
                         <i class="em em-anguished"></i>
@@ -238,6 +238,10 @@ export default {
             type: Number,
             required: true,
         },
+        post: {
+            type: Object,
+            required: true,
+        },
     },
     data() {
         const useGeneral = useGeneralStore()
@@ -251,7 +255,6 @@ export default {
             formMediarepComment: {},
             boxRepComment: reactive(false),
             filteredFriends: [],
-            friends: [],
             selectedFrientCreatedComment: null,
             selectedFrientEidtComment: null,
             isRepComment: false,
@@ -286,7 +289,11 @@ export default {
         },
         isSubmitDisabled() {
             return this.formRepComment.content === '' && Object.keys(this.formMediarepComment).length === 0;
-        }
+        },
+        ...mapGetters('friends', ['allFriends']),
+        friends() {
+            return this.allFriends;
+        },
     },
     mounted() {
 
@@ -697,7 +704,7 @@ export default {
                 const query = diacritics.remove(match[1].toLowerCase());
                 this.filteredFriends = this.friends.filter(
                     friend =>
-                        diacritics.remove(friend.user.user_name.toLowerCase()).includes(query)
+                        diacritics.remove(friend.user_name.toLowerCase()).includes(query)
                 );
                 this.showSuggestions = true;
             } else {
@@ -716,9 +723,12 @@ export default {
                 const query = diacritics.remove(match[1].toLowerCase());
                 this.filteredFriends = this.friends.filter(
                     friend =>
-                        diacritics.remove(friend.user.user_name.toLowerCase()).includes(query)
+                        diacritics.remove(friend.user_name.toLowerCase()).includes(query)
                 );
                 this.showSuggestions = true;
+                console.log(this.showSuggestions);
+                console.log(this.filteredFriends);
+
             } else {
                 this.showSuggestions = false;
             }
@@ -771,7 +781,6 @@ export default {
 
     created() {
         this.setupCommentWatcher();
-        this.friends = this.friendsWithUsers
     },
 }
 </script>

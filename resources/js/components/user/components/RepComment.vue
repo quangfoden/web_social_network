@@ -15,7 +15,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                 repcomment.user.user_name }}</a></h5>
             <p v-html="contentRepComment"></p>
             <span v-if="repcomment.user.id === authUser.id" class="edit-coment"
-                style="position: relative; margin-left: 50px; cursor: pointer;">
+                style="margin-left: 50px; cursor: pointer;">
                 <i class="fa-solid fa-ellipsis"></i>
                 <ul class="edit-options"
                     style="margin: 0;border: none; position: absolute;left: 0;padding: 0;width: 100px; list-style: none;">
@@ -48,10 +48,10 @@ import Close from 'vue-material-design-icons/Close.vue'
                 <ul v-show="showSuggestions && filteredFriends.length >= 1"
                     class="suggestions rounded  position-absolute">
                     <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
-                        @click="selectFriend(friend.user, post.id)">
+                        @click="selectFriend(friend, repcomment.id)">
                         <div class="d-flex gap-2 align-items-center">
-                            <img class="rounded-full ml-1 img-cus" :src="friend.user.avatar" alt="">
-                            <p class="primary-text fw-bold mb-0">{{ friend.user.user_name }}</p>
+                            <img width="40" class="rounded-full ml-1 img-cus" :src="friend.avatar" alt="">
+                            <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
                         </div>
                     </li>
                 </ul>
@@ -73,7 +73,7 @@ import Close from 'vue-material-design-icons/Close.vue'
                         </label>
                     </div>
                     <span class="em em-expressionless" title="add icon"></span>
-                    <div class="smiles-bunch active">
+                    <div class="smiles-bunch">
                         <i class="em em---1"></i>
                         <i class="em em-smiley"></i>
                         <i class="em em-anguished"></i>
@@ -128,7 +128,7 @@ import Close from 'vue-material-design-icons/Close.vue'
 import { ref } from "vue";
 import diacritics from 'diacritics';
 import { v4 as uuidv4 } from 'uuid';
-import { mapState } from 'vuex';
+import { mapState,mapGetters  } from 'vuex';
 export default {
     props: {
         repcomment: {
@@ -169,6 +169,10 @@ export default {
                 return this.$store.getters.getAuthUser;
             }
             return JSON.parse(localStorage.getItem('authUser'));
+        },
+        ...mapGetters('friends', ['allFriends']),
+        friends() {
+            return this.allFriends;
         },
         ...mapState({
             accounts: state => state.users.accounts
@@ -481,7 +485,7 @@ export default {
     },
     created() {
         this.setupRepCommentWatcher();
-        this.friends = this.accounts
+        // this.friends = this.accounts
     },
 }
 </script>

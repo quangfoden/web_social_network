@@ -49,6 +49,12 @@ const emit = defineEmits(['showModal'])
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
+                                <div style="width: 300px;padding-inline: 40px;" v-else-if="image.type.includes('audio')">
+                                    <audio class="rounded-lg mx-auto w-100" controls>
+                                        <source :src="image.url" type="audio/mpeg">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                </div>
                                 <div v-else class="createFile_" style="word-wrap: break-word;">
                                     <a :href="image.url" target="_blank">
                                         {{ image.url }}</a>

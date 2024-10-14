@@ -1288,7 +1288,6 @@ img.custom {
   right: 100px;
   color: var(--primary-text);
   background: var(--bg-item);
-  border-radius: 10px 10px 0 0;
   display: flex;
   flex-direction: column;
 }

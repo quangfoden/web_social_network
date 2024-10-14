@@ -3,10 +3,10 @@
         <div class="menu-left">
             <ul class="left-menu">
                 <li v-ripple>
-                    <a class="user-img" href="#" title="">
+                    <router-link :to="{ name: 'Profile User', params: { id: authUser.user_id } }" class="user-img" href="#" title="">
                         <img class="img-user" :src="authUser.avatar" alt="">
                         <span class="title-menu">{{ authUser.user_name }}</span>
-                    </a>
+                    </router-link>
                 </li>
                 <li v-ripple>
                     <a href="#" title="Bạn bè" data-toggle="tooltip" data-placement="right">
@@ -39,7 +39,7 @@
                     </a>
                 </li>
                 <li v-ripple>
-                    <a href="notifications.html" title="Nhóm" data-toggle="tooltip" data-placement="right">
+                    <a href="#" title="Nhóm" data-toggle="tooltip" data-placement="right">
                         <i class="fas fa-users"></i>
                         <span class="title-menu">Nhóm</span>
                     </a>

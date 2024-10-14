@@ -1,100 +1,44 @@
 <template>
     <!-- topbar -->
+    <ChatBox v-if="isChatBoxOverLay" />
     <div class="topbar stick">
         <div class="logo">
-            <router-link :to="{ name: 'Home Section' }" title="home"><img src="/images/logo/logo2.png"
-                    alt=""></router-link>
+            <router-link :to="{ name: 'Home Section' }" title="home">
+                <h2 style="color: #fff;">Imnotify</h2>
+            </router-link>
         </div>
         <div class="top-area">
             <div class="top-search">
-                <form method="post" class="">
-                    <input type="text" placeholder="Search People, Pages, Groups etc">
-                    <button data-ripple><i class="fas fa-search"></i></button>
+                <form @submit.prevent="searchUsers">
+                    <input type="text" v-model="searchQuery" placeholder="TÌm kiếm người dùng..." @input="onInput">
+                    <button type="submit" data-ripple><i class="fas fa-search"></i></button>
                 </form>
+                <ul class="list_user_search" style="list-style: none; position: absolute;" v-if="results.length">
+                    <li style="display: flex; gap: 5px; align-items: center;" v-for="user in results" :key="user.id">
+                        <span><img width="40" :src="user.avatar" alt=""></span>
+                        <router-link :to="{ name: 'Profile User', params: { id: user.user_id } }">{{ user.user_name
+                            }}</router-link>
+                    </li>
+                </ul>
             </div>
             <ul class="setting-area">
-                <li @click="clickHome"><a @clcik.prevent :class="{ active: $route.path === '/' && !showNot }"
+                <li @click="clickHome"><a @clcik.prevent :class="{ active: $route.path === '/' && !showNot && !showKb }"
                         title="Home" v-ripple><i class="fa fa-home"></i></a></li>
-                <li>
-                    <a href="#" title="Friend Requests" v-ripple>
-                        <i class="fa fa-user"></i><em class="bg-red">5</em>
+                <li @click="showKb = !showKb">
+                    <a :class="{ 'active': showKb }" href="#" title="Friend Requests" v-ripple>
+                        <i class="fa fa-user"></i><em v-if="notificationCount > 0" class="bg-purple">{{
+                            notificationCount }}</em>
                     </a>
-                    <div class="dropdowns">
-                        <span>5 New Requests <a href="#" title="">View all Requests</a></span>
+                    <div class="dropdowns" :class="{ 'active': showKb }">
+                        <span>{{ notificationCount }} yêu cầu</span>
                         <ul class="drops-menu">
-                            <li>
+                            <li  v-for="(notification, index) in notifications" :key="index">
                                 <div>
                                     <figure>
-                                        <img src="/images/resources/thumb-2.jpg" alt="">
+                                        <img width="40" :src="notification.avatar" alt="">
                                     </figure>
-                                    <div class="mesg-meta">
-                                        <h6><a href="#" title="">Loren</a></h6>
-                                        <span><b>Amy</b> is mutule friend</span>
-                                        <i>yesterday</i>
-                                    </div>
-                                    <div class="add-del-friends">
-                                        <a href="#" title=""><i class="fa fa-heart"></i></a>
-                                        <a href="#" title=""><i class="fa fa-trash"></i></a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div>
-                                    <figure>
-                                        <img src="/images/resources/thumb-3.jpg" alt="">
-                                    </figure>
-                                    <div class="mesg-meta">
-                                        <h6><a href="#" title="">Tina Trump</a></h6>
-                                        <span><b>Simson</b> is mutule friend</span>
-                                        <i>2 days ago</i>
-                                    </div>
-                                    <div class="add-del-friends">
-                                        <a href="#" title=""><i class="fa fa-heart"></i></a>
-                                        <a href="#" title=""><i class="fa fa-trash"></i></a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div>
-                                    <figure>
-                                        <img src="/images/resources/thumb-4.jpg" alt="">
-                                    </figure>
-                                    <div class="mesg-meta">
-                                        <h6><a href="#" title="">Andrew</a></h6>
-                                        <span><b>Bikra</b> is mutule friend</span>
-                                        <i>4 hours ago</i>
-                                    </div>
-                                    <div class="add-del-friends">
-                                        <a href="#" title=""><i class="fa fa-heart"></i></a>
-                                        <a href="#" title=""><i class="fa fa-trash"></i></a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div>
-                                    <figure>
-                                        <img src="/images/resources/thumb-5.jpg" alt="">
-                                    </figure>
-                                    <div class="mesg-meta">
-                                        <h6><a href="#" title="">Dasha</a></h6>
-                                        <span><b>Sarah</b> is mutule friend</span>
-                                        <i>9 hours ago</i>
-                                    </div>
-                                    <div class="add-del-friends">
-                                        <a href="#" title=""><i class="fa fa-heart"></i></a>
-                                        <a href="#" title=""><i class="fa fa-trash"></i></a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div>
-                                    <figure>
-                                        <img src="/images/resources/thumb-1.jpg" alt="">
-                                    </figure>
-                                    <div class="mesg-meta">
-                                        <h6><a href="#" title="">Emily</a></h6>
-                                        <span><b>Amy</b> is mutule friend</span>
-                                        <i>4 hours ago</i>
+                                    <div style="margin-top: 10px;" class="mesg-meta">
+                                        <h6><a href="#" title="">{{notification.user_name}}</a></h6>
                                     </div>
                                     <div class="add-del-friends">
                                         <a href="#" title=""><i class="fa fa-heart"></i></a>
@@ -112,11 +56,11 @@
                             notificationCount }}</em>
                     </a>
                     <div class="dropdowns" :class="{ 'active': showNot }">
-                        <span>4 New Notifications <a href="#" title="">Mark all as read</a></span>
+                        <span>{{ notificationCount }} thông báo mới</span>
                         <ul class="drops-menu">
                             <li v-for="(notification, index) in notifications" :key="index">
-                                <router-link :to="{ name: 'Profile User', params: { id: notification.friendId2 } }" href="#"
-                                    title="">
+                                <router-link :to="{ name: 'Profile User', params: { id: notification.friendId2 } }"
+                                    href="#" title="">
                                     <figure>
                                         <img width="35" :src="notification.avatar" alt="">
                                         <span class="status f-online"></span>
@@ -133,85 +77,7 @@
                         <a href="#" title="" class="more-mesg">View All</a>
                     </div>
                 </li>
-                <li>
-                    <a href="#" title="Messages" v-ripple><i class="fa fa-commenting"></i><em class="bg-blue">9</em></a>
-                    <div class="dropdowns">
-                        <span>5 New Messages <a href="#" title="">Mark all as read</a></span>
-                        <ul class="drops-menu">
-                            <li>
-                                <a class="show-mesg" href="#" title="">
-                                    <figure>
-                                        <img src="/images/resources/thumb-1.jpg" alt="">
-                                        <span class="status f-online"></span>
-                                    </figure>
-                                    <div class="mesg-meta">
-                                        <h6>sarah Loren</h6>
-                                        <span><i class="ti-check"></i> Hi, how r u dear ...?</span>
-                                        <i>2 min ago</i>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="show-mesg" href="#" title="">
-                                    <figure>
-                                        <img src="/images/resources/thumb-2.jpg" alt="">
-                                        <span class="status f-offline"></span>
-                                    </figure>
-                                    <div class="mesg-meta">
-                                        <h6>Jhon doe</h6>
-                                        <span><i class="ti-check"></i> We’ll have to check that at the office and see if
-                                            the client is on board with</span>
-                                        <i>2 min ago</i>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="show-mesg" href="#" title="">
-                                    <figure>
-                                        <img src="/images/resources/thumb-3.jpg" alt="">
-                                        <span class="status f-online"></span>
-                                    </figure>
-                                    <div class="mesg-meta">
-                                        <h6>Andrew</h6>
-                                        <span> <i class="fa fa-paperclip"></i>Hi Jack's! It’s Diana, I just wanted to
-                                            let you know that we have to reschedule..</span>
-                                        <i>2 min ago</i>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="show-mesg" href="#" title="">
-                                    <figure>
-                                        <img src="/images/resources/thumb-4.jpg" alt="">
-                                        <span class="status f-offline"></span>
-                                    </figure>
-                                    <div class="mesg-meta">
-                                        <h6>Tom cruse</h6>
-                                        <span><i class="ti-check"></i> Great, I’ll see you tomorrow!.</span>
-                                        <i>2 min ago</i>
-                                    </div>
-                                </a>
-                                <span class="tag">New</span>
-                            </li>
-                            <li>
-                                <a class="show-mesg" href="#" title="">
-                                    <figure>
-                                        <img src="/images/resources/thumb-5.jpg" alt="">
-                                        <span class="status f-away"></span>
-                                    </figure>
-                                    <div class="mesg-meta">
-                                        <h6>Amy</h6>
-                                        <span><i class="fa fa-paperclip"></i> Sed ut perspiciatis unde omnis iste natus
-                                            error sit </span>
-                                        <i>2 min ago</i>
-                                    </div>
-                                </a>
-                                <span class="tag">New</span>
-                            </li>
-                        </ul>
-                        <a href="chat-messenger.html" title="" class="more-mesg">View All</a>
-                    </div>
-                </li>
+
             </ul>
             <div @click="showMenu = !showMenu" class="user-img">
                 <h5>{{ authUser.user_name }}</h5>
@@ -224,7 +90,12 @@
                                     class="fas fa-user"></i>Trang cá nhân</router-link></li>
                         <li v-ripple><a href="#" title=""><i class="fas fa-pencil-alt"></i>Chỉnh sửa trang cá nhân</a>
                         </li>
-                        <li v-ripple><a href="#" title=""><i class="fas fa-id-badge"></i>Đăng ký khuôn mặt</a></li>
+                        <li v-ripple><router-link v-if="!authUser.user_face_regs.length > 0"
+                                :to="{ name: 'RgFaceIF User' }" href="#" title=""><i class="fas fa-id-badge"></i>Đăng ký
+                                khuôn mặt</router-link></li>
+                        <li @click="deleteFaceId" v-ripple><a v-if="authUser.user_face_regs.length > 0"
+                               href="#" title=""><i class="fas fa-close"></i>Xoá khuôn
+                                mặt đã đăng ký</a></li>
                         <!-- <li><a href="#" title=""><i class="fas fa-user-slash"></i>Xoá xác thực khuôn mặt</a></li> -->
                         <li v-ripple><a href="#" title=""><i class="fas fa-cog"></i>Tài khoản</a></li>
                         <li v-ripple><a @click.prevent="logoutSubmit" title="đăng xuất">
@@ -236,7 +107,7 @@
             </div>
         </div>
     </div><!-- topbar -->
-
+    <MediaDisplay v-if="isFileDisplay.length > 0" />
 </template>
 <script>
 import Router from '../../../router';
@@ -247,6 +118,7 @@ import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import CropperModal from '../components/CropperModal.vue'
 import MediaDisplay from '../Components/mediaDisplay.vue'
+import ChatBox from '../components/ChatBox.vue';
 import EventBus from '../../../eventBus';
 import Echo from 'laravel-echo';
 import toastr from 'toastr';
@@ -255,21 +127,27 @@ export default {
     components: {
         CropperModal,
         MediaDisplay,
+        ChatBox
     },
     data() {
         const useGeneral = useGeneralStore();
-        const { isPostOverlay, isCropperModal, isFileDisplay } = storeToRefs(useGeneral)
+        const { isPostOverlay, isCropperModal, isFileDisplay,isChatBoxOverLay } = storeToRefs(useGeneral)
         return {
             showMenu: false,
             isPostOverlay,
             isCropperModal,
             isFileDisplay,
+            isChatBoxOverLay,
             isLoading: false,
             activeIndex: null,
             notifications: [],
             notificationCount: 0,
             userId: null,
-            showNot: false
+            showNot: false,
+            showKb: false,
+            searchQuery: '',
+            results: [],
+            debounceTimeout: null,
         }
     },
     computed: {
@@ -312,6 +190,26 @@ export default {
         toggleActive(index) {
             this.activeIndex = this.activeIndex === index ? null : index;
         },
+        onInput() {
+            clearTimeout(this.debounceTimeout); // Xóa timeout cũ nếu có
+            this.debounceTimeout = setTimeout(() => {
+                if (this.searchQuery.length > 0) {
+                    this.searchUsers(); // Gọi tìm kiếm sau thời gian chờ debounce
+                } else {
+                    this.results = []; // Xóa kết quả nếu không có giá trị nhập
+                }
+            }, 500);
+        },
+        searchUsers() {
+            axios.get(`/api/user/search`, { params: { query: this.searchQuery } })
+                .then(response => {
+                    this.results = response.data;
+                })
+                .catch(error => {
+                    console.error("Error during search:", error);
+                });
+        },
+
         clickHome() {
             if (this.$route.path === '/') {
                 this.isLoading = true;
@@ -377,3 +275,32 @@ export default {
     }
 }
 </script>
+<style scoped>
+.list_user_search {
+    font-size: 16px;
+    list-style: none;
+    position: absolute;
+    top: 60px;
+    margin: 0;
+    padding: 0;
+    color: #fa6342;
+    width: 400px;
+    min-height: 300px;
+    background: #fff none repeat scroll 0 0;
+    border-radius: 10px;
+    z-index: 1000;
+    font-weight: 500;
+    z-index: 1000;
+    padding: 15px;
+}
+
+.list_user_search li {
+    padding: 5px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid;
+}
+
+.list_user_search img {
+    border-radius: 50%;
+}
+</style>

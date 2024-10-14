@@ -21,6 +21,9 @@ const mutations = {
     SET_ISFRIENDS(state, isfriends) {
         state.isfriends = isfriends;
     },
+    setFriends: (state, friends) => {
+        state.friends = friends;  
+    },
     SET_RECEIVED_REQUESTS(state, requests) {
         state.receivedRequests = requests;
     },
@@ -159,8 +162,19 @@ const actions = {
         }
     },
 
+    async fetchFriendsByUserId({ commit }, userId) {
+        try {
+            const response = await axios.get(`/api/user/friends/${userId}`);
+            commit('setFriends', response.data);  // Gán dữ liệu vào state
+        } catch (error) {
+            console.error('Error fetching friends:', error);
+        }
+    },
+
 }
+
 const getters = {
+    allFriends: (state) => state.friends,
     getFriendsWithUsers: state => {
         return state.isfriends.map(friend => {
             return {
@@ -168,12 +182,12 @@ const getters = {
                 user: friend.user || null,
             };
         });
-    },
+    }, 
     receivedRequests: state => state.receivedRequests,
     sentRequests: state => state.sentRequests,
     friends: state => state.friends,
     loading: state => state.loading,
-}
+};
 
 export default {
     namespaced: true,

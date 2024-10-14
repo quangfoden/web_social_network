@@ -1603,6 +1603,40 @@ header.sticky {
     vertical-align: middle;
 }
 
+#MediaDisplay {
+    position: fixed;
+    z-index: 99999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+}
+
+#MediaDisplay .imagedisplay_close {
+    position: absolute;
+    z-index: 60;
+    right: 0;
+    padding: 0.25rem;
+    margin: 0.75rem;
+    background-color: #E5E7EB;
+    border-radius: 9999px;
+    cursor: pointer;
+}
+
+#MediaDisplay .media_display {
+    display: grid;
+    height: 100vh;
+    place-items: center;
+}
+
+#MediaDisplay .media_display .displ {
+    height: 100vh;
+    padding: 2.5rem;
+    -o-object-fit: scale-down;
+    object-fit: scale-down;
+}
+
 .activity-meta {
     display: inline-block;
     width: 100%;
@@ -2268,6 +2302,7 @@ a.learnmore:hover {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.5s, visibility 0.5s;
+    z-index: 120;
 }
 
 .list-user-like.active {
@@ -2725,16 +2760,34 @@ for some reason nth-child(1) is always busy and elements starting from 2 */
     width: auto;
     text-transform: capitalize;
 }
-
+.we-comment>h5 a{
+    word-break: break-all;
+}
 .we-comment>p {
-    display: inline;
     font-size: 13.4px;
     line-height: 20px;
     margin-bottom: 0;
     margin-top: 0;
+    max-width: 70%;
+    word-break: break-all;
 }
-
-.edit-coment {}
+.suggestions{
+    z-index: 1;
+    background: #fff;
+    width: auto;
+    padding: 10px;
+    border: none !important;
+    margin: 0 !important;
+    top: 80px;
+}
+.suggestions li{
+    margin-bottom:20px;
+    cursor: pointer;
+}
+.edit-coment {
+    position: absolute;
+    right: 80px;
+}
 
 .edit-coment ul {
     opacity: 0;
@@ -5326,6 +5379,7 @@ canvas {
     padding: 15px;
     position: relative;
     width: 100%;
+    background: #2222;
 }
 
 .chat-list>ul {
@@ -5595,7 +5649,7 @@ canvas {
 }
 
 .chat-friends .chat-box {
-    bottom: -43px;
+    bottom: -449px;
 }
 
 .menu-left {
@@ -7299,6 +7353,17 @@ a.addnewforum {
     margin: 0;
     position: relative;
     width: 100%;
+    max-height: 300px;
+    overflow: auto;
+    -ms-overflow-style: none;
+    /* Ẩn thanh cuộn trong IE và Edge */
+    scrollbar-width: none;
+    /* Ẩn thanh cuộn trong Firefox */
+}
+
+.user-profile>figure::-webkit-scrollbar {
+    display: none;
+    /* Ẩn thanh cuộn trong Chrome, Safari và Opera */
 }
 
 .user-profile figure img {

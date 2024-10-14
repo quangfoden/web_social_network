@@ -252,51 +252,107 @@ const router = createRouter({
 import { store } from '../store/store';
 import { useUserStatus } from '../core/coreFunction';
 
+// router.beforeEach((to, from, next) => {
+//     // store.dispatch('fetchAccounts')
+//     // store.dispatch('friends/fetchIsFriends')
+//     //     .then(() => {
+//     //         next();
+//     //     }).catch(error => {
+//     //         console.error('Error fetching accounts:', error);
+//     //         next(error);
+//     //     });
+//     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+//     const requiresAuthUser = to.matched.some(record => record.meta.requiresAuthUser)
+//     const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
+
+//     const isAdmin = loginResponse?.role?.includes('admin');
+//     const isUser = loginResponse?.role?.includes('user');
+//     const token = localStorage.getItem('auth_token');
+//     const isAuthenticated =
+//         store.getters.getLoginResponse.authenticated && isAdmin
+//         || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated && isAdmin
+//     const isUserAuthenticated =
+//         store.getters.getLoginResponse.authenticated && isUser
+//         || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated && isUser
+//     let authUser = undefined
+//     if (store.getters.getAuthUser.id !== undefined) {
+//         authUser = store.getters.getAuthUser;
+//     }
+//     authUser = JSON.parse(localStorage.getItem('authUser'));
+//     if (authUser) {
+//         const { userStatusRef } = useUserStatus(authUser.id);
+//         console.log('User status updated in global router middleware.');
+//         next();
+//     }
+//     if (requiresAuth) {
+//         if (!isAuthenticated) {
+//             next('/admin/login');
+//             return;
+//         }
+//     }
+//     if (requiresAuthUser) {
+//         if (!isUserAuthenticated && !token) {
+//             next('/login');
+//             return;
+//         }
+//     }
+
+//     next();
+// })
+// export default router
 router.beforeEach((to, from, next) => {
-    store.dispatch('fetchAccounts')
-    store.dispatch('friends/fetchIsFriends')
-        .then(() => {
-            next();
-        }).catch(error => {
-            console.error('Error fetching accounts:', error);
-            next(error);
-        });
-    const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-    const requiresAuthUser = to.matched.some(record => record.meta.requiresAuthUser)
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    const requiresAuthUser = to.matched.some(record => record.meta.requiresAuthUser);
     const loginResponse = JSON.parse(localStorage.getItem('loginResponse'));
 
     const isAdmin = loginResponse?.role?.includes('admin');
     const isUser = loginResponse?.role?.includes('user');
     const token = localStorage.getItem('auth_token');
+    
     const isAuthenticated =
         store.getters.getLoginResponse.authenticated && isAdmin
-        || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated && isAdmin
+        || loginResponse?.authenticated && isAdmin;
+    
     const isUserAuthenticated =
         store.getters.getLoginResponse.authenticated && isUser
-        || JSON.parse(localStorage.getItem('loginResponse'))?.authenticated && isUser
-    let authUser = undefined
-    if (store.getters.getAuthUser.id !== undefined) {
-        authUser = store.getters.getAuthUser;
-    }
-    authUser = JSON.parse(localStorage.getItem('authUser'));
+        || loginResponse?.authenticated && isUser;
+    
+    let authUser = store.getters.getAuthUser.id !== undefined
+        ? store.getters.getAuthUser
+        : JSON.parse(localStorage.getItem('authUser'));
+
     if (authUser) {
         const { userStatusRef } = useUserStatus(authUser.id);
-        console.log('User status updated in global router middleware.');
-        next();
-    }
-    if (requiresAuth) {
-        if (!isAuthenticated) {
-            next('/admin/login');
-            return;
-        }
-    }
-    if (requiresAuthUser) {
-        if (!isUserAuthenticated && !token) {
-            next('/login');
-            return;
+        
+        // Gọi fetchAccounts và fetchIsFriends chỉ khi người dùng đã đăng nhập
+        if (isAuthenticated || isUserAuthenticated) {
+            Promise.all([
+                store.dispatch('fetchAccounts'),
+                store.dispatch('friends/fetchFriendsByUserId', authUser.user_id)
+            ])
+                .then(() => {
+                    next();
+                })
+                .catch(error => {
+                    console.error('Error fetching accounts:', error);
+                    next(error);
+                });
+            return; // Dừng lại cho đến khi fetch hoàn thành
         }
     }
 
+    // Kiểm tra yêu cầu xác thực
+    if (requiresAuth && !isAuthenticated) {
+        next('/admin/login');
+        return;
+    }
+    
+    if (requiresAuthUser && !isUserAuthenticated && !token) {
+        next('/login');
+        return;
+    }
+
     next();
-})
-export default router
+});
+
+export default router;
