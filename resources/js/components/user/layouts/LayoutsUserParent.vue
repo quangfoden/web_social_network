@@ -1,6 +1,7 @@
 <template>
     <div @click="isPostOverlay = false" v-show="isPostOverlay" class="postoverlay"></div>
     <TopBar />
+  
     <router-view></router-view>
     <SidebarRight />
     <SidebarLeft />

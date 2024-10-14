@@ -202,17 +202,17 @@ import Send from 'vue-material-design-icons/Send.vue';
                                             :placeholder="`Viết bình luận với vai trò ${authUser.user_name} ...`"
                                             :ref="'textAreaComment' + isPost.id" @input="onInput(isPost.id, $event)"
                                             v-model="formComment.content"></textarea>
-                                        <!-- <ul v-show="showSuggestions && filteredFriends.length >= 1"
+                                        <ul v-show="showSuggestions && filteredFriends.length >= 1"
                                             class="suggestions rounded  position-absolute">
                                             <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
-                                                @click="selectFriend(friend.user, post.id)">
+                                                @click="selectFriend(friend, isPost.id)">
                                                 <div class="d-flex gap-2 align-items-center">
-                                                    <img class="rounded-full ml-1 img-cus" :src="friend.user.avatar"
+                                                    <img width="40" class="rounded-full ml-1 img-cus" :src="friend.avatar"
                                                         alt="">
-                                                    <p class="primary-text fw-bold mb-0">{{ friend.user.user_name }}</p>
+                                                    <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
                                                 </div>
                                             </li>
-                                        </ul> -->
+                                        </ul>
                                         <div class="add-smiles">
                                             <div class="uploadimage">
                                                 <i class="fa fa-image"></i>
@@ -296,7 +296,6 @@ export default {
             formMediaComment: ref({
             }),
             showSuggestions: false,
-            friends: [],
             selectedFriend: null,
             filteredFriends: [],
             isSendLoading: false,
@@ -314,6 +313,10 @@ export default {
                 return this.$store.getters.getAuthUser;
             }
             return JSON.parse(localStorage.getItem('authUser'));
+        },
+        ...mapGetters('friends', ['allFriends']),
+        friends() {
+            return this.allFriends;
         },
         ...mapState({
             accounts: state => state.users.accounts
@@ -473,7 +476,7 @@ export default {
                 const query = diacritics.remove(match[1].toLowerCase());
                 this.filteredFriends = this.friends.filter(
                     friend =>
-                        diacritics.remove(friend.user.user_name.toLowerCase()).includes(query)
+                        diacritics.remove(friend.user_name.toLowerCase()).includes(query)
                 );
                 this.showSuggestions = true;
             } else {
@@ -583,7 +586,6 @@ export default {
         }
     },
     created() {
-        this.friends = this.friendsWithUsers
     }
 }
 </script>

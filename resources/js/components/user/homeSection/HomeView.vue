@@ -12,21 +12,23 @@
 								<div v-if="!posts || posts.length < 1">
 									<p>Không có bài viết nào</p>
 								</div>
-
-								<div v-else id="posts" v-for="post in posts " :key="post.id">
-									<Post v-if="post.privacy === 'public' || post.privacy === 'friends'"
-										:status="post.status" :post="post" :user="post.user" :media="post.media"
-										:comments="post.comments" :comment_count="post.comment_count"
-										:likes="post.likes" :like_count="post.like_count"
-										@comment-created="handleCommentCreated(post.id)"
-										@comment-deleted="handleCommentdeleted(post.id)"
-										@comment_overlay-created="handleCommentCreated(post.id)"
-										@comment_overlay-deleted="handleCommentdeleted(post.id)"
-										@updated_like="handleUpdatedLike(post.id)"
-										@deleted_like="handleLikedeleted(post.id)"
-										@updated-like-overlay="handleUpdatedLike(post.id)"
-										@deleted-like-overlay="handleLikedeleted(post.id)" />
+								<div v-else>
+									<div id="posts" v-for="post in posts " :key="post.id">
+										<Post v-if="post.privacy === 'public' || post.privacy === 'friends'"
+											:status="post.status" :post="post" :user="post.user" :media="post.media"
+											:comments="post.comments" :comment_count="post.comment_count"
+											:likes="post.likes" :like_count="post.like_count"
+											@comment-created="handleCommentCreated(post.id)"
+											@comment-deleted="handleCommentdeleted(post.id)"
+											@comment_overlay-created="handleCommentCreated(post.id)"
+											@comment_overlay-deleted="handleCommentdeleted(post.id)"
+											@updated_like="handleUpdatedLike(post.id)"
+											@deleted_like="handleLikedeleted(post.id)"
+											@updated-like-overlay="handleUpdatedLike(post.id)"
+											@deleted-like-overlay="handleLikedeleted(post.id)" />
+									</div>
 								</div>
+
 								<button @click="loadMorePost" class="btn-view btn-load-more">Load More</button>
 							</div>
 						</div>

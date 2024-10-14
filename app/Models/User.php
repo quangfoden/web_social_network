@@ -108,6 +108,13 @@ class User extends Authenticatable
     }
     public function friends()
     {
-        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id');
+        return $this->hasMany(Friends::class, 'user_id');
+    }
+    public function allFriends()
+    {
+        return $this->friends()->where('status', 'accepted')
+            ->orWhereHas('receivedFriendRequests', function ($query) {
+                $query->where('status', 'accepted');
+            });
     }
 }

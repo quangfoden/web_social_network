@@ -1,5 +1,6 @@
 <template>
     <!-- topbar -->
+    <ChatBox v-if="isChatBoxOverLay" />
     <div class="topbar stick">
         <div class="logo">
             <router-link :to="{ name: 'Home Section' }" title="home">
@@ -93,7 +94,7 @@
                                 :to="{ name: 'RgFaceIF User' }" href="#" title=""><i class="fas fa-id-badge"></i>Đăng ký
                                 khuôn mặt</router-link></li>
                         <li @click="deleteFaceId" v-ripple><a v-if="authUser.user_face_regs.length > 0"
-                                :to="{ name: 'RgFaceIF User' }" href="#" title=""><i class="fas fa-close"></i>Xoá khuôn
+                               href="#" title=""><i class="fas fa-close"></i>Xoá khuôn
                                 mặt đã đăng ký</a></li>
                         <!-- <li><a href="#" title=""><i class="fas fa-user-slash"></i>Xoá xác thực khuôn mặt</a></li> -->
                         <li v-ripple><a href="#" title=""><i class="fas fa-cog"></i>Tài khoản</a></li>
@@ -117,6 +118,7 @@ import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import CropperModal from '../components/CropperModal.vue'
 import MediaDisplay from '../Components/mediaDisplay.vue'
+import ChatBox from '../components/ChatBox.vue';
 import EventBus from '../../../eventBus';
 import Echo from 'laravel-echo';
 import toastr from 'toastr';
@@ -125,15 +127,17 @@ export default {
     components: {
         CropperModal,
         MediaDisplay,
+        ChatBox
     },
     data() {
         const useGeneral = useGeneralStore();
-        const { isPostOverlay, isCropperModal, isFileDisplay } = storeToRefs(useGeneral)
+        const { isPostOverlay, isCropperModal, isFileDisplay,isChatBoxOverLay } = storeToRefs(useGeneral)
         return {
             showMenu: false,
             isPostOverlay,
             isCropperModal,
             isFileDisplay,
+            isChatBoxOverLay,
             isLoading: false,
             activeIndex: null,
             notifications: [],

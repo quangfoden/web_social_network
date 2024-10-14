@@ -9,7 +9,9 @@ import Image from 'vue-material-design-icons/Image.vue'
                     <img :src="friend.avatar" class="custom" alt="">
                     <span class="dot-status" :class="{ 'online': friendStatus.state === 'online' }"></span>
                     <div>
+                        <router-link style="color: #fff;":to="{ name: 'Profile User', params: { id: friend.user_id } }">
                         <h3 class="user-name">{{ friend.user_name }}</h3>
+                        </router-link>
                         <small v-if="friendStatus.state" class="secondary-text">
                             {{ friendStatus.state === "online" ? "Đang hoạt động" :
                                 formatLastChanged(friendStatus.last_changed) }}
@@ -65,12 +67,12 @@ import Image from 'vue-material-design-icons/Image.vue'
                     <textarea ref="mess-text" @keydown.enter="sendMessage" @input="onInput" v-model="contentMessage"
                         @blur="stopTyping" name="" id="" placeholder="nhập tin nhắn...">
             </textarea>
-                    <div v-if="filePreview" class="file-preview p-1 position-relative">
+                    <div v-if="filePreview !=null" class="file-preview p-1 position-relative">
                         <span @click="clearFileMess"
                             class="clear-file-mess position-absolute end-0 custom-cursor-pointer"><i
                                 class="fas fa-close"></i></span>
                         <template v-if="fileType === 'image'">
-                            <img @click="isFileDisplay = filePreview" width="100" :src="filePreview"
+                            <img @click="isFileDisplay = filePreview" width="200" :src="filePreview"
                                 alt="Selected File Preview">
                         </template>
                         <template @click="isFileDisplay=filePreview" v-else-if="fileType === 'video'">
@@ -83,7 +85,7 @@ import Image from 'vue-material-design-icons/Image.vue'
                     <label class="lmess" for="file-mess">
                         <Image :size="27" fillColor="#43BE62" />
                     </label>
-                    <input @change="handleFileChange($event)" type="file" id="file-mess" class="hidden">
+                    <input  @change="handleFileChange($event)" type="file" id="file-mess" class="hidden">
                 </div>
 
                 <button type="submit" class="sendmess">
@@ -105,14 +107,14 @@ import { database, ref as dbRef, ref, push, onValue, query, orderByChild, equalT
 export default {
     data() {
         const useGeneral = useGeneralStore();
-        const { isChatBoxOverLay, isLoadingChatBox, isFileDisplay, filesMessUpload } = storeToRefs(useGeneral)
+        const { isChatBoxOverLay, isLoadingChatBox, isFileDisplay } = storeToRefs(useGeneral)
         return {
             isChatBoxOverLay,
             isLoadingChatBox,
             isFileDisplay,
             listMessage: [],
             contentMessage: '',
-            filesMessUpload,
+            file:null,
             fileURL: null,
             fileType: null,
             filePath: null,
@@ -209,9 +211,9 @@ export default {
         async sendMessage(event) {
             if (event) event.preventDefault();
             this.stopTyping()
-            console.log(this.filesMessUpload);
+            console.log(this.file);
 
-            if (this.contentMessage.trim() !== '' || this.filesMessUpload) {
+            if (this.contentMessage.trim() !== '' || this.file) {
                 await this.startConversation();
                 const messagesRef = dbRef(database, 'messages');
 
@@ -223,17 +225,17 @@ export default {
                     timestamp: Date.now()
                 };
 
-                if (this.filesMessUpload) {
+                if (this.file) {
                     console.log('hehe');
 
                     const storage = getStorage();
-                    const fileRef = storageRef(storage, `uploads/message/${this.filesMessUpload.name}`);
-                    await uploadBytes(fileRef, this.filesMessUpload);
+                    const fileRef = storageRef(storage, `uploads/message/${this.file.name}`);
+                    await uploadBytes(fileRef, this.file);
                     const fileURL = await getDownloadURL(fileRef);
 
                     messageData.fileURL = fileURL;
-                    messageData.fileType = this.getFileType(this.filesMessUpload);
-                    messageData.filePath = `uploads/message/${this.filesMessUpload.name}`;
+                    messageData.fileType = this.getFileType(this.file);
+                    messageData.filePath = `uploads/message/${this.file.name}`;
 
                     this.clearFileMess()
 
@@ -257,36 +259,27 @@ export default {
                 return 'other';
             }
         },
-        handleFileChange(event) {
-            this.filesMessUpload = event.target.files[0]; // Lưu tệp được chọn vào biến
-            console.log(this.filesMessUpload); // Kiểm tra xem tệp đã được lưu chưa
-
-            if (this.filesMessUpload) {
-                const fileType = this.filesMessUpload.type;
+        handleFileChange($event) {
+            this.file = $event.target.files[0];
+            $event.target.value = '';
+            if (this.file) {
+                const fileType = this.file.type;
                 if (fileType.startsWith('image/')) {
-                    this.filePreview = URL.createObjectURL(this.filesMessUpload);
+                    this.filePreview = URL.createObjectURL(this.file);
                     this.fileType = 'image';
                 } else if (fileType.startsWith('video/')) {
-                    this.filePreview = URL.createObjectURL(this.filesMessUpload);
+                    this.filePreview = URL.createObjectURL(this.file);
                     this.fileType = 'video';
                 } else {
-                    // Lấy tên tệp nếu không phải ảnh hoặc video
-                    this.filePreview = this.filesMessUpload.name;
+                    this.filePreview = this.file.name;
                     this.fileType = 'other';
                 }
             }
-
-            console.log(this.filePreview); // In ra đường dẫn hoặc tên tệp
         },
         clearFileMess() {
-            console.log('clear');
-
-            this.filesMessUpload = null
+            this.file = null
             this.filePreview = null
             this.fileType = null;
-            console.log(this.filesMessUpload);
-            console.log(this.filePreview);
-
         },
         getFriendStatus(friendId) {
             const friendStatusRef = ref(database, `status/${friendId}`);
@@ -377,7 +370,6 @@ img.custom {
     position: fixed;
     bottom: 0;
     right: 100px;
-    border-radius: 10px 10px 0 0;
     display: flex;
     flex-direction: column;
 }
@@ -508,14 +500,14 @@ img.custom {
 
 #ChatBox .clear-file-mess {
     position: absolute;
-    right: 0;
     font-size: 15px;
     cursor: pointer;
     padding: 5px 10px;
     border-radius: 50%;
-    top: 0;
+    color: black;
+    top: -20px;
+    right: -10px;
     z-index: 1000;
-    background-color: var(--bg-input);
 }
 
 #ChatBox .user-name {

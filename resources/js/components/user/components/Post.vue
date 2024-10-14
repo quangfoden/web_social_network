@@ -1,4 +1,5 @@
 <template>
+
     <div @click="closeEditModalEditPost" v-show="isEditPostOverlay" class="posteditoverlay"></div>
     <div class="loadMore">
         <p class="d-inline pb-2 border-bottom m-0 secondary-text " v-if="pinned === 1 || pinned === true"> Bài viết đã
@@ -182,13 +183,26 @@
                                     </span>
                                 </li>
 
-                                <li>
+                                <li @click.prevent="sharePost(post.id)">
                                     <span>
                                         <a class="share-pst" href="#" title="Share">
                                             <i class="fa fa-share-alt"></i>
                                         </a>
-                                        <ins>20</ins>
+                                        <ins></ins>
                                     </span>
+                                    <div style="position: absolute;
+    right: 200px;
+    top: 5px;
+" v-if="isSharing" class="share-options">
+                                        <select @click="handleIconClick2($event)" v-model="privacy">
+                                            <option value="public">Công khai</option>
+                                            <option value="friends">Bạn bè</option>
+                                            <option value="only_me">Chỉ mình tôi</option>
+                                        </select>
+                                        <button style="border: none;
+    margin-left: 10px;
+    border-radius: 10px;" @click="confirmShare">Chia sẽ</button>
+                                    </div>
                                 </li>
                             </ul>
                             <!-- <div class="users-thumb-list">
@@ -255,11 +269,11 @@
                                         <ul v-show="showSuggestions && filteredFriends.length >= 1"
                                             class="suggestions rounded  position-absolute">
                                             <li v-for="friend in filteredFriends" :key="friend.id" class="rounded"
-                                                @click="selectFriend(friend.user, post.id)">
+                                                @click="selectFriend(friend, post.id)">
                                                 <div class="d-flex gap-2 align-items-center">
-                                                    <img class="rounded-full ml-1 img-cus" :src="friend.user.avatar"
-                                                        alt="">
-                                                    <p class="primary-text fw-bold mb-0">{{ friend.user.user_name }}</p>
+                                                    <img width="40px" class="rounded-full ml-1 img-cus"
+                                                        :src="friend.avatar" alt="">
+                                                    <p class="primary-text fw-bold mb-0">{{ friend.user_name }}</p>
                                                 </div>
                                             </li>
                                         </ul>
@@ -301,6 +315,113 @@
             </div>
         </div><!-- album post -->
     </div>
+    <!-- <div v-else-if="post.type === 'share'"> -->
+    <!-- Hiển thị bài chia sẻ -->
+    <!-- <h3>{{ post.user.user_name }} đã chia sẻ một bài viết:</h3>
+        <p>{{ post.content }}</p>
+        <small>{{ post.created_at_formatted }}</small>
+      </div> -->
+    <div  v-if="post.type === 'share'">
+
+        <div class="loadMore">
+            <p class="d-inline pb-2 border-bottom m-0 secondary-text " v-if="pinned === 1 || pinned === true"> Bài viết
+                đã
+                ghim
+            </p>
+            <i v-if="pinned === 1 || pinned === true" class="fas fa-thumbtack"></i>
+            <div class="central-meta item">
+                <div class="share-post" style="margin: 0;">
+                    <figure style="display: inline; margin-right: 10px;">
+                        <img width="40" style="border-radius: 100%;" :src="post.user_share.avatar" alt="">
+                    </figure>
+                    <router-link :to="{ name: 'Profile User', params: { id: post.user_share.user_id } }" title="">{{
+                        post.user_share.user_name }}</router-link> đã chia sẽ bài viết của
+                    <router-link :to="{ name: 'Profile User', params: { id: user.user_id } }" title="">{{
+                        post.user.user_name }}</router-link>
+                </div>
+                <div class="user-post" style="padding:10px 20px;border-top: 1px solid #fa6342;">
+                    <div class="friend-info">
+                        <figure>
+                            <img :src="user.avatar" alt="">
+                        </figure>
+                        <div class="friend-name">
+                            <ins><router-link :to="{ name: 'Profile User', params: { id: user.user_id } }" title="">{{
+                                user.user_name }}</router-link></ins>
+                            <span>
+                                <i v-if="post.privacy === 'public'" class="fas fa-globe"></i>
+                                <i v-if="post.privacy === 'friends'" class="fas fa-user-friends"></i>
+                                <i v-if="post.privacy === 'only_me'" class="fas fa-lock"></i>
+                                {{ post.created_at_formatted }}
+                            </span>
+                        </div>
+                        <div class="post-meta">
+                            <p>
+                                {{ post.content ? post.content : '' }}
+                            </p>
+                            <figure>
+                                <div class="img-bunch">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div
+                                                :class="{ 'one-media': media.length === 1, 'multiple-medias': media.length > 1 }">
+                                                <figure v-for=" medias in media.slice(0, 3)" :key="media.id">
+                                                    <a target="_blank" v-if="medias.type.includes('image')"
+                                                        class="strip" :href="medias.url" title=""
+                                                        data-strip-group="mygroup"
+                                                        data-strip-group-options="loop: false">
+                                                        <img :src="medias.url" alt="">
+                                                        <i @click="handleIconClick($event, medias)"
+                                                            style="color:#fff; transform:translatey(-200px);padding:10px;"
+                                                            class="fa-regular fa-eye"></i>
+                                                    </a>
+                                                    <a target="_blank" v-else-if="medias.type.includes('video')"
+                                                        class="strip" :href="medias.url" title=""
+                                                        data-strip-group="mygroup"
+                                                        data-strip-group-options="loop: false">
+                                                        <video :src="medias.url" class="" autoplay controls muted>
+                                                        </video>
+                                                    </a>
+                                                    <div style="width: 500px;padding-inline: 40px;"
+                                                        v-else-if="medias.type.includes('audio')">
+                                                        <audio class="rounded-lg mx-auto w-100" controls>
+                                                            <source :src="medias.url" type="audio/mpeg">
+                                                            Your browser does not support the audio element.
+                                                        </audio>
+                                                    </div>
+                                                </figure>
+
+                                                <figure style="overflow: hidden;" v-if="media.length >= 5">
+                                                    <a target="_blank" v-if="media[3].type.includes('image')"
+                                                        class="strip" :href="media[3].url" title=""
+                                                        data-strip-group="mygroup"
+                                                        data-strip-group-options="loop: false">
+                                                        <img :src="media[3].url" alt="">
+                                                    </a>
+                                                    <a target="_blank" v-else-if="media[3].type.includes('video')"
+                                                        class="strip" :href="media[3].url" title=""
+                                                        data-strip-group="mygroup"
+                                                        data-strip-group-options="loop: false">
+                                                        <video :src="media[3].url" class="" autoplay controls muted>
+                                                        </video>
+                                                    </a>
+                                                    <div class="more-photos">
+                                                        <span>+{{ media.length - 3 }}</span>
+                                                    </div>
+                                                </figure>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </figure>
+                        </div>
+                    </div>
+
+                </div>
+                <p style="text-align: center;
+    text-decoration: underline; margin: 0;cursor:pointer;">Xem bài viết</p>
+            </div><!-- album post -->
+        </div>
+    </div>
     <EditPostOverlay :postEdit="postBeingEdited" :medias="postBeingEdited.media"
         v-if="isEditPostOverlay && postBeingEdited && postBeingEdited.id == post.id"
         @close-modalEditPost="closeEditModalEditPost" />
@@ -322,7 +443,9 @@ import Comment from '../Components/Comment.vue'
 import EditPostOverlay from '../Components/EditPostOverlay.vue'
 import ModalPostOverLay from './ModalPostOverLay.vue';
 import { post } from 'jquery';
-
+import axios from 'axios';
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
 export default {
     components: {
         Comment,
@@ -387,7 +510,6 @@ export default {
             showAllComments: false,
             showSuggestions: false,
             filteredFriends: [],
-            friends: [],
             selectedFriend: null,
             isSendLoading: false,
             // likes: [],
@@ -397,6 +519,8 @@ export default {
             typeLaugh: "Laugh",
             typeSad: "Sad",
             typeInfuriating: "Infuriating",
+            isSharing: false,
+            privacy: 'public',
         }
     },
     computed: {
@@ -406,9 +530,12 @@ export default {
             }
             return JSON.parse(localStorage.getItem('authUser'));
         },
-        ...mapGetters('friends', ['getFriendsWithUsers']),
         friendsWithUsers() {
             return this.getFriendsWithUsers;
+        },
+        ...mapGetters('friends', ['allFriends']),
+        friends() {
+            return this.allFriends;
         },
         ...mapState({
             accounts: state => state.users.accounts
@@ -447,6 +574,31 @@ export default {
         showModalpost(postId) {
             if (postId === this.post.id) {
                 this.isPostOverLay = true
+            }
+        },
+        sharePost(postId) {
+            this.isSharing = !this.isSharing;
+        },
+        async confirmShare() {
+            try {
+                const response = await axios.post('/api/user/share', {
+                    post_id: this.post.id,
+                    privacy: this.privacy,
+                });
+                this.$store.commit('post/RESET_ALL_POSTS');
+                this.$store.dispatch('post/fetchPosts')
+                window.scrollTo(0, 0);
+                toastr.success(response.data.message, 'Thông báo', {
+                    positionClass: 'toast-bottom-left',
+                    backgroundColor: '#4CAF50',
+                    progressBar: true,
+                    closeButton: true,
+                    timeOut: 10000,
+                });
+                this.isSharing = false;
+            } catch (error) {
+                console.error(error);
+                alert('Error sharing the post');
             }
         },
         showBoxPostEdit(post) {
@@ -629,6 +781,10 @@ export default {
             event.preventDefault();   // Ngăn chặn hành động mặc định (điều hướng)
             this.convertImageUrl(medias);  // Gọi hàm xử lý của bạn
         },
+        handleIconClick2(event) {
+            event.stopPropagation();  // Ngăn chặn sự kiện click lan truyền
+            event.preventDefault();   // Ngăn chặn hành động mặc định (điều hướng)
+        },
         convertImageUrl(media) {
             let imageUrl = media.url;
             this.isLoading1 = true
@@ -690,9 +846,11 @@ export default {
             if (match) {
                 const query = diacritics.remove(match[1].toLowerCase());
                 this.filteredFriends = this.friends.filter(
-                    friend => diacritics.remove(friend.user.user_name.toLowerCase()).includes(query)
+                    friend => diacritics.remove(friend.user_name.toLowerCase()).includes(query)
                 );
                 this.showSuggestions = true;
+                console.log(this.friends);
+
             } else {
                 this.showSuggestions = false;
             }

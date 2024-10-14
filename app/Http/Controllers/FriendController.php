@@ -225,7 +225,8 @@ class FriendController extends Controller
                 'user_name' => $friendUser->user_name,
                 'user_id' => $friendUser->user_id,
                 'avatar' => $friendUser->avatar,
-                'mutual_friends' => $mutualFriendsCount
+                'mutual_friends' => $mutualFriendsCount,
+                'data'=> $friendUser
             ];
         });
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\FriendRequestController;
 use App\Http\Controllers\PostsController;
+use App\Http\Controllers\ShareController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -79,6 +80,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum']], function ()
     Route::post('deleteComment/{commentId}', [CommentController::class, 'delete_comment']);
     Route::post('/comments/repcomment/{repCommentId}', [CommentController::class, 'updateRepComment']);
     Route::post('/deleterepcomment/repcomment/{repCommentId}', [CommentController::class, 'delete_repcomment']);
+    Route::post('/share', [ShareController::class, 'sharePost']);
+
     //    Friends
     Route::post('/friends/request', [FriendController::class, 'sendRequest']);
     Route::post('/friends/cancel-request', [FriendController::class, 'cancelRequest']);

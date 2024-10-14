@@ -51,7 +51,7 @@
                                     </li>
                                     <li v-if="isFriend && showUnfriend" @click="unfriend(user.id)"><a class="text-white"
                                             href="#" title="Huỷ kết bạn"> <i class="fa fa-user-times"></i></a></li>
-                                    <li><a class="text-white send-mesg" href="#" title="Nhắn tin"><i
+                                    <li @click="fetchFriendChat(user.id)"><a class="text-white send-mesg" href="#" title="Nhắn tin"><i
                                                 class="fa fa-comment"></i></a></li>
                                 </ul>
                             </figure>
@@ -128,9 +128,12 @@ import 'toastr/build/toastr.min.css';
 export default {
     data() {
         const useGeneral = useGeneralStore();
-        const { isPostOverlay } = storeToRefs(useGeneral)
+        const { isPostOverlay,isLoadingChatBox,selecFriendId,isChatBoxOverLay } = storeToRefs(useGeneral)
         return {
             isPostOverlay,
+            selecFriendId,
+            isLoadingChatBox,
+            isChatBoxOverLay,
             loading: false,
             userId: null,
             InUser: ref({}),
@@ -172,6 +175,22 @@ export default {
         this.getStatusFriend()
     },
     methods: {
+        ...mapActions('chat', ['getFriend']),
+        fetchFriendChat(accountId) {
+            console.log('chat');
+            
+            this.isLoadingChatBox = true
+            this.isChatBoxOverLay = true
+            this.getFriend(accountId)
+                .then(response => {
+                    this.isLoadingChatBox = false
+                    this.selecFriendId = accountId
+                })
+                .catch(error => {
+                    console.error("Error in fetchFriendChat:", error);
+                    this.isLoadingChatBox = true
+                });
+        },
         checkPrivacy(post) {
             if (post.privacy == 'only_me') {
                 if (this.isAuthUser) {

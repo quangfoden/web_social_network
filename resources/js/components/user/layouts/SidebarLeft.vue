@@ -39,7 +39,7 @@
                     </a>
                 </li>
                 <li v-ripple>
-                    <a href="notifications.html" title="Nhóm" data-toggle="tooltip" data-placement="right">
+                    <a href="#" title="Nhóm" data-toggle="tooltip" data-placement="right">
                         <i class="fas fa-users"></i>
                         <span class="title-menu">Nhóm</span>
                     </a>

@@ -2760,16 +2760,34 @@ for some reason nth-child(1) is always busy and elements starting from 2 */
     width: auto;
     text-transform: capitalize;
 }
-
+.we-comment>h5 a{
+    word-break: break-all;
+}
 .we-comment>p {
-    display: inline;
     font-size: 13.4px;
     line-height: 20px;
     margin-bottom: 0;
     margin-top: 0;
+    max-width: 70%;
+    word-break: break-all;
 }
-
-.edit-coment {}
+.suggestions{
+    z-index: 1;
+    background: #fff;
+    width: auto;
+    padding: 10px;
+    border: none !important;
+    margin: 0 !important;
+    top: 80px;
+}
+.suggestions li{
+    margin-bottom:20px;
+    cursor: pointer;
+}
+.edit-coment {
+    position: absolute;
+    right: 80px;
+}
 
 .edit-coment ul {
     opacity: 0;

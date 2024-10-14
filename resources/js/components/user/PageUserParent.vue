@@ -1,6 +1,5 @@
 <template>
     <router-view></router-view>
-    <ChatBox v-if="isChatBoxOverLay" />
 </template>
 <script>
 import { useGeneralStore } from '../../store/general';
